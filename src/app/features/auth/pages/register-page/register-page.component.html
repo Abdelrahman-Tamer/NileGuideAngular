@@ -1,0 +1,215 @@
+
+<section class="min-h-screen  flex items-center justify-center px-4 py-10 text-white">
+  <div class="w-full max-w-6xl border border-yellow-500/10 overflow-hidden rounded-3xl bg-[#14120d] shadow-2xl grid lg:grid-cols-2">
+
+    <!-- LEFT -->
+    <div class="p-10 lg:p-14 flex flex-col justify-center">
+
+      <!-- Logo -->
+      <div class="flex items-center gap-3 text-yellow-500 mb-8">
+        <i class="fa-solid fa-star text-xl"></i>
+        <span class="text-lg font-semibold tracking-widest">NileGuide</span>
+      </div>
+
+      <h1 class="text-4xl font-bold mb-2">Create Account</h1>
+      <p class="text-white/60 mb-8">Begin your journey through Egypt today</p>
+
+      <form class="space-y-5" [formGroup]="registerForm" (ngSubmit)="submitData()">
+
+        <!-- Full Name -->
+        <div>
+          <label class="text-sm font-medium mb-2 block">Full Name</label>
+          <div class="relative">
+            <i class="fa-regular fa-user absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+            <input
+              formControlName="fullName"
+              type="text"
+              placeholder="John Doe"
+              class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-4 text-white placeholder:text-white/35 outline-none
+                     focus:ring-2 focus:ring-yellow-500/20"
+              [class.border-red-500]="f.fullName.touched && f.fullName.invalid"
+              [class.border-yellow-500/50]="!(f.fullName.touched && f.fullName.invalid)"
+            />
+          </div>
+
+          @if (f.fullName.touched && f.fullName.errors) {
+            <p class="mt-2 text-xs text-red-300">
+              @if (f.fullName.errors['required']) { <span>Full name is required.</span> }
+              @if (f.fullName.errors['minlength']) { <span>Minimum 2 characters.</span> }
+              @if (f.fullName.errors['maxlength']) { <span>Maximum 150 characters.</span> }
+            </p>
+          }
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="text-sm font-medium mb-2 block">Email Address</label>
+          <div class="relative">
+            <i class="fa-regular fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+            <input
+              formControlName="email"
+              type="email"
+              placeholder="name@example.com"
+              class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-4 text-white placeholder:text-white/35 outline-none
+                     focus:ring-2 focus:ring-yellow-500/20"
+              [class.border-red-500]="f.email.touched && f.email.invalid"
+              [class.border-yellow-500/50]="!(f.email.touched && f.email.invalid)"
+            />
+          </div>
+
+          @if (f.email.touched && f.email.errors) {
+            <p class="mt-2 text-xs text-red-300">
+              @if (f.email.errors['required']) { <span>Email is required.</span> }
+              @if (f.email.errors['email']) { <span>Email format is invalid.</span> }
+            </p>
+          }
+        </div>
+
+        <!-- Nationality -->
+        <div>
+          <label class="text-sm font-medium mb-2 block">Nationality</label>
+          <div class="relative">
+            <i class="fa-solid fa-earth-africa absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+
+            <select
+              formControlName="nationality"
+              class="w-full appearance-none rounded-xl bg-black/40 border py-3 pl-12 pr-10 text-yellow-400 outline-none
+                     focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20
+                     [&>option]:bg-black [&>option]:text-yellow-400"
+              [class.border-red-500]="f.nationality.touched && f.nationality.invalid"
+              [class.border-white/10]="!(f.nationality.touched && f.nationality.invalid)"
+            >
+              <option value="" disabled>Select nationality</option>
+              @for (n of NATIONALITIES; track n) {
+                <option [value]="n">{{ n }}</option>
+              }
+            </select>
+          </div>
+
+          @if (f.nationality.touched && f.nationality.errors) {
+            <p class="mt-2 text-xs text-red-300">
+              @if (f.nationality.errors['required']) { <span>Nationality is required.</span> }
+              @if (f.nationality.errors['maxlength']) { <span>Maximum 100 characters.</span> }
+            </p>
+          }
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="text-sm font-medium mb-2 block">Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+            <input
+              formControlName="password"
+              type="password"
+              placeholder="Enter your password"
+              class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-4 text-white placeholder:text-white/35 outline-none
+                     focus:ring-2 focus:ring-yellow-500/20"
+              [class.border-red-500]="f.password.touched && f.password.invalid"
+              [class.border-yellow-500/50]="!(f.password.touched && f.password.invalid)"
+            />
+          </div>
+          <p class="mt-2 text-xs text-white/45">At least 8 chars, must include letters and numbers</p>
+
+          @if (f.password.touched && f.password.errors) {
+            <p class="mt-2 text-xs text-red-300">
+              @if (f.password.errors['required']) { <span>Password is required.</span> }
+              @if (f.password.errors['maxlength']) { <span>Maximum 100 characters.</span> }
+              @if (f.password.errors['pattern']) { <span>Must include letters and numbers.</span> }
+            </p>
+          }
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label class="text-sm font-medium mb-2 block">Confirm Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+            <input
+              formControlName="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-4 text-white placeholder:text-white/35 outline-none
+                     focus:ring-2 focus:ring-yellow-500/20"
+              [class.border-red-500]="f.confirmPassword.touched && (f.confirmPassword.invalid || registerForm.hasError('passwordMatch'))"
+              [class.border-yellow-500/50]="!(f.confirmPassword.touched && (f.confirmPassword.invalid || registerForm.hasError('passwordMatch')))"
+            />
+          </div>
+
+          @if (f.confirmPassword.touched && (f.confirmPassword.errors || registerForm.hasError('passwordMatch'))) {
+            <p class="mt-2 text-xs text-red-300">
+              @if (f.confirmPassword.errors?.['required']) { <span>Confirm password is required.</span> }
+              @if (registerForm.hasError('passwordMatch')) { <span>Passwords do not match.</span> }
+            </p>
+          }
+        </div>
+
+        <!-- Agree -->
+        <label class="flex items-center gap-3 text-sm text-white/70">
+          <input formControlName="agree" type="checkbox" class="h-4 w-4 accent-yellow-500" />
+          <span>
+            I agree to the
+            <a href="#" class="text-yellow-500 hover:text-yellow-400">Terms of Service</a>
+            and
+            <a href="#" class="text-yellow-500 hover:text-yellow-400">Privacy Policy</a>
+          </span>
+        </label>
+
+        @if (f.agree.touched && f.agree.errors) {
+          <p class="text-xs text-red-300">You must accept the terms.</p>
+        }
+
+        <!-- Button -->
+        <button
+          type="submit"
+          class="w-full cursor-pointer rounded-xl bg-yellow-500 py-3 text-black font-semibold hover:bg-yellow-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          [disabled]="isLoading"
+        >
+          CREATE ACCOUNT
+          @if (isLoading) { <i class="fas fa-spinner fa-spin ml-2"></i> }
+        </button>
+
+        @if (successMessage) {
+          <div class="mt-2 bg-green-400 border-l-8 border-green-600 text-green-900 font-bold p-4 rounded-xl">
+            <p>{{ successMessage }}</p>
+            <p>You will be redirected in {{ redirectCounter }} seconds...</p>
+          </div>
+        }
+
+        @if (errorMessage) {
+          <div class="mt-2 bg-red-800 border-l-8 border-red-700 text-red-950 p-4 rounded-xl">
+            <p class="font-bold">{{ errorMessage }}</p>
+          </div>
+        }
+
+        <!-- Sign in -->
+        <p class="text-center text-white/60 mt-4">
+          Already have an account?
+          <a routerLink="/auth/login" class="text-yellow-500 hover:text-yellow-400 font-medium">Sign In</a>
+        </p>
+
+        <!-- Back -->
+        <a routerLink="/home" class="text-center block text-white/50 mt-2 hover:text-white/80 text-sm">
+          ← Back to Home
+        </a>
+
+      </form>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="relative hidden lg:block">
+      <img src="/Photo/Luxor.png" alt="Egypt" class="h-full w-full object-cover" />
+      <div class="absolute inset-0 bg-black/55 flex flex-col items-center justify-center text-center px-10 text-white">
+        <div class="flex items-center justify-center h-16 w-16 rounded-2xl bg-yellow-500/10 text-yellow-400 mb-6">
+          <i class="fa-solid fa-plane-departure text-4xl"></i>
+        </div>
+
+        <h2 class="text-5xl font-bold leading-tight mb-4">Start Your<br />Adventure</h2>
+        <p class="text-white/80 text-lg max-w-md">
+          Join thousands of travelers discovering the wonders of ancient Egypt with personalized AI-powered itineraries.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>

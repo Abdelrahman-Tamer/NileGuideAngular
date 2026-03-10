@@ -1,0 +1,195 @@
+
+<section class="pt-18">
+  <div class="mx-auto max-w-7xl  px-4 pt-10 pb-5">
+    <div
+      class="relative overflow-hidden rounded-2xl shadow-2xl pb-20">
+      <!-- background image -->
+      <img
+        src="/Photo/pyramid.png"
+        alt="Pyramids"
+        class="absolute inset-0 h-full w-full object-cover "
+      />
+
+      <!-- overlays (readability) -->
+    <div class="absolute inset-0 bg-black/30"></div>
+<div class="absolute inset-0 bg-linear-to-r from-black/35 via-black/20 to-transparent"></div>
+
+      <!-- content -->
+      <div class="relative flex min-h-115 md:min-h-130 items-center">
+        <div class="w-full px-6 py-10 mt-20 sm:px-8 md:w-3/5 md:px-14">
+
+          <h1 class="text-3xl font-bold font-serif leading-tight text-white sm:text-4xl md:text-6xl">
+            Plan Your Perfect Egyptian Adventure
+          </h1>
+
+          <p class="mt-5 max-w-xl text-sm text-white/80 sm:text-base md:mt-6 md:text-lg">
+            Discover curated experiences from ancient wonders to Red Sea retreats.
+            Your AI-powered journey starts here.
+          </p>
+
+          <!-- stats -->
+         <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-white/90 md:mt-7">
+  <!-- 200+ Experiences -->
+  <div class="flex items-center gap-3">
+    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-yellow-500/15 text-yellow-400">
+      <i class="fa-solid fa-compass"></i>
+    </span>
+    <span class="text-sm sm:text-base">
+      <span class="font-semibold text-white">200+</span> Experiences
+    </span>
+  </div>
+
+  <!-- 4.9 Average Rating -->
+  <div class="flex items-center gap-3">
+    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-yellow-500/15 text-yellow-400">
+      <i class="fa-solid fa-star"></i>
+    </span>
+    <span class="text-sm sm:text-base">
+      <span class="font-semibold text-white">4.9</span> Average Rating
+    </span>
+  </div>
+
+  <!-- 50,000+ Travelers -->
+  <div class="flex items-center gap-3">
+    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-yellow-500/15 text-yellow-400">
+      <i class="fa-solid fa-user-group"></i>
+    </span>
+    <span class="text-sm sm:text-base">
+      <span class="font-semibold text-white">50,000+</span> Travelers
+    </span>
+  </div>
+          </div>
+
+          <!-- actions -->
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4 md:mt-10">
+            <a
+              routerLink="/activities"
+              class="inline-flex w-full items-center justify-center rounded-xl bg-yellow-500 px-8 py-3 text-base font-semibold text-black
+                     hover:bg-yellow-400 transition-colors sm:w-auto"
+            >
+              Get Started
+            </a>
+
+            <button
+              type="button"
+              class="inline-flex w-full items-center justify-center rounded-xl border border-white/30 bg-white/10 px-8 py-3 text-base font-semibold text-white
+                     hover:bg-white/15 transition-colors sm:w-auto"
+            >
+              Watch Video
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="  pt-20 text-white">
+
+  <!-- Content -->
+  <div class="mx-auto max-w-7xl px-4 pb-16 ">
+    <!-- Header row -->
+    <div class="mb-6 flex items-center justify-between">
+      <h2 class="text-2xl font-semibold">Explore Ancient Cities</h2>
+
+      <a
+    routerLink="/activities"
+    
+        class="inline-flex  items-center gap-2 cursor-pointer text-yellow-500 hover:text-yellow-400 transition-colors"
+      >
+        View All
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
+          <path d="M10 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Cards -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Cairo -->
+      <article class="group">
+        <div class="relative h-80 overflow-hidden rounded-2xl bg-neutral-800 shadow-lg">
+          <img
+            src="/Photo/Cairo.png"
+            alt="Cairo"
+            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 text-sm font-semibold">
+            45 Activities
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <h3 class="text-xl font-semibold">Cairo</h3>
+          <p class="mt-1 text-sm text-white/70">The City of a Thousand Minarets</p>
+        </div>
+      </article>
+
+      <!-- Luxor -->
+      <article class="group">
+        <div class="relative h-80 overflow-hidden rounded-2xl bg-neutral-800 shadow-lg">
+          <img
+            src="/Photo/Luxor.png"
+            alt="Luxor"
+            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 text-sm font-semibold">
+            38 Activities
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <h3 class="text-xl font-semibold">Luxor</h3>
+          <p class="mt-1 text-sm text-white/70">World's Greatest Open Air Museum</p>
+        </div>
+      </article>
+
+      <!-- Aswan -->
+      <article class="group">
+        <div class="relative h-80 overflow-hidden rounded-2xl bg-neutral-800 shadow-lg">
+          <img
+            src="/Photo/Aswan.png"
+            alt="Aswan"
+            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 text-sm font-semibold">
+            26 Activities
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <h3 class="text-xl font-semibold">Aswan</h3>
+          <p class="mt-1 text-sm text-white/70">Nubian Culture &amp; The Nile</p>
+        </div>
+      </article>
+
+      <!-- Alexandria -->
+      <article class="group">
+        <div class="relative h-80 overflow-hidden rounded-2xl bg-neutral-800 shadow-lg">
+          <img
+            src="/Photo/Alexandria.png"
+            alt="Alexandria"
+            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 text-sm font-semibold">
+            32 Activities
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <h3 class="text-xl font-semibold">Alexandria</h3>
+          <p class="mt-1 text-sm text-white/70">Pearl of the Mediterranean</p>
+        </div>
+      </article>
+    </div>
+
+
+  </div>
+</section>
+
