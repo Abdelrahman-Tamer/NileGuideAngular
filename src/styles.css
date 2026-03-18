@@ -6,3 +6,24 @@
 @import "tailwindcss";
 @import "./styles/base.css";
 @import"./styles/toaster.css";
+
+body {
+  background: #1b1915;
+}
+
+/* Widjet chatbot shell styling */
+body iframe[src*="widget-loader"],
+body iframe[src*="widjet"],
+body [class*="widjet"],
+body [id*="widjet"],
+body [data-widjet-root],
+body [data-wj-root] {
+  color-scheme: dark;
+}
+
+body [class*="widjet-launcher"],
+body [id*="widjet-launcher"],
+body [data-testid*="launcher"],
+body [aria-label*="chat" i] {
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
