@@ -1,4 +1,5 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 
@@ -10,7 +11,10 @@ import { initFlowbite } from 'flowbite';
   styleUrl: './details.component.css',
 })
 export class DetailsComponent implements AfterViewInit {
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     initFlowbite();
   }
 }
