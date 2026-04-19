@@ -1,6 +1,5 @@
-
-<div class="bg-[#12100d] pt-20 text-white min-h-screen">
-  <div class="mx-auto max-w-7xl px-4 py-8 flex flex-col" style="height: calc(100vh - 80px);">
+<div class="bg-[#12100d] pt-20 text-white">
+  <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 py-8 flex flex-col">
 
     <!-- Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-[#3a3122] pb-4">
@@ -8,12 +7,11 @@
         Interactive <span class="text-yellow-400">Map</span>
       </h1>
 
-      <!-- City Filter -->
       <div class="relative">
         <select
           [(ngModel)]="selectedCity"
           (ngModelChange)="onCityChange()"
-          class="appearance-none bg-[#27241b] border border-[#3a3122] text-white py-2 pl-4 pr-10 rounded-xl focus:outline-none focus:border-yellow-400 transition-colors cursor-pointer min-w-50">
+          class="appearance-none bg-[#27241b] border border-[#3a3122] text-white py-2 pl-4 pr-10 rounded-xl focus:outline-none focus:border-yellow-400 transition-colors cursor-pointer min-w-[200px]">
           <option value="all">All Cities</option>
           <option value="Cairo">Cairo</option>
           <option value="Luxor">Luxor</option>
@@ -26,16 +24,12 @@
       </div>
     </div>
 
-    <!-- Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 overflow-hidden">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
       <!-- Map Area -->
-      <div class="order-1 lg:order-1 lg:col-span-2 bg-[#1c1912] border border-[#3a3122] rounded-[22px] relative overflow-hidden h-105 lg:h-full shadow-lg">
-
-        <!-- Google Map Container -->
+      <div class="lg:col-span-2 bg-[#1c1912] border border-[#3a3122] rounded-[22px] relative overflow-hidden shadow-lg"
+           style="height: clamp(320px, 55vw, calc(100vh - 200px));">
         <div #mapContainer class="w-full h-full"></div>
-
-        <!-- Map Controls -->
         <div class="absolute top-4 left-4 flex gap-2 z-10">
           <button
             (click)="centerMap()"
@@ -53,9 +47,9 @@
       </div>
 
       <!-- Itinerary List -->
-      <div class="order-2 lg:order-2 bg-[#1c1912] border border-[#3a3122] rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-lg overflow-hidden h-[420px] lg:h-full">
+      <div class="bg-[#1c1912] border border-[#3a3122] rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-lg overflow-hidden"
+           style="height: clamp(320px, 55vw, calc(100vh - 200px));">
 
-        <!-- List Header -->
         <div class="flex items-center justify-between border-b border-[#3a3122] pb-2 shrink-0">
           <h2 class="text-xl font-heading text-white">Itinerary</h2>
           <span class="text-xs font-bold text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full">
@@ -63,62 +57,58 @@
           </span>
         </div>
 
-        <!-- Schedule Items -->
         <div class="custom-scroll space-y-3 overflow-y-auto pr-1 flex-1">
 
-          <!-- Loading Skeleton -->
-          <ng-container *ngIf="isLoading">
-            <div *ngFor="let i of [1,2,3,4]"
-              class="flex gap-3 p-3 rounded-2xl border border-white/10 bg-[#211d16] animate-pulse">
-              <div class="w-20 h-20 rounded-xl bg-[#2a241a] shrink-0"></div>
-              <div class="flex flex-col justify-center gap-2 grow">
-                <div class="h-4 bg-[#2a241a] rounded-lg w-3/4"></div>
-                <div class="h-3 bg-[#2a241a] rounded-lg w-1/2"></div>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-container *ngIf="!isLoading && filteredItems.length > 0; else emptyState">
-            <div
-              *ngFor="let item of filteredItems"
-              (click)="selectItem(getOriginalIndex(item))"
-              class="group flex gap-3 p-3 rounded-2xl border cursor-pointer transition-all duration-300 relative overflow-hidden"
-              [ngClass]="isSelected(getOriginalIndex(item))
-                ? 'border-yellow-400 bg-yellow-400/10 ring-1 ring-yellow-400/50'
-                : 'border-white/10 bg-[#211d16] hover:bg-[#2a241a]'">
-
-              <div class="absolute inset-0 bg-linear-to-r from-yellow-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-
-              <div class="w-20 h-20 rounded-xl overflow-hidden shrink-0 border border-white/10">
-                <img
-                  [src]="item.image"
-                  [alt]="item.activityName"
-                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-              </div>
-
-              <div class="flex flex-col justify-center grow min-w-0 relative z-10">
-                <h3
-                  class="font-bold text-white truncate transition-colors"
-                  [class.text-yellow-400]="isSelected(getOriginalIndex(item))">
-                  {{ item.activityName }}
-                </h3>
-                <div class="flex items-center gap-2 text-xs text-[#bab29c] mt-1">
-                  <span class="flex items-center gap-1">
-                    <i class="fa-solid fa-location-dot text-[11px] text-yellow-400/70"></i>
-                    {{ item.city }}
-                  </span>
-                  <span class="w-1 h-1 rounded-full bg-[#3a3122]"></span>
-                  <span>{{ item.day }}</span>
+          @if (isLoading) {
+            @for (i of [1,2,3,4]; track i) {
+              <div class="flex gap-3 p-3 rounded-2xl border border-white/10 bg-[#211d16] animate-pulse">
+                <div class="w-20 h-20 rounded-xl bg-[#2a241a] shrink-0"></div>
+                <div class="flex flex-col justify-center gap-2 grow">
+                  <div class="h-4 bg-[#2a241a] rounded-lg w-3/4"></div>
+                  <div class="h-3 bg-[#2a241a] rounded-lg w-1/2"></div>
                 </div>
               </div>
-            </div>
-          </ng-container>
+            }
+          } @else if (filteredItems.length > 0) {
+            @for (item of filteredItems; track item.activityName) {
+              <div
+                (click)="selectItem(getOriginalIndex(item))"
+                class="group flex gap-3 p-3 rounded-2xl border cursor-pointer transition-all duration-300 relative overflow-hidden"
+                [ngClass]="isSelected(getOriginalIndex(item))
+                  ? 'border-yellow-400 bg-yellow-400/10 ring-1 ring-yellow-400/50'
+                  : 'border-white/10 bg-[#211d16] hover:bg-[#2a241a]'">
 
-          <ng-template #emptyState>
-            <div *ngIf="!isLoading" class="text-[#bab29c] text-center py-8">
+                <div class="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+
+                <div class="w-20 h-20 rounded-xl overflow-hidden shrink-0 border border-white/10">
+                  <img
+                    [src]="item.image"
+                    [alt]="item.activityName"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                </div>
+
+                <div class="flex flex-col justify-center grow min-w-0 relative z-10">
+                  <h3
+                    class="font-bold text-white truncate transition-colors"
+                    [class.text-yellow-400]="isSelected(getOriginalIndex(item))">
+                    {{ item.activityName }}
+                  </h3>
+                  <div class="flex items-center gap-2 text-xs text-[#bab29c] mt-1">
+                    <span class="flex items-center gap-1">
+                      <i class="fa-solid fa-location-dot text-[11px] text-yellow-400/70"></i>
+                      {{ item.city }}
+                    </span>
+                    <span class="w-1 h-1 rounded-full bg-[#3a3122]"></span>
+                    <span>{{ item.day }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="text-[#bab29c] text-center py-8">
               No activities found.
             </div>
-          </ng-template>
+          }
 
         </div>
       </div>
