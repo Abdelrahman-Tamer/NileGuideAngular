@@ -37,10 +37,28 @@
   <meta name="theme-color" content="#f2b90d">
 
   <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="alternate icon" type="image/x-icon" href="/favicon copy.ico">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="shortcut icon" href="/favicon-96x96.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
+
+  <!-- Structured Data (JSON-LD) for Google Rich Results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "NileGuide",
+    "url": "https://www.nileguide.online/",
+    "description": "NileGuide is your AI-powered travel companion for exploring Egypt. Plan personalized itineraries, discover ancient wonders, Nile cruises, and hidden gems.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.nileguide.online/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
 </head>
 
 <body>
