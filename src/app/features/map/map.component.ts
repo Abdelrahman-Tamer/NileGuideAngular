@@ -5,21 +5,21 @@ import {
   ViewChild,
   ElementRef,
   NgZone,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 // ─── Interface ───────────────────────────────────────────────────────────────
-// يطابق شكل الـ response القادم من الـ API.
-// لما تربط الـ API الحقيقية، عدّل الأسماء هنا بس وكل حاجة تانية هتشتغل أوتوماتيك.
 export interface ScheduleItem {
-  activityName: string;  // اسم النشاط
-  city: string;          // المدينة (بيُستخدم في الـ filter)
-  day: string;           // اليوم (Day 1, Day 2, ...)
-  lat: number;           // خط العرض  ← الأهم للماب
-  lng: number;           // خط الطول ← الأهم للماب
-  image: string;         // رابط الصورة
+  activityName: string;
+  city: string;
+  day: string;
+  lat: number;
+  lng: number;
+  image: string;
 }
 
 declare const google: any;
@@ -42,11 +42,8 @@ export class MapComponent implements OnInit, OnDestroy {
   selectedCity = 'all';
   isLoading = true;
 
-  // ─── الداتا ──────────────────────────────────────────────────────────────
-  // حالياً static — لما تربط الـ API استبدل المصفوفة دي بنتيجة الـ HTTP call
   scheduleItems: ScheduleItem[] = [];
 
-  // ─── Static fallback (تُحذف لما تربط الـ API) ───────────────────────────
   private readonly staticItems: ScheduleItem[] = [
     { activityName: 'Pyramids of Giza Tour',  city: 'Cairo',           day: 'Day 1', lat: 29.9792, lng: 31.1342, image: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&q=80&w=300' },
     { activityName: 'Egyptian Museum',         city: 'Cairo',           day: 'Day 1', lat: 30.0478, lng: 31.2336, image: 'https://images.unsplash.com/photo-1572252009289-9b5324392426?auto=format&fit=crop&q=80&w=300' },
@@ -87,10 +84,19 @@ export class MapComponent implements OnInit, OnDestroy {
     return [...new Set(this.scheduleItems.map(item => item.city))];
   }
 
-  constructor(private ngZone: NgZone, private http: HttpClient) {}
+  constructor(
+    private ngZone: NgZone,
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: object,
+  ) {}
 
   ngOnInit(): void {
-    this.loadData();
+    // ✅ الماب لا يُحمَّل في SSR — window/document غير موجودَين على السيرفر
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadData();
+    } else {
+      this.isLoading = false;
+    }
   }
 
   ngOnDestroy(): void {
@@ -98,16 +104,10 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   // ─── Data Loading ─────────────────────────────────────────────────────────
-  // ✅ نقطة الربط بالـ API
-  // لما يكون عندك endpoint حقيقي:
-  //   1. استبدل السطر ده:   this.http.get<ScheduleItem[]>('YOUR_API_URL')
-  //   2. احذف staticItems
-  //   3. تأكد إن الـ API بترجع نفس شكل الـ ScheduleItem interface
   private loadData(): void {
     this.isLoading = true;
 
     // ── Static mode (شغّال دلوقتي) ──
-    // استبدل بالـ HTTP call لما تربط الـ API
     this.scheduleItems = this.staticItems;
     this.isLoading = false;
     this.loadGoogleMapsScript();
@@ -117,34 +117,39 @@ export class MapComponent implements OnInit, OnDestroy {
     //   next: (items) => {
     //     this.scheduleItems = items;
     //     this.isLoading = false;
-    //     this.loadGoogleMapsScript();   // ← المهم: الماب يتحمّل بعد الداتا
+    //     this.loadGoogleMapsScript();
     //   },
-    //   error: () => {
-    //     this.isLoading = false;
-    //   }
+    //   error: () => { this.isLoading = false; }
     // });
   }
 
   // ─── Google Maps Script ───────────────────────────────────────────────────
+  // ✅ هذه الدالة بتُستدعى فقط بعد فحص isPlatformBrowser في ngOnInit
+  //    لذلك window/document آمنان هنا بدون حاجة لفحص إضافي
   private loadGoogleMapsScript(): void {
-    if (typeof google !== 'undefined' && google.maps) {
+    if (typeof google !== 'undefined' && google?.maps) {
       this.initMap();
       return;
     }
 
     const callbackName = '__mapInitCallback__';
-    (window as any)[callbackName] = () => {
-      this.ngZone.run(() => this.initMap());
-    };
 
-    if (!document.querySelector('#google-maps-script')) {
-      const script = document.createElement('script');
-      script.id = 'google-maps-script';
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD4h36e_ljWxi6V2S4Lf-VsSpgCxP3e7SM&callback=${callbackName}`;
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
-    }
+    // ✅ runOutsideAngular: يمنع Angular من تشغيل change detection عند كل event
+    //    داخل script injection — تحسين الأداء وتقليل overhead
+    this.ngZone.runOutsideAngular(() => {
+      (window as any)[callbackName] = () => {
+        this.ngZone.run(() => this.initMap());
+      };
+
+      if (!document.querySelector('#google-maps-script')) {
+        const script = document.createElement('script');
+        script.id    = 'google-maps-script';
+        script.src   = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD4h36e_ljWxi6V2S4Lf-VsSpgCxP3e7SM&callback=${callbackName}&loading=async`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    });
   }
 
   // ─── Map Init ─────────────────────────────────────────────────────────────
@@ -164,7 +169,6 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   // ─── Markers ──────────────────────────────────────────────────────────────
-  // منفصلة عن initMap عشان تقدر تستدعيها تاني بعد تحديث الداتا
   private buildMarkers(items: ScheduleItem[]): void {
     this.clearMarkers();
 
