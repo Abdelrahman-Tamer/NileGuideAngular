@@ -1,10 +1,13 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { FlowbiteService } from './core/services/flowbite/flowbite.services';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { NavbarComponent } from "./core/components/navbar/navbar.component";
 import { FooterComponent } from "./core/components/footer/footer.component";
 import { filter } from 'rxjs';
+import { injectSpeedInsights } from '@vercel/speed-insights';
+
 @Component({
   selector: 'app-root',
   imports: [NgxSpinnerModule, RouterOutlet, NavbarComponent, FooterComponent],
@@ -12,7 +15,7 @@ import { filter } from 'rxjs';
   styleUrl: './app.css'
 })
 export class App {
- private readonly flowbiteService =inject(FlowbiteService); 
+  private readonly flowbiteService = inject(FlowbiteService);
 
   ngOnInit(): void {
     this.flowbiteService.loadFlowbite((flowbite) => {
@@ -20,18 +23,26 @@ export class App {
     });
   }
 
-showNavbarFooter = true;
+  showNavbarFooter = true;
 
-constructor(private router: Router) {
-  this.router.events
-    .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-    .subscribe((e) => {
-      const url = e.urlAfterRedirects ?? e.url;
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: object
+  ) {
+    // Vercel Speed Insights — browser only (SSR safe)
+    if (isPlatformBrowser(this.platformId)) {
+      injectSpeedInsights();
+    }
 
-      this.showNavbarFooter =
-        !url.startsWith('/auth') &&
-        !url.startsWith('/Details');
-    });
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => {
+        const url = e.urlAfterRedirects ?? e.url;
+
+        this.showNavbarFooter =
+          !url.startsWith('/auth') &&
+          !url.startsWith('/Details');
+      });
+  }
 }
 
-}

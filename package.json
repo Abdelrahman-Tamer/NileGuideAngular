@@ -38,6 +38,7 @@
     "@ng-icons/core": "^31.4.0",
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^17.0.0",
+    "@vercel/speed-insights": "^2.0.0",
     "apexcharts": "^5.10.6",
     "express": "^5.1.0",
     "flowbite": "^4.0.1",
