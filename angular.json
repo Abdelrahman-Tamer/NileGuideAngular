@@ -10,12 +10,12 @@
     "G.Project": {
       "projectType": "application",
       "schematics": {
-          "@schematics/angular:component": {
-            "type": "component"
-          },
-          "@schematics/angular:service": {
-            "type": "service"
-          }
+        "@schematics/angular:component": {
+          "type": "component"
+        },
+        "@schematics/angular:service": {
+          "type": "service"
+        }
       },
       "root": "",
       "sourceRoot": "src",
@@ -35,7 +35,6 @@
             "styles": [
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "node_modules/ngx-spinner/animations/ball-scale-multiple.css",
-              
               "src/styles.css"
             ],
             "server": "src/main.server.ts",
@@ -50,12 +49,12 @@
                 {
                   "type": "initial",
                   "maximumWarning": "600kB",
-                  "maximumError": "1.5MB"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "2kB",
+                  "maximumError": "4kB"
                 }
               ],
               "outputHashing": "all"
