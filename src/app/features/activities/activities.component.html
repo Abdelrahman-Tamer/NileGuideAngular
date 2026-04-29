@@ -1,580 +1,284 @@
 <!-- Page Wrapper -->
-<div class="min-h-screen pt-20 bg-[#12100d] text-white">
+<div class="min-h-screen bg-[var(--surface-1)] text-white">
   <!-- Main Container -->
   <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
 
     <!-- Hero -->
-    <section class="relative overflow-hidden rounded-[28px] bg-[#1b1812] px-6 py-10 md:px-10">
-      <!-- Hero Glow -->
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(250,204,21,0.12),transparent_40%)]"></div>
+    <section
+      class="relative overflow-hidden rounded-[var(--radius-xl)] bg-[var(--surface-2)] px-6 py-10 md:px-10"
+    >
+      <div
+        class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(250,204,21,0.12),transparent_40%)]"
+      ></div>
 
-      <!-- Hero Content -->
       <div class="relative z-10 mx-auto max-w-3xl text-center">
-        <!-- Title -->
-        <h1 class="text-3xl font-bold font-serif tracking-tight md:text-5xl text-zinc-300">
+        <h1
+          class="text-3xl font-bold font-serif tracking-tight md:text-5xl text-zinc-300"
+        >
           Curated Experiences in Egypt
         </h1>
 
-        <!-- Search Box -->
-        <div class="mx-auto mt-6  flex max-w-2xl items-center gap-2 rounded-2xl border border-yellow-500/20 bg-[#27241b] p-2 focus-within:outline-none focus-within:ring-0">
-          <div class="flex flex-1 items-center gap-2 px-3">
-            <i class="fa-solid fa-magnifying-glass text-lg text-yellow-400/80"></i>
+        <div
+          class="mx-auto mt-6 flex max-w-2xl items-center gap-2 rounded-2xl border border-yellow-500/20 bg-[var(--surface-3)] p-2 focus-within:ring-2 focus-within:ring-yellow-500/60"
+        >
+          <label class="flex flex-1 items-center gap-2 px-3" for="activities-search">
+            <i class="fa-solid fa-magnifying-glass text-lg text-yellow-400/80" aria-hidden="true"></i>
             <input
+              id="activities-search"
               type="text"
               placeholder="Search activities, temples, or experiences..."
-              class="w-full bg-transparent border-none  py-2 text-sm text-white placeholder:text-zinc-500 outline-none focus:outline-none focus:ring-0 focus:border-transparent"
+              aria-label="Search activities"
+              class="w-full bg-transparent border-none py-2 text-sm text-white placeholder:text-zinc-500 outline-none focus:outline-none focus:ring-0"
             />
-          </div>
+          </label>
 
-          <button class="rounded-xl bg-yellow-400 px-4 py-2 text-sm font-semibold cursor-pointer text-black">
+          <button
+            type="button"
+            class="min-h-[44px] rounded-xl bg-yellow-400 px-4 py-2 text-sm font-semibold text-black transition hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          >
             Search
           </button>
         </div>
       </div>
     </section>
 
-    <!-- Breadcrumb -->
-    <!-- <div class="mt-6 text-sm text-zinc-500">
-      Home
-      <span class="mx-1 text-zinc-700">/</span>
-      Egypt
-      <span class="mx-1 text-zinc-700">/</span>
-      <span class="text-yellow-400">Activities</span>
-    </div> -->
-
     <!-- Main Content -->
     <section class="mt-10 grid gap-6 lg:grid-cols-[260px_1fr]">
 
-      <!-- Sidebar -->
-<aside class="space-y-6 self-start lg:sticky lg:top-28 lg:h-fit">     
-      <!-- Categories Filter -->
-    <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-5">
-    <div class="mb-5 flex items-center justify-between">
-        <h3 class="text-[15px] font-semibold text-white">Categories</h3>
-        
-    </div>
-
-    <div class="space-y-5">
-        <label class="flex cursor-pointer items-center gap-3">
-        <input type="checkbox" class="peer sr-only" />
-        <span class="flex h-4.5 w-4.5 items-center justify-center rounded-xs border border-[#4a4337] bg-transparent text-2xs text-[#27241b] transition peer-checked:bg-yellow-400 peer-checked:border-yellow-400">
-            <i class="fa-solid fa-check hidden peer-checked:block"></i>
-        </span>
-        <span class="text-[15px] font-normal text-[#c9c1b2]">History &amp; Culture</span>
-        </label>
-
-        <label class="flex cursor-pointer items-center gap-3">
-        <input type="checkbox" class="peer sr-only" />
-        <span class="flexh-4.5 w-4.5 items-center justify-center rounded-xs border border-[#4a4337] bg-transparent text-2xs text-[#27241b] transition peer-checked:bg-yellow-400 peer-checked:border-yellow-400">
-            <i class="fa-solid fa-check hidden peer-checked:block"></i>
-        </span>
-        <span class="text-[15px] font-normal text-[#c9c1b2]">Pyramids</span>
-        </label>
-
-        <label class="flex cursor-pointer items-center gap-3">
-        <input type="checkbox" class="peer sr-only" />
-        <span class="flexh-4.5 w-4.5 items-center justify-center rounded-xs border border-[#4a4337] bg-transparent text-2xs text-[#27241b] transition peer-checked:bg-yellow-400 peer-checked:border-yellow-400">
-            <i class="fa-solid fa-check hidden peer-checked:block"></i>
-        </span>
-        <span class="text-[15px] font-normal text-[#c9c1b2]">Local Food</span>
-        </label>
-
-        <label class="flex cursor-pointer items-center gap-3">
-        <input type="checkbox" class="peer sr-only" />
-        <span class="flexh-4.5 w-4.5 items-center justify-center rounded-xs border border-[#4a4337] bg-transparent text-2xs text-[#27241b] transition peer-checked:bg-yellow-400 peer-checked:border-yellow-400">
-            <i class="fa-solid fa-check hidden peer-checked:block"></i>
-        </span>
-        <span class="text-[15px] font-normal text-[#c9c1b2]">Nile Cruise</span>
-        </label>
-
-        <label class="flex cursor-pointer items-center gap-3">
-        <input type="checkbox" class="peer sr-only" />
-        <span class="flexh-4.5 w-4.5 items-center justify-center rounded-xs border border-[#4a4337] bg-transparent text-2xs text-[#27241b] transition peer-checked:bg-yellow-400 peer-checked:border-yellow-400">
-            <i class="fa-solid fa-check hidden peer-checked:block"></i>
-        </span>
-        <span class="text-[15px] font-normal text-[#c9c1b2]">Red Sea Diving</span>
-        </label>
-
-        <label class="flex cursor-pointer items-center gap-3">
-        <input type="checkbox" class="peer sr-only" />
-        <span class="flex h-4.5 w-4.5 items-center justify-center rounded-xs border border-[#4a4337] bg-transparent text-2xs text-[#27241b] transition peer-checked:bg-yellow-400 peer-checked:border-yellow-400">
-            <i class="fa-solid fa-check hidden peer-checked:block"></i>
-        </span>
-        <span class="text-[15px] font-normal text-[#c9c1b2]">Luxury &amp; Relaxation</span>
-        </label>
-
-        <label class="flex cursor-pointer items-center gap-3">
-        <input type="checkbox" class="peer sr-only" />
-        <span class="flex h-4.5 w-4.5 items-center justify-center rounded-xs border border-[#4a4337] bg-transparent text-2xs text-[#27241b] transition peer-checked:bg-yellow-400 peer-checked:border-yellow-400">
-            <i class="fa-solid fa-check text-2xs peer-checked:block"></i>
-        </span>
-        <span class="text-[15px] font-normal text-[#c9c1b2]">Museums</span>
-        </label>
-
-        <label class="flex cursor-pointer items-center gap-3">
-        <input type="checkbox" class="peer sr-only" />
-        <span class="flex h-4.5 w-4.5 items-center justify-center rounded-xs border border-[#4a4337] bg-transparent text-2xs text-[#27241b] transition peer-checked:bg-yellow-400 peer-checked:border-yellow-400">
-            <i class="fa-solid fa-check hidden peer-checked:block"></i>
-        </span>
-        <span class="text-[15px] font-normal text-[#c9c1b2]">Adventure</span>
-        </label>
-    </div>
-    </div>
-
-       <div class="rounded-2xl border border-white/10 bg-[#27241b] p-4">
-  <h3 class="mb-4 text-sm font-bold text-white">Cities</h3>
-
-  <div class="flex flex-wrap gap-3">
-
-    <!-- Cairo -->
-    <label class="cursor-pointer">
-      <input type="checkbox" class="peer hidden" />
-      <span class="rounded-full border border-white/10 bg-[#27241b] px-3 py-1.5 text-xs text-zinc-300 
-                   transition 
-                   peer-checked:border-yellow-400/30 
-                   peer-checked:text-yellow-300">
-        Cairo
-      </span>
-    </label>
-
-    <!-- Luxor -->
-    <label class="cursor-pointer">
-      <input type="checkbox" class="peer hidden" />
-      <span class="rounded-full border border-white/10 bg-[#27241b] px-3 py-1.5 text-xs text-zinc-300 
-                   transition 
-                   peer-checked:border-yellow-400/30 
-                   peer-checked:text-yellow-300">
-        Luxor
-      </span>
-    </label>
-
-    <!-- Aswan -->
-
-     <label class="cursor-pointer">
-      <input type="checkbox" class="peer hidden" />
-      <span class="rounded-full border border-white/10 bg-[#27241b] px-3 py-1.5 text-xs text-zinc-300 
-                   transition 
-                   peer-checked:border-yellow-400/30 
-                   peer-checked:text-yellow-300">
-        Aswan
-      </span>
-     </label>
-
-    <!-- Giza -->
-    <label class="cursor-pointer">
-      <input type="checkbox" class="peer hidden" />
-      <span class="rounded-full border border-white/10 bg-[#27241b] px-3 py-1.5 text-xs text-zinc-300 
-                   transition 
-                   peer-checked:border-yellow-400/30 
-                   peer-checked:text-yellow-300">
-        Giza
-      </span>
-    </label>
-
-        <!-- Alexandria -->
-    <label class="cursor-pointer">
-      <input type="checkbox" class="peer hidden" />
-      <span class="rounded-full border border-white/10 bg-[#27241b] px-3 py-1.5 text-xs text-zinc-300 
-                   transition 
-                   peer-checked:border-yellow-400/30 
-                   peer-checked:text-yellow-300">
-        Alexandria
-      </span>
-    </label>
-
-        <!-- Dahab -->
-    <label class="cursor-pointer">
-      <input type="checkbox" class="peer hidden" />
-      <span class="rounded-full border border-white/10 bg-[#27241b] px-3 py-1.5 text-xs text-zinc-300 
-                   transition 
-                   peer-checked:border-yellow-400/30 
-                   peer-checked:text-yellow-300">
-        Dahab
-      </span>
-    </label>
-
-    <!-- Hurghada -->
-
-    <label class="cursor-pointer">
-      <input type="checkbox" class="peer hidden" />
-      <span class="rounded-full border border-white/10 bg-[#27241b] px-3 py-1.5 text-xs text-zinc-300 
-                   transition 
-                   peer-checked:border-yellow-400/30 
-                   peer-checked:text-yellow-300">
-        Hurghada
-      </span>
-    </label>
-
-
-      <!-- Sharm -->
-    <label class="cursor-pointer">
-      <input type="checkbox" class="peer hidden" />
-      <span class="rounded-full border border-white/10 bg-[#27241b] px-3 py-1.5 text-xs text-zinc-300 
-                   transition 
-                   peer-checked:border-yellow-400/30 
-                   peer-checked:text-yellow-300">
-        Sharm El Sheikh
-      </span>
-    </label>
-
-  </div>
-        </div>
+      <!-- Desktop sidebar -->
+      <aside
+        class="hidden space-y-6 self-start lg:block lg:sticky lg:top-28 lg:h-fit"
+        aria-label="Activity filters"
+      >
+        <ng-container *ngTemplateOutlet="filtersTpl"></ng-container>
       </aside>
 
       <!-- Content Area -->
       <div>
         <!-- Top Bar -->
-        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
           <h2 class="text-lg font-semibold text-white/80">
-            Showing <span class="text-yellow-400">5</span> Activities
+            Showing
+            <span class="text-yellow-400">{{ activities.length }}</span>
+            Activities
           </h2>
 
           <div class="flex items-center gap-2">
             <span class="text-xs text-zinc-500">Sort by:</span>
-            <button class="rounded-xl border border-white/10 bg-[#27241b] px-3 py-2 text-xs text-zinc-300">
+            <button
+              type="button"
+              class="min-h-[44px] rounded-xl border border-white/10 bg-[var(--surface-2)] px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            >
               Popularity
             </button>
           </div>
         </div>
 
         <!-- Cards Grid -->
-        <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-
-          <!-- Card 1 -->
-          <article class="overflow-hidden card-activity rounded-2xl border border-[#3a3427] bg-[#27241b] p-3 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-            <div class="relative h-40 overflow-hidden rounded">
-              <img src="/Photo/Alexandria.png" alt="Grand Egyptian Museum VIP" class="h-full w-full object-cover card-activity__image" />
-              <button class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full
-               border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm">
-                <i class="fa-regular fa-heart text-lg"></i>
-              </button>
-              <div class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-[#4b4a45]/90 px-3 py-1 text-[11px] font-semibold text-white">
-                <span class="h-2 w-2 rounded-full bg-green-400"></span>
-                ACTIVE
-              </div>
-            </div>
-
-            <div class="pt-4">
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">Museum</span>
-                <div class="flex items-center gap-1 text-sm text-white">
-                  <i class="fa-solid fa-star text-[11px] text-yellow-400"></i>
-                  <span class="font-medium">5.0</span>
-                  <span class="text-xs text-zinc-400">(89)</span>
+        @if (activities.length > 0) {
+          <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            @for (activity of activities; track activity.id) {
+              <article
+                class="card-activity overflow-hidden rounded-2xl border border-[var(--border-primary)] bg-[var(--surface-2)] p-3 text-white transition hover:shadow-lg"
+              >
+                <div class="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-md)]">
+                  <img
+                    [src]="activity.image"
+                    [alt]="activity.imageAlt"
+                    loading="lazy"
+                    class="h-full w-full object-cover card-activity__image"
+                  />
+                  <button
+                    type="button"
+                    aria-label="Add to wishlist"
+                    class="tap-target absolute left-2 top-2 rounded-full border border-white/20 bg-black/40 text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  >
+                    <i class="fa-regular fa-heart text-lg" aria-hidden="true"></i>
+                  </button>
+                  <div
+                    class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-black/50 px-3 py-1 text-[11px] font-semibold text-white"
+                  >
+                    <span class="h-2 w-2 rounded-full bg-green-400" aria-hidden="true"></span>
+                    ACTIVE
+                  </div>
                 </div>
-              </div>
 
-              <h3 class="mt-2 text-[17px] font-semibold leading-tight text-white">
-                Grand Egyptian Museum VIP
-              </h3>
+                <div class="pt-4">
+                  <div class="flex items-center justify-between gap-3">
+                    <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">
+                      {{ activity.category }}
+                    </span>
+                    <div class="flex items-center gap-1 text-sm text-white">
+                      <i class="fa-solid fa-star text-[11px] text-yellow-400" aria-hidden="true"></i>
+                      <span class="font-medium">{{ activity.rating }}</span>
+                      <span class="text-xs text-zinc-400">({{ activity.ratingCount }})</span>
+                    </div>
+                  </div>
 
-              <div class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400">
-                <i class="fa-regular fa-circle-check text-[11px]"></i>
-                No ID Needed
-              </div>
+                  <h3 class="mt-2 text-[17px] font-semibold leading-tight text-white">
+                    {{ activity.title }}
+                  </h3>
 
-              <p class="mt-4 line-clamp-2 text-sm leading-6 text-zinc-400">
-                Early access to Egypt’s iconic museum with a curated VIP cultural experience.
-              </p>
+                  @if (activity.noIdNeeded) {
+                    <div
+                      class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400"
+                    >
+                      <i class="fa-regular fa-circle-check text-[11px]" aria-hidden="true"></i>
+                      No ID Needed
+                    </div>
+                  }
 
-              <div class="my-4 border-t border-[#3a3427]"></div>
+                  <p class="mt-4 line-clamp-2 text-sm leading-6 text-zinc-400">
+                    {{ activity.description }}
+                  </p>
 
-              <div class="flex justify-between">
-                <p class="text-sm text-zinc-400">Starting from</p>
-                <p class="mt-1 text-[20px] font-bold leading-none text-zinc-400">
-                  $150</p>
-              </div>
+                  <div class="my-4 border-t border-[var(--border-primary)]"></div>
 
-              <div class="my-4 border-t border-[#3a3427]"></div>
+                  <div class="flex justify-between">
+                    <p class="text-sm text-zinc-400">Starting from</p>
+                    <p class="text-[20px] font-bold leading-none text-zinc-200">
+                      {{ activity.startingFrom }}
+                    </p>
+                  </div>
 
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-zinc-400">Book via:</span>
-                <div class="flex items-center gap-4 text-yellow-400">
-                  <i class="fa-solid fa-link text-sm"></i>
-                  <i class="fa-solid fa-plane-departure text-sm"></i>
-                  <i class="fa-solid fa-globe text-sm"></i>
+                  <div class="my-4 border-t border-[var(--border-primary)]"></div>
+
+                  <div class="flex items-center gap-3">
+                    <span class="text-sm text-zinc-400">Book via:</span>
+                    <div class="flex items-center gap-2 text-yellow-400">
+                      <button
+                        type="button"
+                        aria-label="Open booking via website"
+                        class="tap-target rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                      >
+                        <i class="fa-solid fa-link text-sm" aria-hidden="true"></i>
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Open booking via travel partner"
+                        class="tap-target rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                      >
+                        <i class="fa-solid fa-plane-departure text-sm" aria-hidden="true"></i>
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Open booking via global agent"
+                        class="tap-target rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                      >
+                        <i class="fa-solid fa-globe text-sm" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="mt-5 space-y-3">
+                    <button
+                      type="button"
+                      class="w-full min-h-[44px] rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    >
+                      Add To Plan
+                    </button>
+                    <button
+                      type="button"
+                      routerLink="/Details"
+                      class="w-full min-h-[44px] rounded-xl border border-[var(--border-primary)] bg-transparent py-3 text-sm font-semibold text-white transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    >
+                      View Details
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              <div class="mt-5 space-y-3">
-                <button class="w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300">
-                  Add To Plan
-                </button>
-                <button 
-                routerLink="/Details"
-                class="w-full rounded-xl border cursor-pointer border-[#3a3427] bg-transparent py-3 text-sm font-semibold text-white transition hover:bg-white/5">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 2 -->
-         <article class="overflow-hidden card-activity rounded-2xl border border-[#3a3427] bg-[#27241b] p-3 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-            <div class="relative h-40 overflow-hidden rounded">
-              <img src="/Photo/Cairo.png" alt="Grand Egyptian Museum VIP" class="h-full w-full object-cover card-activity__image" />
-              <button class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full
-               border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm">
-                <i class="fa-regular fa-heart text-lg"></i>
-              </button>
-              <div class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-[#4b4a45]/90 px-3 py-1 text-[11px] font-semibold text-white">
-                <span class="h-2 w-2 rounded-full bg-green-400"></span>
-                ACTIVE
-              </div>
-            </div>
-
-            <div class="pt-4">
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">Museum</span>
-                <div class="flex items-center gap-1 text-sm text-white">
-                  <i class="fa-solid fa-star text-[11px] text-yellow-400"></i>
-                  <span class="font-medium">5.0</span>
-                  <span class="text-xs text-zinc-400">(89)</span>
-                </div>
-              </div>
-
-              <h3 class="mt-2 text-[17px] font-semibold leading-tight text-white">
-                Grand Egyptian Museum VIP
-              </h3>
-
-              <div class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400">
-                <i class="fa-regular fa-circle-check text-[11px]"></i>
-                No ID Needed
-              </div>
-
-              <p class="mt-4 line-clamp-2 text-sm leading-6 text-zinc-400">
-                Early access to Egypt’s iconic museum with a curated VIP cultural experience.
-              </p>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex justify-between">
-                <p class="text-sm text-zinc-400">Starting from</p>
-                <p class="mt-1 text-[20px] font-bold leading-none text-zinc-400">$150</p>
-              </div>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-zinc-400">Book via:</span>
-                <div class="flex items-center gap-4 text-yellow-400">
-                  <i class="fa-solid fa-link text-sm"></i>
-                  <i class="fa-solid fa-plane-departure text-sm"></i>
-                  <i class="fa-solid fa-globe text-sm"></i>
-                </div>
-              </div>
-
-              <div class="mt-5 space-y-3">
-                <button class="w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300">
-                  Add To Plan
-                </button>
-                <button class="w-full rounded-xl border border-[#3a3427] bg-transparent py-3 text-sm font-semibold text-white transition hover:bg-white/5">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 3 -->
-           <article class="overflow-hidden card-activity rounded-2xl border border-[#3a3427] bg-[#27241b] p-3 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-            <div class="relative h-40 overflow-hidden rounded">
-              <img src="/Photo/Alexandria.png" alt="Grand Egyptian Museum VIP" class="h-full w-full object-cover card-activity__image" />
-              <button class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full
-               border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm">
-                <i class="fa-regular fa-heart text-lg"></i>
-              </button>
-              <div class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-[#4b4a45]/90 px-3 py-1 text-[11px] font-semibold text-white">
-                <span class="h-2 w-2 rounded-full bg-green-400"></span>
-                ACTIVE
-              </div>
-            </div>
-
-            <div class="pt-4">
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">Museum</span>
-                <div class="flex items-center gap-1 text-sm text-white">
-                  <i class="fa-solid fa-star text-[11px] text-yellow-400"></i>
-                  <span class="font-medium">5.0</span>
-                  <span class="text-xs text-zinc-400">(89)</span>
-                </div>
-              </div>
-
-              <h3 class="mt-2 text-[17px] font-semibold leading-tight text-white">
-                Grand Egyptian Museum VIP
-              </h3>
-
-              <div class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400">
-                <i class="fa-regular fa-circle-check text-[11px]"></i>
-                No ID Needed
-              </div>
-
-              <p class="mt-4 line-clamp-2 text-sm leading-6 text-zinc-400">
-                Early access to Egypt’s iconic museum with a curated VIP cultural experience.
-              </p>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex justify-between">
-                <p class="text-sm text-zinc-400">Starting from</p>
-                <p class="mt-1 text-[20px] font-bold leading-none text-zinc-400">$150</p>
-              </div>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-zinc-400">Book via:</span>
-                <div class="flex items-center gap-4 text-yellow-400">
-                  <i class="fa-solid fa-link text-sm"></i>
-                  <i class="fa-solid fa-plane-departure text-sm"></i>
-                  <i class="fa-solid fa-globe text-sm"></i>
-                </div>
-              </div>
-
-              <div class="mt-5 space-y-3">
-                <button class="w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300">
-                  Add To Plan
-                </button>
-                <button class="w-full rounded-xl border border-[#3a3427] bg-transparent py-3 text-sm font-semibold text-white transition hover:bg-white/5">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 4 -->
-           <article class="overflow-hidden card-activity rounded-2xl border border-[#3a3427] bg-[#27241b] p-3 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-            <div class="relative h-40 overflow-hidden rounded">
-              <img src="/Photo/Aswan.png" alt="Grand Egyptian Museum VIP" class="h-full w-full object-cover card-activity__image" />
-              <button class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full
-               border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm">
-                <i class="fa-regular fa-heart text-lg"></i>
-              </button>
-              <div class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-[#4b4a45]/90 px-3 py-1 text-[11px] font-semibold text-white">
-                <span class="h-2 w-2 rounded-full bg-green-400"></span>
-                ACTIVE
-              </div>
-            </div>
-
-            <div class="pt-4">
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">Museum</span>
-                <div class="flex items-center gap-1 text-sm text-white">
-                  <i class="fa-solid fa-star text-[11px] text-yellow-400"></i>
-                  <span class="font-medium">5.0</span>
-                  <span class="text-xs text-zinc-400">(89)</span>
-                </div>
-              </div>
-
-              <h3 class="mt-2 text-[17px] font-semibold leading-tight text-white">
-                Grand Egyptian Museum VIP
-              </h3>
-
-              <div class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400">
-                <i class="fa-regular fa-circle-check text-[11px]"></i>
-                No ID Needed
-              </div>
-
-              <p class="mt-4 line-clamp-2 text-sm leading-6 text-zinc-400">
-                Early access to Egypt’s iconic museum with a curated VIP cultural experience.
-              </p>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex justify-between">
-                <p class="text-sm text-zinc-400">Starting from</p>
-                <p class="mt-1 text-[20px] font-bold leading-none text-zinc-400">$150</p>
-              </div>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-zinc-400">Book via:</span>
-                <div class="flex items-center gap-4 text-yellow-400">
-                  <i class="fa-solid fa-link text-sm"></i>
-                  <i class="fa-solid fa-plane-departure text-sm"></i>
-                  <i class="fa-solid fa-globe text-sm"></i>
-                </div>
-              </div>
-
-              <div class="mt-5 space-y-3">
-                <button class="w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300">
-                  Add To Plan
-                </button>
-                <button class="w-full rounded-xl border border-[#3a3427] bg-transparent py-3 text-sm font-semibold text-white transition hover:bg-white/5">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 5 -->
-           <article class="overflow-hidden card-activity rounded-2xl border border-[#3a3427] bg-[#27241b] p-3 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-            <div class="relative h-40 overflow-hidden rounded">
-              <img src="/Photo/pyramid.png" alt="Grand Egyptian Museum VIP" class="h-full w-full object-cover card-activity__image" />
-              <button class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full
-               border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm">
-                <i class="fa-regular fa-heart text-lg"></i>
-              </button>
-              <div class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-[#4b4a45]/90 px-3 py-1 text-[11px] font-semibold text-white">
-                <span class="h-2 w-2 rounded-full bg-green-400"></span>
-                ACTIVE
-              </div>
-            </div>
-
-            <div class="pt-4">
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">Museum</span>
-                <div class="flex items-center gap-1 text-sm text-white">
-                  <i class="fa-solid fa-star text-[11px] text-yellow-400"></i>
-                  <span class="font-medium">5.0</span>
-                  <span class="text-xs text-zinc-400">(89)</span>
-                </div>
-              </div>
-
-              <h3 class="mt-2 text-[17px] font-semibold leading-tight text-white">
-                Grand Egyptian Museum VIP
-              </h3>
-
-              <div class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400">
-                <i class="fa-regular fa-circle-check text-[11px]"></i>
-                No ID Needed
-              </div>
-
-              <p class="mt-4 line-clamp-2 text-sm leading-6 text-zinc-400">
-                Early access to Egypt’s iconic museum with a curated VIP cultural experience.
-              </p>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex justify-between">
-                <p class="text-sm text-zinc-400">Starting from</p>
-                <p class="mt-1 text-[20px] font-bold leading-none text-zinc-400">$150</p>
-              </div>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-zinc-400">Book via:</span>
-                <div class="flex items-center gap-4 text-yellow-400">
-                  <i class="fa-solid fa-link text-sm"></i>
-                  <i class="fa-solid fa-plane-departure text-sm"></i>
-                  <i class="fa-solid fa-globe text-sm"></i>
-                </div>
-              </div>
-
-              <div class="mt-5 space-y-3">
-                <button class="w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300">
-                  Add To Plan
-                </button>
-                <button class="w-full rounded-xl border border-[#3a3427] bg-transparent py-3 text-sm font-semibold text-white transition hover:bg-white/5">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </article>
-
-        </div>
+              </article>
+            }
+          </div>
+        }
       </div>
     </section>
   </div>
+
+  <!-- Mobile filters: floating toggle button (hidden on lg+) -->
+  <button
+    type="button"
+    (click)="openFilters()"
+    aria-label="Open filters"
+    aria-controls="activities-filters-drawer"
+    [attr.aria-expanded]="isFilterOpen()"
+    class="fixed bottom-4 right-4 z-30 inline-flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-full bg-yellow-400 px-5 py-3 text-sm font-bold text-black shadow-lg transition hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 lg:hidden"
+  >
+    <i class="fa-solid fa-sliders" aria-hidden="true"></i>
+    Filters
+  </button>
+
+  <!-- Mobile filters drawer + backdrop (lg:hidden) -->
+  @if (isFilterOpen()) {
+    <div
+      class="ng-backdrop fixed inset-0 z-40 bg-black/50 lg:hidden"
+      (click)="closeFilters()"
+      aria-hidden="true"
+    ></div>
+
+    <aside
+      id="activities-filters-drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Activity filters"
+      class="ng-drawer fixed inset-y-0 right-0 z-50 w-80 max-w-[85vw] overflow-y-auto bg-[var(--surface-2)] p-4 shadow-2xl lg:hidden"
+    >
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-base font-semibold text-white">Filters</h2>
+        <button
+          type="button"
+          (click)="closeFilters()"
+          aria-label="Close filters"
+          class="tap-target rounded-lg text-zinc-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+        >
+          <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <ng-container *ngTemplateOutlet="filtersTpl"></ng-container>
+    </aside>
+  }
 </div>
+
+<!-- Shared filters template (used by desktop sidebar AND mobile drawer) -->
+<ng-template #filtersTpl>
+  <!-- Categories -->
+  <div class="rounded-2xl border border-[var(--border-primary)] bg-[var(--surface-2)] p-5">
+    <div class="mb-5 flex items-center justify-between">
+      <h3 class="text-[15px] font-semibold text-white">Categories</h3>
+    </div>
+
+    <div class="space-y-4">
+      @for (cat of categories; track cat) {
+        <label class="flex cursor-pointer items-center gap-3">
+          <input type="checkbox" class="peer sr-only" [attr.aria-label]="cat" />
+          <span
+            class="flex h-4.5 w-4.5 items-center justify-center rounded-xs border border-[var(--border-primary)] bg-transparent text-2xs text-[var(--surface-2)] transition peer-checked:bg-yellow-400 peer-checked:border-yellow-400 peer-focus-visible:ring-2 peer-focus-visible:ring-yellow-500"
+          >
+            <i class="fa-solid fa-check hidden peer-checked:block" aria-hidden="true"></i>
+          </span>
+          <span class="text-[15px] font-normal text-[#c9c1b2]">{{ cat }}</span>
+        </label>
+      }
+    </div>
+  </div>
+
+  <!-- Cities -->
+  <div class="mt-6 rounded-2xl border border-white/10 bg-[var(--surface-2)] p-4">
+    <h3 class="mb-4 text-sm font-bold text-white">Cities</h3>
+
+    <div class="flex flex-wrap gap-2">
+      @for (city of cities; track city) {
+        <label class="cursor-pointer">
+          <input type="checkbox" class="peer hidden" [attr.aria-label]="city" />
+          <span
+            class="inline-flex min-h-[36px] items-center rounded-full border border-white/10 bg-[var(--surface-2)] px-3 py-1.5 text-xs text-zinc-300 transition peer-checked:border-yellow-400/30 peer-checked:text-yellow-300 peer-focus-visible:ring-2 peer-focus-visible:ring-yellow-500"
+          >
+            {{ city }}
+          </span>
+        </label>
+      }
+    </div>
+  </div>
+</ng-template>

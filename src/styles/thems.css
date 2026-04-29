@@ -75,6 +75,50 @@
   --font-family-body: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   --page-content-max: 1280px;
   --page-reading-max: 960px;
+
+  /* Layout */
+  --nav-h: 4rem;
+
+  /* Surfaces (canonical aliases used across the app) */
+  --surface-1: var(--bg-primary);
+  --surface-2: var(--surface);
+  --surface-3: var(--surface-soft);
+}
+
+/* Layout helpers */
+.pt-nav {
+  padding-top: var(--nav-h);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --nav-h: 4.5rem;
+  }
+}
+
+/* Minimum touch target (WCAG / mobile a11y) */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Slide-in drawer animation (mobile filters) */
+@keyframes ng-slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes ng-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.ng-drawer {
+  animation: ng-slide-in-right 0.25s ease-out;
+}
+.ng-backdrop {
+  animation: ng-fade-in 0.2s ease-out;
 }
 
 /* Tailwind v4 @theme extensions */

@@ -1,0 +1,116 @@
+<!--
+  Single, responsive schedule row.
+  Replaces the previously duplicated desktop table row + mobile card markup.
+  Layout collapses to a card on small screens and to a 10-col grid row on lg+.
+-->
+<article
+  class="rounded-2xl border border-white/10 bg-[var(--surface-2)] p-4 lg:rounded-none lg:border-0 lg:border-b lg:border-white/5 lg:p-0 lg:px-4 lg:py-4"
+>
+  <div class="grid gap-3 lg:grid-cols-10 lg:items-center lg:gap-4">
+    <!-- Time + date -->
+    <div class="flex items-start justify-between lg:block">
+      <div>
+        <p class="text-sm text-white lg:text-white">{{ item.time }}</p>
+        <p class="text-xs text-zinc-500">{{ item.date }}</p>
+      </div>
+
+      <!-- Mobile-only actions on the right -->
+      <div class="flex items-center gap-2 lg:hidden">
+        <button
+          type="button"
+          aria-label="View activity details"
+          class="tap-target rounded-lg text-yellow-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+        >
+          <i class="fa-solid fa-eye" aria-hidden="true"></i>
+        </button>
+        <button
+          type="button"
+          aria-label="Remove from schedule"
+          class="tap-target rounded-lg text-yellow-400 transition hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          <i class="fa-solid fa-trash" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Activity title + description -->
+    <div class="lg:col-span-2">
+      <p class="font-semibold text-white">{{ item.title }}</p>
+      <p class="text-xs text-zinc-500">{{ item.description }}</p>
+    </div>
+
+    <!-- Location -->
+    <div class="lg:contents">
+      <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500 lg:hidden">Location</p>
+      <span class="text-sm text-zinc-300">{{ item.location }}</span>
+    </div>
+
+    <!-- Duration -->
+    <div class="lg:contents">
+      <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500 lg:hidden">Duration</p>
+      <span class="text-sm text-zinc-300">{{ item.duration }}</span>
+    </div>
+
+    <!-- Cost -->
+    <div class="lg:contents">
+      <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500 lg:hidden">Cost</p>
+      <span class="text-sm font-semibold text-zinc-300">{{ item.cost }}</span>
+    </div>
+
+    <!-- Crowd level -->
+    <div class="lg:contents">
+      <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500 lg:hidden">Crowd</p>
+      <span
+        class="inline-flex w-fit rounded-full px-2 py-1 text-xs"
+        [class]="crowdClasses"
+      >
+        {{ item.crowd }}
+      </span>
+    </div>
+
+    <!-- ID required -->
+    <div class="lg:contents">
+      <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500 lg:hidden">ID Required</p>
+      <span
+        class="inline-flex w-fit rounded-full px-2 py-1 text-xs"
+        [class]="idClasses"
+      >
+        {{ item.idRequired ? 'Yes' : 'No' }}
+      </span>
+    </div>
+
+    <!-- Booking icons -->
+    <div class="lg:contents">
+      <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500 lg:hidden">Booking</p>
+      <div class="flex items-center gap-2 text-yellow-400">
+        @for (icon of item.bookingIcons; track icon) {
+          <button
+            type="button"
+            [attr.aria-label]="'Open booking link'"
+            class="tap-target rounded-lg transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          >
+            <i class="fa-solid {{ icon }}" aria-hidden="true"></i>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Desktop-only actions -->
+    <div class="hidden items-center gap-2 text-yellow-400 lg:flex">
+      <button
+        type="button"
+        aria-label="View activity details"
+        class="tap-target rounded-lg transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+      >
+        <i class="fa-solid fa-eye" aria-hidden="true"></i>
+      </button>
+      <button
+        type="button"
+        aria-label="Remove from schedule"
+        class="tap-target rounded-lg transition hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500"
+      >
+        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+</article>
