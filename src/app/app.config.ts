@@ -13,7 +13,11 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideAnimations(),
-    provideToastr(),
+    provideToastr({
+  positionClass: 'toast-top-right',
+  timeOut: 2500,
+  extendedTimeOut: 1200,
+}),
     provideRouter(
       routes,
       withInMemoryScrolling({

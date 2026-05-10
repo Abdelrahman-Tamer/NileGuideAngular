@@ -5,21 +5,30 @@ import {
   ViewChild,
   ElementRef,
   NgZone,
+  ChangeDetectorRef,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
-// ─── Interface ───────────────────────────────────────────────────────────────
-// يطابق شكل الـ response القادم من الـ API.
-// لما تربط الـ API الحقيقية، عدّل الأسماء هنا بس وكل حاجة تانية هتشتغل أوتوماتيك.
-export interface ScheduleItem {
-  activityName: string;  // اسم النشاط
-  city: string;          // المدينة (بيُستخدم في الـ filter)
-  day: string;           // اليوم (Day 1, Day 2, ...)
-  lat: number;           // خط العرض  ← الأهم للماب
-  lng: number;           // خط الطول ← الأهم للماب
-  image: string;         // رابط الصورة
+import { ActivitiesService } from '../activities/activities.service';
+import { ActivityDetails } from '../activities/activities.interfaces';
+import { ScheduleService } from '../schedule/schedule.service';
+import { ScheduleItemResponse } from '../schedule/schedule.interfaces';
+
+export interface MapScheduleItem {
+  activityId: number;
+  activityName: string;
+  city: string;
+  day: string;
+  lat: number;
+  lng: number;
+  image: string;
+  scheduledDate: string;
+  startTime: string;
+  endTime: string;
 }
 
 declare const google: any;
@@ -32,7 +41,12 @@ declare const google: any;
   styleUrl: './map.component.css',
 })
 export class MapComponent implements OnInit, OnDestroy {
-  @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('mapContainer', { static: true })
+  mapContainer!: ElementRef<HTMLDivElement>;
+
+  private readonly scheduleService = inject(ScheduleService);
+  private readonly activitiesService = inject(ActivitiesService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   private map: any = null;
   private markers: any[] = [];
@@ -42,52 +56,44 @@ export class MapComponent implements OnInit, OnDestroy {
   selectedCity = 'all';
   isLoading = true;
 
-  // ─── الداتا ──────────────────────────────────────────────────────────────
-  // حالياً static — لما تربط الـ API استبدل المصفوفة دي بنتيجة الـ HTTP call
-  scheduleItems: ScheduleItem[] = [];
-
-  // ─── Static fallback (تُحذف لما تربط الـ API) ───────────────────────────
-  private readonly staticItems: ScheduleItem[] = [
-    { activityName: 'Pyramids of Giza Tour',  city: 'Cairo',           day: 'Day 1', lat: 29.9792, lng: 31.1342, image: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&q=80&w=300' },
-    { activityName: 'Egyptian Museum',         city: 'Cairo',           day: 'Day 1', lat: 30.0478, lng: 31.2336, image: 'https://images.unsplash.com/photo-1572252009289-9b5324392426?auto=format&fit=crop&q=80&w=300' },
-    { activityName: 'Khan El-Khalili Bazaar',  city: 'Cairo',           day: 'Day 2', lat: 30.0472, lng: 31.2620, image: 'https://images.unsplash.com/photo-1662499252328-912c1cb41764?auto=format&fit=crop&q=80&w=300' },
-    { activityName: 'Hot Air Balloon Ride',    city: 'Luxor',           day: 'Day 3', lat: 25.6872, lng: 32.6396, image: 'https://images.unsplash.com/photo-1544967082-d9d25d867d66?auto=format&fit=crop&q=80&w=300' },
-    { activityName: 'Valley of the Kings',     city: 'Luxor',           day: 'Day 3', lat: 25.7402, lng: 32.6014, image: 'https://images.unsplash.com/photo-1503424886307-b090341d2c4c?auto=format&fit=crop&q=80&w=300' },
-    { activityName: 'Karnak Temple',           city: 'Luxor',           day: 'Day 4', lat: 25.7188, lng: 32.6573, image: 'https://images.unsplash.com/photo-1501264326535-3f2d0115024d?auto=format&fit=crop&q=80&w=300' },
-    { activityName: 'Philae Temple',           city: 'Aswan',           day: 'Day 5', lat: 24.0258, lng: 32.8820, image: 'https://images.unsplash.com/photo-1533512217506-d2fc7636e768?auto=format&fit=crop&q=80&w=300' },
-    { activityName: 'Abu Simbel Temples',      city: 'Aswan',           day: 'Day 6', lat: 22.3372, lng: 31.6258, image: 'https://images.unsplash.com/photo-1539650116574-8ef11e3b8552?auto=format&fit=crop&q=80&w=300' },
-    { activityName: 'Red Sea Diving',          city: 'Sharm El-Sheikh', day: 'Day 7', lat: 27.9158, lng: 34.3300, image: 'https://images.unsplash.com/photo-1565543793744-8d998d63e9e3?auto=format&fit=crop&q=80&w=300' },
-  ];
+  scheduleItems: MapScheduleItem[] = [];
 
   private readonly egyptCenter = { lat: 26.8206, lng: 30.8025 };
 
   private readonly mapStyles = [
-    { elementType: 'geometry',           stylers: [{ color: '#0C0C0C' }] },
+    { elementType: 'geometry', stylers: [{ color: '#0C0C0C' }] },
     { elementType: 'labels.text.stroke', stylers: [{ color: '#0C0C0C' }] },
-    { elementType: 'labels.text.fill',   stylers: [{ color: '#C6A664' }] },
-    { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#C6A664' }] },
-    { featureType: 'poi',          elementType: 'labels.text.fill', stylers: [{ color: '#C6A664' }] },
-    { featureType: 'poi.park',     elementType: 'geometry',         stylers: [{ color: '#1a1a1a' }] },
-    { featureType: 'road',         elementType: 'geometry',         stylers: [{ color: '#1f1f1f' }] },
-    { featureType: 'road',         elementType: 'geometry.stroke',  stylers: [{ color: '#0C0C0C' }] },
-    { featureType: 'road',         elementType: 'labels.text.fill', stylers: [{ color: '#F4EAD5' }] },
-    { featureType: 'road.highway', elementType: 'geometry',         stylers: [{ color: '#B68C40' }] },
-    { featureType: 'road.highway', elementType: 'geometry.stroke',  stylers: [{ color: '#C6A664' }] },
-    { featureType: 'water',        elementType: 'geometry',         stylers: [{ color: '#003B73' }] },
-    { featureType: 'water',        elementType: 'labels.text.fill', stylers: [{ color: '#C6A664' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#C6A664' }] },
+    {
+      featureType: 'administrative.locality',
+      elementType: 'labels.text.fill',
+      stylers: [{ color: '#C6A664' }],
+    },
+    { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#C6A664' }] },
+    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#1a1a1a' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1f1f1f' }] },
+    { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#0C0C0C' }] },
+    { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#F4EAD5' }] },
+    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#B68C40' }] },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry.stroke',
+      stylers: [{ color: '#C6A664' }],
+    },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#003B73' }] },
+    { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#C6A664' }] },
   ];
 
-  // ─── Computed ─────────────────────────────────────────────────────────────
-  get filteredItems(): ScheduleItem[] {
+  get filteredItems(): MapScheduleItem[] {
     if (this.selectedCity === 'all') return this.scheduleItems;
-    return this.scheduleItems.filter(item => item.city === this.selectedCity);
+    return this.scheduleItems.filter((item) => item.city === this.selectedCity);
   }
 
   get availableCities(): string[] {
-    return [...new Set(this.scheduleItems.map(item => item.city))];
+    return [...new Set(this.scheduleItems.map((item) => item.city))];
   }
 
-  constructor(private ngZone: NgZone, private http: HttpClient) {}
+  constructor(private ngZone: NgZone) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -97,35 +103,92 @@ export class MapComponent implements OnInit, OnDestroy {
     this.clearMarkers();
   }
 
-  // ─── Data Loading ─────────────────────────────────────────────────────────
-  // ✅ نقطة الربط بالـ API
-  // لما يكون عندك endpoint حقيقي:
-  //   1. استبدل السطر ده:   this.http.get<ScheduleItem[]>('YOUR_API_URL')
-  //   2. احذف staticItems
-  //   3. تأكد إن الـ API بترجع نفس شكل الـ ScheduleItem interface
   private loadData(): void {
     this.isLoading = true;
+    this.cdr.detectChanges();
 
-    // ── Static mode (شغّال دلوقتي) ──
-    // استبدل بالـ HTTP call لما تربط الـ API
-    this.scheduleItems = this.staticItems;
-    this.isLoading = false;
-    this.loadGoogleMapsScript();
+    this.scheduleService.getSchedule().subscribe({
+      next: (response) => {
+        const scheduleItems = response.items ?? [];
 
-    // ── API mode (فعّله لما يكون عندك endpoint) ──
-    // this.http.get<ScheduleItem[]>('https://your-api.com/api/schedule').subscribe({
-    //   next: (items) => {
-    //     this.scheduleItems = items;
-    //     this.isLoading = false;
-    //     this.loadGoogleMapsScript();   // ← المهم: الماب يتحمّل بعد الداتا
-    //   },
-    //   error: () => {
-    //     this.isLoading = false;
-    //   }
-    // });
+        if (!scheduleItems.length) {
+          this.scheduleItems = [];
+          this.isLoading = false;
+          this.cdr.detectChanges();
+          this.loadGoogleMapsScript();
+          return;
+        }
+
+        const detailRequests = scheduleItems.map((item) =>
+          this.activitiesService.getActivityById(item.activityId).pipe(
+            map((details: ActivityDetails) => this.mapToMapScheduleItem(item, details)),
+            catchError(() => of(null))
+          )
+        );
+
+        forkJoin(detailRequests).subscribe({
+          next: (items) => {
+            this.scheduleItems = items
+              .filter((item): item is MapScheduleItem => item !== null)
+              .filter((item) => this.hasValidCoordinates(item))
+              .sort((a, b) => {
+                const dateCompare = a.scheduledDate.localeCompare(b.scheduledDate);
+                if (dateCompare !== 0) return dateCompare;
+                return a.startTime.localeCompare(b.startTime);
+              });
+
+            this.isLoading = false;
+            this.cdr.detectChanges();
+            this.loadGoogleMapsScript();
+          },
+          error: () => {
+            this.scheduleItems = [];
+            this.isLoading = false;
+            this.cdr.detectChanges();
+            this.loadGoogleMapsScript();
+          },
+        });
+      },
+      error: () => {
+        this.scheduleItems = [];
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        this.loadGoogleMapsScript();
+      },
+    });
   }
 
-  // ─── Google Maps Script ───────────────────────────────────────────────────
+  private mapToMapScheduleItem(
+    scheduleItem: ScheduleItemResponse,
+    details: ActivityDetails
+  ): MapScheduleItem {
+    return {
+      activityId: scheduleItem.activityId,
+      activityName: scheduleItem.activityName,
+      city: scheduleItem.cityName,
+      day: this.formatDisplayDate(scheduleItem.scheduledDate),
+      lat: details.latitude,
+      lng: details.longitude,
+      image:
+        details.images?.[0] ||
+        'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&q=80&w=300',
+      scheduledDate: scheduleItem.scheduledDate,
+      startTime: scheduleItem.startTime,
+      endTime: scheduleItem.endTime,
+    };
+  }
+
+  private hasValidCoordinates(item: MapScheduleItem): boolean {
+    return (
+      typeof item.lat === 'number' &&
+      typeof item.lng === 'number' &&
+      !Number.isNaN(item.lat) &&
+      !Number.isNaN(item.lng) &&
+      item.lat !== 0 &&
+      item.lng !== 0
+    );
+  }
+
   private loadGoogleMapsScript(): void {
     if (typeof google !== 'undefined' && google.maps) {
       this.initMap();
@@ -134,7 +197,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
     const callbackName = '__mapInitCallback__';
     (window as any)[callbackName] = () => {
-      this.ngZone.run(() => this.initMap());
+      this.ngZone.run(() => {
+        this.initMap();
+        this.cdr.detectChanges();
+      });
     };
 
     if (!document.querySelector('#google-maps-script')) {
@@ -147,7 +213,6 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ─── Map Init ─────────────────────────────────────────────────────────────
   private initMap(): void {
     this.map = new google.maps.Map(this.mapContainer.nativeElement, {
       center: this.egyptCenter,
@@ -161,11 +226,10 @@ export class MapComponent implements OnInit, OnDestroy {
     });
 
     this.buildMarkers(this.scheduleItems);
+    this.cdr.detectChanges();
   }
 
-  // ─── Markers ──────────────────────────────────────────────────────────────
-  // منفصلة عن initMap عشان تقدر تستدعيها تاني بعد تحديث الداتا
-  private buildMarkers(items: ScheduleItem[]): void {
+  private buildMarkers(items: MapScheduleItem[]): void {
     this.clearMarkers();
 
     items.forEach((item, index) => {
@@ -193,21 +257,45 @@ export class MapComponent implements OnInit, OnDestroy {
       });
 
       marker.addListener('click', () => {
-        this.ngZone.run(() => this.selectItem(index));
+        this.ngZone.run(() => {
+          this.selectItem(index);
+          this.cdr.detectChanges();
+        });
       });
 
       this.markers.push(marker);
       this.infoWindows.push(infoWindow);
     });
+
+    if (items.length === 1) {
+      this.map.panTo({ lat: items[0].lat, lng: items[0].lng });
+      this.map.setZoom(12);
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (items.length > 1) {
+      const bounds = new google.maps.LatLngBounds();
+      items.forEach((item) => bounds.extend({ lat: item.lat, lng: item.lng }));
+      this.map.fitBounds(bounds);
+
+      google.maps.event.addListenerOnce(this.map, 'bounds_changed', () => {
+        this.ngZone.run(() => {
+          if (this.map.getZoom() > 12) {
+            this.map.setZoom(12);
+          }
+          this.cdr.detectChanges();
+        });
+      });
+    }
   }
 
   private clearMarkers(): void {
-    this.markers.forEach(m => m.setMap(null));
+    this.markers.forEach((m) => m.setMap(null));
     this.markers = [];
     this.infoWindows = [];
   }
 
-  // ─── Filter ───────────────────────────────────────────────────────────────
   onCityChange(): void {
     const city = this.selectedCity;
     this.selectedIndex = null;
@@ -219,14 +307,26 @@ export class MapComponent implements OnInit, OnDestroy {
     });
 
     if (city !== 'all' && this.filteredItems.length > 0) {
-      this.map.panTo({ lat: this.filteredItems[0].lat, lng: this.filteredItems[0].lng });
-      this.map.setZoom(10);
+      if (this.filteredItems.length === 1) {
+        this.map.panTo({
+          lat: this.filteredItems[0].lat,
+          lng: this.filteredItems[0].lng,
+        });
+        this.map.setZoom(12);
+      } else {
+        const bounds = new google.maps.LatLngBounds();
+        this.filteredItems.forEach((item) =>
+          bounds.extend({ lat: item.lat, lng: item.lng })
+        );
+        this.map.fitBounds(bounds);
+      }
     } else {
       this.centerMap();
     }
+
+    this.cdr.detectChanges();
   }
 
-  // ─── Item Selection ───────────────────────────────────────────────────────
   selectItem(originalIndex: number): void {
     if (!this.map) return;
     this.selectedIndex = originalIndex;
@@ -235,31 +335,58 @@ export class MapComponent implements OnInit, OnDestroy {
     this.map.panTo({ lat: item.lat, lng: item.lng });
     this.map.setZoom(13);
 
-    this.infoWindows.forEach(iw => iw.close());
-    this.infoWindows[originalIndex].open(this.map, this.markers[originalIndex]);
+    this.infoWindows.forEach((iw) => iw.close());
+    this.infoWindows[originalIndex]?.open(this.map, this.markers[originalIndex]);
+
+    this.cdr.detectChanges();
   }
 
-  // ─── Map Controls ─────────────────────────────────────────────────────────
   centerMap(): void {
     if (!this.map) return;
-    this.map.panTo(this.egyptCenter);
-    this.map.setZoom(6);
-    this.infoWindows.forEach(iw => iw.close());
+
+    if (this.filteredItems.length === 1) {
+      this.map.panTo({
+        lat: this.filteredItems[0].lat,
+        lng: this.filteredItems[0].lng,
+      });
+      this.map.setZoom(12);
+    } else if (this.filteredItems.length > 1) {
+      const bounds = new google.maps.LatLngBounds();
+      this.filteredItems.forEach((item) =>
+        bounds.extend({ lat: item.lat, lng: item.lng })
+      );
+      this.map.fitBounds(bounds);
+    } else {
+      this.map.panTo(this.egyptCenter);
+      this.map.setZoom(6);
+    }
+
+    this.infoWindows.forEach((iw) => iw.close());
     this.selectedIndex = null;
+    this.cdr.detectChanges();
   }
 
   toggleMapType(): void {
     if (!this.map) return;
     const current = this.map.getMapTypeId();
     this.map.setMapTypeId(current === 'roadmap' ? 'satellite' : 'roadmap');
+    this.cdr.detectChanges();
   }
 
-  // ─── Template Helpers ─────────────────────────────────────────────────────
-  getOriginalIndex(item: ScheduleItem): number {
+  getOriginalIndex(item: MapScheduleItem): number {
     return this.scheduleItems.indexOf(item);
   }
 
   isSelected(originalIndex: number): boolean {
     return this.selectedIndex === originalIndex;
+  }
+
+  formatDisplayDate(date: string): string {
+    const parsed = new Date(`${date}T00:00:00`);
+    return parsed.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
   }
 }

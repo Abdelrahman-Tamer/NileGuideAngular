@@ -1,5 +1,4 @@
-<div class="min-h-screen pt-16 bg-[#12100d] text-white">
-  <!-- Top Hero -->
+<div class="min-h-screen bg-[#12100d] pt-16 text-white">
   <section class="bg-linear-to-r from-[#1c1811] via-[#18150f] to-[#201c14]">
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
       <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
@@ -9,7 +8,7 @@
           </div>
 
           <div>
-            <h1 class="text-4xl font-bold font-serif leading-none py-5 text-white/90 sm:text-5xl">
+            <h1 class="py-5 font-serif text-4xl font-bold leading-none text-white/90 sm:text-5xl">
               My Wishlist
             </h1>
             <p class="mt-2 text-lg text-white/70">
@@ -19,8 +18,11 @@
         </div>
 
         <button
-          class="inline-flex items-center cursor-pointer justify-center gap-2 rounded-2xl border border-red-500 px-5 py-3 text-base font-semibold
-           text-red-500 transition hover:text-white hover:bg-red-500">
+          type="button"
+          (click)="clearAll()"
+          [disabled]="wishlistItems.length === 0"
+          class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-red-500 px-5 py-3 text-base font-semibold text-red-500 transition hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+        >
           <i class="fa-solid fa-trash-can"></i>
           Clear All
         </button>
@@ -28,221 +30,203 @@
     </div>
   </section>
 
-  <!-- Content -->
   <section class="px-4 py-10 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-5xl">
-      <!-- Top Row -->
+    <div class="mx-auto max-w-6xl" id="wishlist-list">
       <div class="mb-8 flex items-center justify-between gap-4">
-        <h2 class="text-2xl font-bold text-white/90 sm:text-3xl"><span class="text-yellow-400">3</span> Activities Saved</h2>
+        <h2 class="text-2xl font-bold text-white/90 sm:text-3xl">
+          <span class="text-yellow-400">{{ totalCount }}</span> Activities Saved
+        </h2>
       </div>
 
-        <!-- Cards Grid -->
+      @if (isLoading) {
         <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-
-          <!-- Card 1 -->
-          <article class="overflow-hidden card-activity rounded-2xl border border-[#3a3427] bg-[#27241b] p-3 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-            <div class="relative h-40 overflow-hidden rounded">
-              <img src="/Photo/Alexandria.png" alt="Grand Egyptian Museum VIP" class="h-full w-full object-cover card-activity__image" />
-              <button class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full
-               border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm">
-                <i class="fa-regular fa-heart text-lg"></i>
-              </button>
-              <div class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-[#4b4a45]/90 px-3 py-1 text-[11px] font-semibold text-white">
-                <span class="h-2 w-2 rounded-full bg-green-400"></span>
-                ACTIVE
+          @for (item of [1,2,3,4,5,6]; track $index) {
+            <article class="overflow-hidden rounded-2xl border border-[#3a3427] bg-[#27241b] p-3">
+              <div class="h-40 animate-pulse rounded bg-[#1f1b14]"></div>
+              <div class="space-y-3 pt-4">
+                <div class="h-4 w-1/3 animate-pulse rounded bg-[#1f1b14]"></div>
+                <div class="h-5 w-3/4 animate-pulse rounded bg-[#1f1b14]"></div>
+                <div class="h-14 w-full animate-pulse rounded bg-[#1f1b14]"></div>
               </div>
-            </div>
-
-            <div class="pt-4">
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">Museum</span>
-                <div class="flex items-center gap-1 text-sm text-white">
-                  <i class="fa-solid fa-star text-[11px] text-yellow-400"></i>
-                  <span class="font-medium">5.0</span>
-                  <span class="text-xs text-zinc-400">(89)</span>
-                </div>
-              </div>
-
-              <h3 class="mt-2 text-[17px] font-semibold leading-tight text-white">
-                Grand Egyptian Museum VIP
-              </h3>
-
-              <div class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400">
-                <i class="fa-regular fa-circle-check text-[11px]"></i>
-                No ID Needed
-              </div>
-
-              <p class="mt-4 line-clamp-2 text-sm leading-6 text-zinc-400">
-                Early access to Egypt’s iconic museum with a curated VIP cultural experience.
-              </p>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex justify-between">
-                <p class="text-sm text-zinc-400">Starting from</p>
-                <p class="mt-2 text-lg font-bold leading-none text-zinc-400">
-                  $150</p>
-              </div>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-zinc-400">Book via:</span>
-                <div class="flex items-center gap-4 text-yellow-400">
-                  <i class="fa-solid fa-link text-sm"></i>
-                  <i class="fa-solid fa-plane-departure text-sm"></i>
-                  <i class="fa-solid fa-globe text-sm"></i>
-                </div>
-              </div>
-
-              <div class="mt-5 space-y-3">
-                <button class="w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300">
-                  Add To Plan
-                </button>
-                <button 
-                routerLink="/Details"
-                class="w-full rounded-xl border cursor-pointer border-[#3a3427] bg-transparent py-3 text-sm font-semibold text-white transition hover:bg-white/5">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 2 -->
-         <article class="overflow-hidden card-activity rounded-2xl border border-[#3a3427] bg-[#27241b] p-3 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-            <div class="relative h-40 overflow-hidden rounded">
-              <img src="/Photo/Cairo.png" alt="Grand Egyptian Museum VIP" class="h-full w-full object-cover card-activity__image" />
-              <button class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full
-               border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm">
-                <i class="fa-regular fa-heart text-lg"></i>
-              </button>
-              <div class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-[#4b4a45]/90 px-3 py-1 text-[11px] font-semibold text-white">
-                <span class="h-2 w-2 rounded-full bg-green-400"></span>
-                ACTIVE
-              </div>
-            </div>
-
-            <div class="pt-4">
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">Museum</span>
-                <div class="flex items-center gap-1 text-sm text-white">
-                  <i class="fa-solid fa-star text-[11px] text-yellow-400"></i>
-                  <span class="font-medium">5.0</span>
-                  <span class="text-xs text-zinc-400">(89)</span>
-                </div>
-              </div>
-
-              <h3 class="mt-2 text-[17px] font-semibold leading-tight text-white">
-                Grand Egyptian Museum VIP
-              </h3>
-
-              <div class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400">
-                <i class="fa-regular fa-circle-check text-[11px]"></i>
-                No ID Needed
-              </div>
-
-              <p class="mt-4 line-clamp-2 text-sm leading-6 text-zinc-400">
-                Early access to Egypt’s iconic museum with a curated VIP cultural experience.
-              </p>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex justify-between">
-                <p class="text-sm text-zinc-400">Starting from</p>
-                <p class="mt-2 text-lg font-bold leading-none text-zinc-400">$150</p>
-              </div>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-zinc-400">Book via:</span>
-                <div class="flex items-center gap-4 text-yellow-400">
-                  <i class="fa-solid fa-link text-sm"></i>
-                  <i class="fa-solid fa-plane-departure text-sm"></i>
-                  <i class="fa-solid fa-globe text-sm"></i>
-                </div>
-              </div>
-
-              <div class="mt-5 space-y-3">
-                <button class="w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300">
-                  Add To Plan
-                </button>
-                <button class="w-full rounded-xl border border-[#3a3427] bg-transparent py-3 text-sm font-semibold text-white transition hover:bg-white/5">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 3-->
-           <article class="overflow-hidden card-activity rounded-2xl border border-[#3a3427] bg-[#27241b] p-3 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-            <div class="relative h-40 overflow-hidden rounded">
-              <img src="/Photo/Aswan.png" alt="Grand Egyptian Museum VIP" class="h-full w-full object-cover card-activity__image" />
-              <button class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full
-               border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm">
-                <i class="fa-regular fa-heart text-lg"></i>
-              </button>
-              <div class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-[#4b4a45]/90 px-3 py-1 text-[11px] font-semibold text-white">
-                <span class="h-2 w-2 rounded-full bg-green-400"></span>
-                ACTIVE
-              </div>
-            </div>
-
-            <div class="pt-4">
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">Museum</span>
-                <div class="flex items-center gap-1 text-sm text-white">
-                  <i class="fa-solid fa-star text-[11px] text-yellow-400"></i>
-                  <span class="font-medium">5.0</span>
-                  <span class="text-xs text-zinc-400">(89)</span>
-                </div>
-              </div>
-
-              <h3 class="mt-2 text-[17px] font-semibold leading-tight text-white">
-                Grand Egyptian Museum VIP
-              </h3>
-
-              <div class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400">
-                <i class="fa-regular fa-circle-check text-[11px]"></i>
-                No ID Needed
-              </div>
-
-              <p class="mt-4 line-clamp-2 text-sm leading-6 text-zinc-400">
-                Early access to Egypt’s iconic museum with a curated VIP cultural experience.
-              </p>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex justify-between">
-                <p class="text-sm text-zinc-400">Starting from</p>
-                <p class="mt-2 text-lg font-bold leading-none text-zinc-400">$150</p>
-              </div>
-
-              <div class="my-4 border-t border-[#3a3427]"></div>
-
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-zinc-400">Book via:</span>
-                <div class="flex items-center gap-4 text-yellow-400">
-                  <i class="fa-solid fa-link text-sm"></i>
-                  <i class="fa-solid fa-plane-departure text-sm"></i>
-                  <i class="fa-solid fa-globe text-sm"></i>
-                </div>
-              </div>
-
-              <div class="mt-5 space-y-3">
-                <button class="w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300">
-                  Add To Plan
-                </button>
-                <button class="w-full rounded-xl border border-[#3a3427] bg-transparent py-3 text-sm font-semibold text-white transition hover:bg-white/5">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </article>
-
-    
-
+            </article>
+          }
         </div>
+      } @else if (wishlistItems.length === 0) {
+        <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] px-6 py-14 text-center">
+          <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-yellow-500/20 bg-yellow-500/10 text-yellow-400">
+            <i class="fa-regular fa-heart text-2xl"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-white">Your wishlist is empty</h3>
+          <p class="mt-3 text-white/65">Save activities you love and they will appear here.</p>
+          <a
+            routerLink="/activities"
+            class="mt-6 inline-flex rounded-2xl bg-yellow-400 px-6 py-3 text-sm font-bold text-black transition hover:bg-yellow-300"
+          >
+            Browse Activities
+          </a>
+        </div>
+      } @else {
+        <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          @for (activity of wishlistItems; track activity.activityID) {
+            <article class="card-activity overflow-hidden rounded-2xl border border-[#3a3427] bg-[#27241b] p-3 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
+              <div class="relative h-40 overflow-hidden rounded">
+                <img
+                  [src]="activity.imageUrl"
+                  [alt]="activity.activityName"
+                  class="card-activity__image h-full w-full object-cover"
+                />
+
+                <button
+                  type="button"
+                  (click)="removeFromWishlist(activity.activityID)"
+                  class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm"
+                >
+                  @if (isRemoving(activity.activityID)) {
+                    <i class="fa-solid fa-spinner fa-spin text-lg text-yellow-400"></i>
+                  } @else {
+                    <i class="fa-solid fa-heart text-lg text-red-500"></i>
+                  }
+                </button>
+
+                <div class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-[#4b4a45]/90 px-3 py-1 text-[11px] font-semibold text-white">
+                  <span
+                    class="h-2 w-2 rounded-full"
+                    [class.bg-green-400]="activity.isActive"
+                    [class.bg-red-400]="!activity.isActive"
+                  ></span>
+                  {{ activity.isActive ? 'ACTIVE' : 'INACTIVE' }}
+                </div>
+              </div>
+
+              <div class="pt-4">
+                <div class="flex items-center justify-between gap-3">
+                  <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">
+                    {{ activity.categoryName }}
+                  </span>
+
+                  <div class="flex items-center gap-1 text-sm text-white">
+                    <i class="fa-solid fa-star text-[11px] text-yellow-400"></i>
+                    <span class="font-medium">{{ getRoundedRating(activity.rating) }}</span>
+                    <span class="text-xs text-zinc-400">({{ activity.reviewsCount }})</span>
+                  </div>
+                </div>
+
+                <h3 class="mt-2 line-clamp-2 text-[17px] font-semibold leading-tight text-white/85">
+                  {{ activity.activityName }}
+                </h3>
+
+                <div class="flex justify-between">
+                  <div class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400">
+                    <i class="fa-regular fa-circle-check text-[11px]"></i>
+                    {{ activity.requiredDocuments }}
+                  </div>
+                </div>
+
+                <p class="mt-4 line-clamp-2 text-sm leading-5 text-zinc-400">
+                  {{ activity.description }}
+                </p>
+
+                <div class="my-4 border-t border-[#3a3427]"></div>
+
+                 <div class="flex items-center justify-between gap-3">
+                    <div class="flex flex-col">
+                      <span class="text-sm uppercase tracking-wide text-green-600/90">Open</span>
+                      <p class="mt-1 text-[13px] font-semibold text-white/80">
+                        {{ getOpenTime(activity) }}
+                      </p>
+                    </div>
+
+                     <div class="flex flex-col text-right">
+                      <span class="text-sm uppercase tracking-wide text-red-600/90">Close</span>
+                      <p class="mt-1 text-[13px] font-semibold text-white/80">
+                        {{ getCloseTime(activity) }}
+                      </p>
+                    </div>
+
+                    <div class="h-8 w-px bg-[#3a3427]"></div>
+                       <div>
+                      <p class=" text-[25px] font-bold leading-none mr-2 text-yellow-500/90">
+                        ${{ activity.minPrice }}
+                      </p>
+                    </div>
+                  </div>
+
+                <div class="my-4 border-t border-[#3a3427]"></div>
+
+                <div class="flex items-center gap-3">
+                  <span class="text-sm text-zinc-400">Book via:</span>
+                  <div class="flex items-center gap-4 text-yellow-400">
+                    @for (provider of activity.providers; track provider.link) {
+                      <a
+                        [href]="provider.link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="transition hover:text-yellow-300"
+                        [title]="provider.providerName"
+                      >
+                        <i [class]="getProviderIcon(provider) + ' text-sm'"></i>
+                      </a>
+                    }
+                  </div>
+                </div>
+
+                <div class="mt-5 space-y-3">
+                  <button class="w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300">
+                    Add To Plan
+                  </button>
+
+                  <a
+                    [routerLink]="['/activities', activity.activityID]"
+                    class="block w-full rounded-xl border border-[#3a3427] bg-transparent py-3 text-center text-sm font-semibold text-white transition hover:bg-white/5"
+                  >
+                    View Details
+                  </a>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+
+        @if (totalPages > 1) {
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              (click)="goToPreviousPage()"
+              [disabled]="currentPage === 1"
+              class="rounded-2xl border border-[#3a3427] bg-[#1b1812] px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:border-yellow-400 hover:text-yellow-400 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Previous
+            </button>
+
+            @for (page of pages; track page) {
+              <button
+                type="button"
+                (click)="changePage(page)"
+                class="flex h-12 w-12 items-center justify-center rounded-full border text-sm font-bold transition"
+                [class.border-yellow-400]="currentPage === page"
+                [class.bg-yellow-400]="currentPage === page"
+                [class.text-black]="currentPage === page"
+                [class.border-[#3a3427]]="currentPage !== page"
+                [class.bg-[#1b1812]]="currentPage !== page"
+                [class.text-white]="currentPage !== page"
+                [class.hover:border-yellow-400]="currentPage !== page"
+                [class.hover:text-yellow-400]="currentPage !== page"
+              >
+                {{ page }}
+              </button>
+            }
+
+            <button
+              type="button"
+              (click)="goToNextPage()"
+              [disabled]="currentPage === totalPages"
+              class="rounded-2xl border border-[#3a3427] bg-[#1b1812] px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:border-yellow-400 hover:text-yellow-400 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        }
+      }
     </div>
   </section>
 </div>

@@ -43,6 +43,8 @@
     "flowbite": "^4.0.1",
     "flowbite-angular": "^21.0.0",
     "flowbite-datepicker": "^2.0.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "ng-primitives": "^0.90.0",
     "ngx-spinner": "^21.0.0",
     "ngx-toastr": "^20.0.5",

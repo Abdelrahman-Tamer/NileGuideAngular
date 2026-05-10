@@ -1,128 +1,133 @@
-
-<div class="bg-[#12100d] pt-20 text-white min-h-screen">
-  <div class="mx-auto max-w-7xl px-4 py-8 flex flex-col" style="height: calc(100vh - 80px);">
-
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-[#3a3122] pb-4">
-      <h1 class="text-3xl md:text-4xl font-heading text-white">
+<div class="min-h-screen bg-[#12100d] pt-20 text-white">
+  <div class="mx-auto flex max-w-7xl flex-col px-4 py-8 lg:h-[calc(100vh-80px)]">
+    <div
+      class="mb-6 flex flex-col items-start justify-between gap-4 border-b border-[#3a3122] pb-4 md:flex-row md:items-center"
+    >
+      <h1 class="text-3xl text-white md:text-4xl">
         Interactive <span class="text-yellow-400">Map</span>
       </h1>
 
-      <!-- City Filter -->
       <div class="relative">
         <select
           [(ngModel)]="selectedCity"
           (ngModelChange)="onCityChange()"
-          class="appearance-none bg-[#27241b] border border-[#3a3122] text-white py-2 pl-4 pr-10 rounded-xl focus:outline-none focus:border-yellow-400 transition-colors cursor-pointer min-w-50">
+          class="min-w-50 cursor-pointer appearance-none rounded-xl border border-[#3a3122] bg-[#27241b] py-2 pl-4 pr-10 text-white transition-colors focus:border-yellow-400 focus:outline-none"
+        >
           <option value="all">All Cities</option>
-          <option value="Cairo">Cairo</option>
-          <option value="Luxor">Luxor</option>
-          <option value="Aswan">Aswan</option>
-          <option value="Sharm El-Sheikh">Sharm El-Sheikh</option>
+          @for (city of availableCities; track city) {
+            <option [value]="city">{{ city }}</option>
+          }
         </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-yellow-400">
+
+        <div
+          class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-yellow-400"
+        >
           <i class="fa-solid fa-chevron-down text-sm"></i>
         </div>
       </div>
     </div>
 
-    <!-- Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1 overflow-hidden">
+    <div class="grid grid-cols-1 gap-8 lg:flex-1 lg:overflow-hidden lg:grid-cols-3">
+      <div
+        class="order-1 relative h-105 overflow-hidden rounded-[22px] border border-[#3a3122] bg-[#1c1912] shadow-lg lg:col-span-2 lg:h-full"
+      >
+        <div #mapContainer class="h-full w-full"></div>
 
-      <!-- Map Area -->
-      <div class="order-1 lg:order-1 lg:col-span-2 bg-[#1c1912] border border-[#3a3122] rounded-[22px] relative overflow-hidden h-105 lg:h-full shadow-lg">
-
-        <!-- Google Map Container -->
-        <div #mapContainer class="w-full h-full"></div>
-
-        <!-- Map Controls -->
-        <div class="absolute top-4 left-4 flex gap-2 z-10">
+        <div class="absolute top-4 left-4 z-10 flex gap-2">
           <button
             (click)="centerMap()"
             title="Center Map"
-            class="bg-[#2a241a]/90 backdrop-blur-sm border border-white/10 text-yellow-400 p-2 rounded-xl hover:bg-[#332c20] transition-colors shadow-lg flex items-center justify-center h-11 w-11">
+            class="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-[#2a241a]/90 p-2 text-yellow-400 shadow-lg backdrop-blur-sm transition-colors hover:bg-[#332c20]"
+          >
             <i class="fa-solid fa-location-crosshairs text-lg"></i>
           </button>
+
           <button
             (click)="toggleMapType()"
-            class="bg-[#2a241a]/90 backdrop-blur-sm border border-white/10 text-white px-4 py-2 rounded-xl hover:bg-[#332c20] hover:text-yellow-400 transition-colors text-sm font-bold shadow-lg flex items-center gap-2">
+            class="flex items-center gap-2 rounded-xl border border-white/10 bg-[#2a241a]/90 px-4 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-sm transition-colors hover:bg-[#332c20] hover:text-yellow-400"
+          >
             <i class="fa-solid fa-satellite-dish text-base"></i>
             <span>View</span>
           </button>
         </div>
       </div>
 
-      <!-- Itinerary List -->
-      <div class="order-2 lg:order-2 bg-[#1c1912] border border-[#3a3122] rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-lg overflow-hidden h-[420px] lg:h-full">
-
-        <!-- List Header -->
-        <div class="flex items-center justify-between border-b border-[#3a3122] pb-2 shrink-0">
-          <h2 class="text-xl font-heading text-white">Itinerary</h2>
-          <span class="text-xs font-bold text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full">
-            {{ filteredItems.length }} Items
-          </span>
+      <div
+        class="order-2 flex min-h-0 flex-col gap-4 overflow-hidden rounded-2xl border border-[#3a3122] bg-[#1c1912] p-4 shadow-lg sm:p-5 lg:h-full"
+      >
+        <div class="shrink-0 border-b border-[#3a3122] pb-2">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl text-white">Itinerary</h2>
+            <span
+              class="rounded-full bg-yellow-400/10 px-3 py-1 text-xs font-bold text-yellow-400"
+            >
+              {{ filteredItems.length }} Items
+            </span>
+          </div>
         </div>
 
-        <!-- Schedule Items -->
-        <div class="custom-scroll space-y-3 overflow-y-auto pr-1 flex-1">
-
-          <!-- Loading Skeleton -->
-          <ng-container *ngIf="isLoading">
-            <div *ngFor="let i of [1,2,3,4]"
-              class="flex gap-3 p-3 rounded-2xl border border-white/10 bg-[#211d16] animate-pulse">
-              <div class="w-20 h-20 rounded-xl bg-[#2a241a] shrink-0"></div>
-              <div class="flex flex-col justify-center gap-2 grow">
-                <div class="h-4 bg-[#2a241a] rounded-lg w-3/4"></div>
-                <div class="h-3 bg-[#2a241a] rounded-lg w-1/2"></div>
-              </div>
-            </div>
-          </ng-container>
-
-          <ng-container *ngIf="!isLoading && filteredItems.length > 0; else emptyState">
-            <div
-              *ngFor="let item of filteredItems"
-              (click)="selectItem(getOriginalIndex(item))"
-              class="group flex gap-3 p-3 rounded-2xl border cursor-pointer transition-all duration-300 relative overflow-hidden"
-              [ngClass]="isSelected(getOriginalIndex(item))
-                ? 'border-yellow-400 bg-yellow-400/10 ring-1 ring-yellow-400/50'
-                : 'border-white/10 bg-[#211d16] hover:bg-[#2a241a]'">
-
-              <div class="absolute inset-0 bg-linear-to-r from-yellow-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-
-              <div class="w-20 h-20 rounded-xl overflow-hidden shrink-0 border border-white/10">
-                <img
-                  [src]="item.image"
-                  [alt]="item.activityName"
-                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-              </div>
-
-              <div class="flex flex-col justify-center grow min-w-0 relative z-10">
-                <h3
-                  class="font-bold text-white truncate transition-colors"
-                  [class.text-yellow-400]="isSelected(getOriginalIndex(item))">
-                  {{ item.activityName }}
-                </h3>
-                <div class="flex items-center gap-2 text-xs text-[#bab29c] mt-1">
-                  <span class="flex items-center gap-1">
-                    <i class="fa-solid fa-location-dot text-[11px] text-yellow-400/70"></i>
-                    {{ item.city }}
-                  </span>
-                  <span class="w-1 h-1 rounded-full bg-[#3a3122]"></span>
-                  <span>{{ item.day }}</span>
+        <div class="custom-scroll flex-1 space-y-3 overflow-y-auto pr-1">
+          @if (isLoading) {
+            @for (i of [1, 2, 3, 4]; track $index) {
+              <div
+                class="flex animate-pulse gap-3 rounded-2xl border border-white/10 bg-[#211d16] p-3"
+              >
+                <div class="h-20 w-20 shrink-0 rounded-xl bg-[#2a241a]"></div>
+                <div class="grow flex flex-col justify-center gap-2">
+                  <div class="h-4 w-3/4 rounded-lg bg-[#2a241a]"></div>
+                  <div class="h-3 w-1/2 rounded-lg bg-[#2a241a]"></div>
                 </div>
               </div>
-            </div>
-          </ng-container>
+            }
+          } @else if (filteredItems.length > 0) {
+            @for (item of filteredItems; track item.activityId) {
+              <div
+                (click)="selectItem(getOriginalIndex(item))"
+                class="group relative flex cursor-pointer gap-3 overflow-hidden rounded-2xl border p-3 transition-all duration-300"
+                [ngClass]="
+                  isSelected(getOriginalIndex(item))
+                    ? 'border-yellow-400 bg-yellow-400/10 ring-1 ring-yellow-400/50'
+                    : 'border-white/10 bg-[#211d16] hover:bg-[#2a241a]'
+                "
+              >
+                <div
+                  class="pointer-events-none absolute inset-0 bg-linear-to-r from-yellow-400/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
+                ></div>
 
-          <ng-template #emptyState>
-            <div *ngIf="!isLoading" class="text-[#bab29c] text-center py-8">
+                <div class="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-white/10">
+                  <img
+                    [src]="item.image"
+                    [alt]="item.activityName"
+                    class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                </div>
+
+                <div class="relative z-10 flex min-w-0 grow flex-col justify-center">
+                  <h3
+                    class="truncate font-bold text-white transition-colors"
+                    [class.text-yellow-400]="isSelected(getOriginalIndex(item))"
+                  >
+                    {{ item.activityName }}
+                  </h3>
+
+                  <div class="mt-1 flex items-center gap-2 text-xs text-[#bab29c]">
+                    <span class="flex items-center gap-1">
+                      <i class="fa-solid fa-location-dot text-[11px] text-yellow-400/70"></i>
+                      {{ item.city }}
+                    </span>
+                    <span class="h-1 w-1 rounded-full bg-[#3a3122]"></span>
+                    <span>{{ item.day }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="py-8 text-center text-[#bab29c]">
               No activities found.
             </div>
-          </ng-template>
-
+          }
         </div>
       </div>
-
     </div>
   </div>
 </div>
