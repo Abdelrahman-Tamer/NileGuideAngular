@@ -60,7 +60,7 @@
           <p class="mt-3 text-white/65">Save activities you love and they will appear here.</p>
           <a
             routerLink="/activities"
-            class="mt-6 inline-flex rounded-2xl bg-yellow-400 px-6 py-3 text-sm font-bold text-black transition hover:bg-yellow-300"
+            class="mt-6 inline-flex cursor-pointer rounded-2xl bg-yellow-400 px-6 py-3 text-sm font-bold text-black transition hover:bg-yellow-300"
           >
             Browse Activities
           </a>
@@ -79,7 +79,7 @@
                 <button
                   type="button"
                   (click)="removeFromWishlist(activity.activityID)"
-                  class="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm"
+                  class="absolute left-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm"
                 >
                   @if (isRemoving(activity.activityID)) {
                     <i class="fa-solid fa-spinner fa-spin text-lg text-yellow-400"></i>
@@ -128,28 +128,29 @@
 
                 <div class="my-4 border-t border-[#3a3427]"></div>
 
-                 <div class="flex items-center justify-between gap-3">
-                    <div class="flex flex-col">
-                      <span class="text-sm uppercase tracking-wide text-green-600/90">Open</span>
-                      <p class="mt-1 text-[13px] font-semibold text-white/80">
-                        {{ getOpenTime(activity) }}
-                      </p>
-                    </div>
-
-                     <div class="flex flex-col text-right">
-                      <span class="text-sm uppercase tracking-wide text-red-600/90">Close</span>
-                      <p class="mt-1 text-[13px] font-semibold text-white/80">
-                        {{ getCloseTime(activity) }}
-                      </p>
-                    </div>
-
-                    <div class="h-8 w-px bg-[#3a3427]"></div>
-                       <div>
-                      <p class=" text-[25px] font-bold leading-none mr-2 text-yellow-500/90">
-                        ${{ activity.minPrice }}
-                      </p>
-                    </div>
+                <div class="flex items-center justify-between gap-3">
+                  <div class="flex flex-col">
+                    <span class="text-sm uppercase tracking-wide text-green-600/90">Open</span>
+                    <p class="mt-1 text-[13px] font-semibold text-white/80">
+                      {{ getOpenTime(activity) }}
+                    </p>
                   </div>
+
+                  <div class="flex flex-col text-right">
+                    <span class="text-sm uppercase tracking-wide text-red-600/90">Close</span>
+                    <p class="mt-1 text-[13px] font-semibold text-white/80">
+                      {{ getCloseTime(activity) }}
+                    </p>
+                  </div>
+
+                  <div class="h-8 w-px bg-[#3a3427]"></div>
+
+                  <div>
+                    <p class="text-[25px] font-bold leading-none mr-2 text-yellow-500/90">
+                      ${{ activity.minPrice }}
+                    </p>
+                  </div>
+                </div>
 
                 <div class="my-4 border-t border-[#3a3427]"></div>
 
@@ -161,7 +162,7 @@
                         [href]="provider.link"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="transition hover:text-yellow-300"
+                        class="cursor-pointer transition hover:text-yellow-300"
                         [title]="provider.providerName"
                       >
                         <i [class]="getProviderIcon(provider) + ' text-sm'"></i>
@@ -171,13 +172,17 @@
                 </div>
 
                 <div class="mt-5 space-y-3">
-                  <button class="w-full rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300">
+                  <button
+                    type="button"
+                    (click)="openPlanModal(activity.activityID)"
+                    class="w-full cursor-pointer rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300"
+                  >
                     Add To Plan
                   </button>
 
                   <a
                     [routerLink]="['/activities', activity.activityID]"
-                    class="block w-full rounded-xl border border-[#3a3427] bg-transparent py-3 text-center text-sm font-semibold text-white transition hover:bg-white/5"
+                    class="block w-full cursor-pointer rounded-xl border border-[#3a3427] bg-transparent py-3 text-center text-sm font-semibold text-white transition hover:bg-white/5"
                   >
                     View Details
                   </a>
@@ -193,7 +198,7 @@
               type="button"
               (click)="goToPreviousPage()"
               [disabled]="currentPage === 1"
-              class="rounded-2xl border border-[#3a3427] bg-[#1b1812] px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:border-yellow-400 hover:text-yellow-400 disabled:cursor-not-allowed disabled:opacity-40"
+              class="cursor-pointer rounded-2xl border border-[#3a3427] bg-[#1b1812] px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:border-yellow-400 hover:text-yellow-400 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Previous
             </button>
@@ -202,7 +207,7 @@
               <button
                 type="button"
                 (click)="changePage(page)"
-                class="flex h-12 w-12 items-center justify-center rounded-full border text-sm font-bold transition"
+                class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border text-sm font-bold transition"
                 [class.border-yellow-400]="currentPage === page"
                 [class.bg-yellow-400]="currentPage === page"
                 [class.text-black]="currentPage === page"
@@ -220,7 +225,7 @@
               type="button"
               (click)="goToNextPage()"
               [disabled]="currentPage === totalPages"
-              class="rounded-2xl border border-[#3a3427] bg-[#1b1812] px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:border-yellow-400 hover:text-yellow-400 disabled:cursor-not-allowed disabled:opacity-40"
+              class="cursor-pointer rounded-2xl border border-[#3a3427] bg-[#1b1812] px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:border-yellow-400 hover:text-yellow-400 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Next
             </button>
@@ -230,3 +235,180 @@
     </div>
   </section>
 </div>
+
+@if (isPlanModalOpen) {
+  <div class="fixed inset-0 z-50 overflow-y-auto bg-black/70 px-3 py-4 sm:px-4 sm:py-6">
+    <div class="flex min-h-full items-center justify-center">
+      <div class="absolute inset-0" (click)="closePlanModal()"></div>
+
+      <div
+        class="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[28px] border border-[#3a3427] bg-[#1b1812] shadow-[0_20px_80px_rgba(0,0,0,0.55)] lg:max-h-none lg:overflow-visible"
+        lang="en"
+        dir="ltr"
+      >
+        <div class="border-b border-[#3a3427] bg-[radial-gradient(circle_at_top,rgba(250,204,21,0.10),transparent_45%)] px-6 py-5 sm:px-8">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-yellow-500/80">
+                Plan Activity
+              </p>
+              <h3 class="mt-2 text-2xl font-bold text-white">
+                Add to Schedule
+              </h3>
+              <p class="mt-2 text-sm text-white/60">
+                Choose your preferred date and start time.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              (click)="closePlanModal()"
+              class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="px-6 py-6 sm:px-8 sm:py-7">
+          @if (isPlanModalLoading) {
+            <div class="space-y-4">
+              <div class="h-5 w-2/3 animate-pulse rounded bg-[#27241b]"></div>
+              <div class="h-20 animate-pulse rounded-2xl bg-[#27241b]"></div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="h-14 animate-pulse rounded-2xl bg-[#27241b]"></div>
+                <div class="h-14 animate-pulse rounded-2xl bg-[#27241b]"></div>
+              </div>
+              <div class="h-20 animate-pulse rounded-2xl bg-[#27241b]"></div>
+            </div>
+          } @else if (selectedActivityDetails) {
+            <div class="space-y-6">
+              <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-4">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h4 class="text-lg font-bold text-white">
+                      {{ selectedActivityDetails.activityName }}
+                    </h4>
+                    <p class="mt-1 text-sm text-white/60">
+                      {{ selectedActivityDetails.cityName }} • {{ selectedActivityDetails.categoryName }}
+                    </p>
+                  </div>
+
+                  <div class="text-left sm:text-right">
+                    <p class="text-xs uppercase tracking-wide text-yellow-500/90">Starting From</p>
+                    <p class="mt-1 text-2xl font-bold text-yellow-400">
+                      ${{ selectedActivityDetails.minPrice }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-4">
+                  <p class="text-xs uppercase tracking-wide text-green-500/90">Open</p>
+                  <p class="mt-2 text-base font-semibold text-white/85">
+                    {{ planOpenTime }}
+                  </p>
+                </div>
+
+                <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-4">
+                  <p class="text-xs uppercase tracking-wide text-red-500/90">Close</p>
+                  <p class="mt-2 text-base font-semibold text-white/85">
+                    {{ planCloseTime }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-4">
+                  <p class="text-xs uppercase tracking-wide text-yellow-500/90">Duration</p>
+                  <p class="mt-2 text-base font-semibold text-white/85">
+                    {{ formattedSelectedDuration }}
+                  </p>
+                </div>
+
+                <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-4">
+                  <p class="text-xs uppercase tracking-wide text-yellow-500/90">Computed End Time</p>
+                  <p class="mt-2 text-base font-semibold text-white/85">
+                    {{ computedEndTime }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="plan-inputs-en">
+                  <label class="mb-2 block text-sm font-medium text-white/80">
+                    Select Date
+                  </label>
+                  <input
+                    type="text"
+                    lang="en-US"
+                    dir="ltr"
+                    inputmode="numeric"
+                    placeholder="YYYY-MM-DD"
+                    [(ngModel)]="planDate"
+                    (input)="onPlanDateChange()"
+                    class="w-full rounded-2xl border border-[#3a3427] bg-[#27241b] px-4 py-3 text-sm text-white placeholder:text-zinc-500 outline-none transition focus:border-yellow-400"
+                  />
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-white/80">
+                    Start Time
+                  </label>
+
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_110px]">
+        <input
+          type="text"
+          lang="en-US"
+          dir="ltr"
+          inputmode="numeric"
+          placeholder="hh:mm"
+          [(ngModel)]="planStartTime"
+          (input)="onPlanStartTimeChange()"
+          class="w-full min-w-0 rounded-2xl border border-[#3a3427] bg-[#27241b] px-4 py-3 text-sm text-white placeholder:text-zinc-500 outline-none transition focus:border-yellow-400"
+        />
+
+        <select
+          [(ngModel)]="planStartPeriod"
+          (change)="onPlanStartPeriodChange()"
+          class="w-full cursor-pointer rounded-2xl border border-[#3a3427] bg-[#27241b] px-4 py-3 text-sm font-semibold text-white outline-none transition focus:border-yellow-400 sm:w-auto"
+        >
+          <option value="AM">AM</option>
+          <option value="PM">PM</option>
+        </select>
+      </div>
+                </div>
+              </div>
+
+              @if (planValidationError) {
+                <div class="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {{ planValidationError }}
+                </div>
+              }
+
+              <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  (click)="closePlanModal()"
+                  class="cursor-pointer rounded-2xl border border-[#3a3427] bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/5"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  (click)="submitPlan()"
+                  [disabled]="isSubmittingPlan"
+                  class="cursor-pointer rounded-2xl bg-yellow-400 px-5 py-3 text-sm font-bold text-black transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Add To Schedule
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
