@@ -56,6 +56,21 @@ export interface ActivityDetails {
   openingHours: ActivityOpeningHour[];
 }
 
+export interface ActivityReview {
+  reviewId: number;
+  reviewerName: string;
+  reviewerCity: string;
+  rating: number;
+  comment: string;
+  createdAtUtc: string;
+}
+
+export interface CreateActivityReviewPayload {
+  reviewerCity: string;
+  rating: number;
+  comment: string;
+}
+
 export interface ActivitiesResponse {
   totalCount: number;
   page: number;

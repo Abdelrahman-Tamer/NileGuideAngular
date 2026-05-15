@@ -30,7 +30,7 @@ constructor(private router: Router) {
 
       this.showNavbarFooter =
         !url.startsWith('/auth') &&
-        !url.startsWith('/Details');
+        !url.startsWith('/activities/');
     });
 }
 

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { STORED_KEYS } from '../../core/constants/Stored_keys';
 
 import {
@@ -8,6 +8,8 @@ import {
   ActivityCity,
   ActivitySortBy,
   ActivityDetails,
+  ActivityReview,
+  CreateActivityReviewPayload,
 } from './activities.interfaces';
 
 @Injectable({
@@ -18,6 +20,14 @@ export class ActivitiesService {
   private readonly baseUrl = STORED_KEYS.baseUrl + '/Activities';
   private readonly categoriesUrl = STORED_KEYS.baseUrl + '/Categories';
   private readonly citiesUrl = STORED_KEYS.baseUrl + '/Cities';
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem(STORED_KEYS.USER_TOKEN) ?? '';
+
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+  }
 
   getActivities(payload: {
     categoryIds?: number[];
@@ -57,6 +67,23 @@ export class ActivitiesService {
 
   getActivityById(activityId: number) {
     return this.http.get<ActivityDetails>(`${this.baseUrl}/${activityId}`);
+  }
+
+  getActivityReviews(activityId: number) {
+    return this.http.get<ActivityReview[]>(`${this.baseUrl}/${activityId}/reviews`);
+  }
+
+  createActivityReview(
+    activityId: number,
+    payload: CreateActivityReviewPayload
+  ) {
+    return this.http.post<ActivityReview>(
+      `${this.baseUrl}/${activityId}/reviews`,
+      payload,
+      {
+        headers: this.getAuthHeaders(),
+      }
+    );
   }
 
   getCategories() {

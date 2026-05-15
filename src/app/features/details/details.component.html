@@ -1,498 +1,489 @@
 <div class="min-h-screen bg-[#12100d] text-white">
-
-  <!-- Full Width Hero -->
-  <section class="relative w-full overflow-hidden bg-[#27241b]">
-    <button
-      routerLink="/activities"
-      class="absolute top-4 left-3 z-20 inline-flex hover:bg-black hover:text-white/90 cursor-pointer items-center gap-2 rounded-xl border border-black bg-white/30 px-4 py-2 text-sm text-black 
-      backdrop-blur-md transition hover:border-white/80 hover:border-2 md:top-6 md:left-6"  >
-      <i class="fa-solid fa-arrow-left text-xs"></i>
-      Back
-    </button>
-
-    <!-- Background Image -->
-    <div class="relative w-full h-105 md:h-130 ">
-      <img
-        src="/Photo/Aswan.png"
-        alt="Sunrise Hot Air Balloon"
-        class="h-full w-full object-cover blur-xs"/>
-
-      <!-- Overlays -->
-      <div class="absolute inset-0 bg-linear-to-t from-[#12100d] via-[#12100d]/55 to-transparent"></div>
-      <div class="absolute inset-0 bg-linear-to-r from-black/35 via-transparent to-transparent"></div>
-
-      <!-- Floating Balloon Effect -->
-      <div class="pointer-events-none absolute -right-6 -top-8 hidden h-40 w-40 rounded-full bg-yellow-300/10 blur-3xl md:block"></div>
-
-      <!-- Hero Content -->
-      <div class="absolute inset-x-0 bottom-0 z-10">
-        <div class="mx-auto max-w-7xl px-4 pb-6 md:px-6 md:pb-8 lg:px-8">
-          <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-
-            <!-- Left -->
-            <div class="max-w-3xl">
-              <div class="mb-3 flex flex-wrap items-center gap-2">
-                <span class="rounded-md bg-yellow-400 px-2.5 py-1 text-2xs font-bold uppercase tracking-wide text-black">
-                  Adventure
-                </span>
-
-                <span class="inline-flex items-center gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-2xs font-semibold text-emerald-400">
-                  <i class="fa-solid fa-circle-check text-[9px]"></i>
-                  Verified
-                </span>
-              </div>
-
-              <h1 class="text-3xl font-extrabold tracking-tight text-white md:text-5xl">
-                Sunrise Hot Air Balloon
-              </h1>
-
-              <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-zinc-300">
-                <div class="flex items-center gap-1.5">
-                  <span class="flex items-center gap-0.5 text-yellow-400">
-                    <i class="fa-solid fa-star text-2xs"></i>
-                    <i class="fa-solid fa-star text-2xs"></i>
-                    <i class="fa-solid fa-star text-2xs"></i>
-                    <i class="fa-solid fa-star text-2xs"></i>
-                    <i class="fa-solid fa-star text-2xs"></i>
-                  </span>
-                  <span>4.9 <span class="text-zinc-500">(128 reviews)</span></span>
-                </div>
-
-                <div class="flex items-center gap-1.5">
-                  <i class="fa-regular fa-clock text-yellow-400"></i>
-                  <span>3 - 4 Hours</span>
-                </div>
-
-                <div class="flex items-center gap-1.5">
-                  <i class="fa-solid fa-location-dot text-yellow-400"></i>
-                  <span>West Bank, Luxor</span>
-                </div>
-
-                <div class="flex items-center gap-1.5">
-                  <i class="fa-solid fa-coins text-yellow-400"></i>
-                  <span>$120</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Right Actions -->
-            <div class="flex items-center gap-3 md:pb-1">
-              <button
-                class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-sm font-medium text-white backdrop-blur-md transition hover:bg-white/15"
-              >
-                <i class="fa-regular fa-heart text-xs"></i>
-                Save
-              </button>
-
-              <button
-                class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-sm font-medium text-white backdrop-blur-md transition hover:bg-white/15"
-              >
-                <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
-                Share
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Centered Page Content -->
-  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6 lg:px-8">
-
-    <!-- Main Content -->
-    <section class="grid gap-6 lg:grid-cols-[1fr_320px]">
-
-      <!-- Left Column -->
+  @if (isLoading) {
+    <div class="mx-auto max-w-7xl px-4 py-10 md:px-6 lg:px-8">
       <div class="space-y-6">
-
-        <!-- Quick Info -->
-        <div class="grid gap-3 rounded-2xl border border-white/5 bg-[#27241b] p-4 sm:grid-cols-2 xl:grid-cols-4">
-          <div class="rounded-xl bg-white/2 p-3">
-            <p class="text-2xs font-semibold uppercase tracking-[0.16em] text-zinc-500">Duration</p>
-            <p class="mt-2 text-sm font-semibold text-white">Approx 3 Hours</p>
+        <div class="h-90 animate-pulse rounded-3xl bg-[#27241b]"></div>
+        <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
+          <div class="space-y-6">
+            <div class="h-30 animate-pulse rounded-2xl bg-[#27241b]"></div>
+            <div class="h-50 animate-pulse rounded-2xl bg-[#27241b]"></div>
+            <div class="h-50 animate-pulse rounded-2xl bg-[#27241b]"></div>
           </div>
-
-          <div class="rounded-xl bg-white/2 p-3">
-            <p class="text-2xs font-semibold uppercase tracking-[0.16em] text-zinc-500">Group Size</p>
-            <p class="mt-2 text-sm font-semibold text-white">Small Group (Max 16)</p>
-          </div>
-
-          <div class="rounded-xl bg-white/2 p-3">
-            <p class="text-2xs font-semibold uppercase tracking-[0.16em] text-zinc-500">Language</p>
-            <p class="mt-2 text-sm font-semibold text-white">English, Arabic</p>
-          </div>
-
-          <div class="rounded-xl bg-white/2 p-3">
-            <p class="text-2xs font-semibold uppercase tracking-[0.16em] text-zinc-500">Cancellation</p>
-            <p class="mt-2 text-sm font-semibold text-emerald-400">Free up to 24h</p>
-          </div>
+          <div class="h-80 animate-pulse rounded-2xl bg-[#27241b]"></div>
         </div>
-
-        <!-- About -->
-        <div>
-          <h2 class="text-2xl font-bold text-white">About this Activity</h2>
-
-          <div class="mt-4 space-y-4 text-[15px] leading-7 text-zinc-400">
-            <p>
-              Experience the magic of Luxor from the sky. Drift peacefully over the Valley of the Kings,
-              the Temple of Hatshepsut, and the Colossi of Memnon as the sun rises over the Nile River.
-              This once-in-a-lifetime adventure offers unparalleled panoramic views of ancient Thebes.
-            </p>
-
-            <p>
-              Your journey begins with a pre-dawn pickup from your hotel or cruise ship. You’ll cross
-              the Nile to the West Bank where coffee, tea, and snacks await as you watch the balloon
-              inflation process. Then ascend gently into the morning sky for a 45-minute flight guided
-              by expert pilots.
-            </p>
-          </div>
-        </div>
-
-        <!-- Gallery -->
-     <div>
-  <div class="mb-4 flex items-center justify-between">
-    <h2 class="text-[28px] font-bold text-yellow-500">Gallery</h2>
-
-    <button
-      type="button"
-      data-modal-target="gallery-modal"
-      data-modal-toggle="gallery-modal"
-      class="text-[16px] font-semibold text-yellow-500 transition cursor-pointer hover:text-yellow-200"
-    >
-      View All Photos
-    </button>
-  </div>
-
-  <div class="grid gap-3 md:grid-cols-[2fr_1fr_1fr]">
-    <div class="overflow-hidden rounded-2xl border border-white/5 bg-[#27241b]">
-      <img
-        src="/Photo/Aswan.png"
-        alt="Gallery"
-        class="h-55 w-full object-cover"
-      />
+      </div>
     </div>
+  } @else if (activity) {
+    <section class="relative w-full overflow-hidden bg-[#27241b]">
+      <button
+        routerLink="/activities"
+        class="absolute top-4 left-3 z-20 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-black bg-white/30 px-4 py-2 text-sm text-black backdrop-blur-md transition hover:border-white/80 hover:border-2 hover:bg-black hover:text-white/90 md:top-6 md:left-6"
+      >
+        <i class="fa-solid fa-arrow-left text-xs"></i>
+        Back
+      </button>
 
-    <div class="overflow-hidden rounded-2xl border border-white/5 bg-[#27241b]">
-      <img
-        src="/Photo/Aswan.png"
-        alt="Gallery"
-        class="h-55 w-full object-cover"
-      />
-    </div>
+      <div class="relative h-105 w-full md:h-130">
+        <img
+          [src]="heroImage"
+          [alt]="activity.activityName"
+          class="h-full w-full object-contain blur-xs"
+        />
 
-    <div class="overflow-hidden rounded-2xl border border-white/5 bg-[#27241b]">
-      <img
-        src="/Photo/Aswan.png"
-        alt="Gallery"
-        class="h-55 w-full object-cover"
-      />
-    </div>
-  </div>
-</div>
+        <div class="absolute inset-0 bg-linear-to-t from-[#12100d] via-[#12100d]/55 to-transparent"></div>
+        <div class="absolute inset-0 bg-linear-to-r from-black/35 via-transparent to-transparent"></div>
+        <div class="pointer-events-none absolute -right-6 -top-8 hidden h-40 w-40 rounded-full bg-yellow-300/10 blur-3xl md:block"></div>
 
-<!-- Gallery Modal -->
-<div
-  id="gallery-modal"
-  tabindex="-1"
-  aria-hidden="true"
-  class="fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0"
+        <div class="absolute inset-x-0 bottom-0 z-10">
+          <div class="mx-auto max-w-7xl px-4 pb-6 md:px-6 md:pb-8 lg:px-8">
+            <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+              <div class="max-w-3xl">
+                <div class="mb-3 flex flex-wrap items-center gap-2">
+                  <span class="rounded-md bg-yellow-400 px-2.5 py-1 text-2xs font-bold uppercase tracking-wide text-black">
+                    {{ activity.categoryName }}
+                  </span>
+
+                  <span
+                    class="inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-2xs font-semibold"
+                    [class.border-emerald-500/25]="activity.isActive"
+                    [class.bg-emerald-500/10]="activity.isActive"
+                    [class.text-emerald-400]="activity.isActive"
+                    [class.border-red-500/25]="!activity.isActive"
+                    [class.bg-red-500/10]="!activity.isActive"
+                    [class.text-red-400]="!activity.isActive"
+                  >
+                    <i class="fa-solid fa-circle-check text-[9px]"></i>
+                    {{ activity.isActive ? 'Verified' : 'Inactive' }}
+                  </span>
+                </div>
+
+                <h1 class="text-3xl font-extrabold tracking-tight text-white md:text-5xl">
+                  {{ activity.activityName }}
+                </h1>
+
+                <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-zinc-300">
+                  <div class="flex items-center gap-1.5">
+                    <span class="flex items-center gap-0.5 text-yellow-400">
+                      @for (star of getStars(averageRating || 0); track $index) {
+                        <i class="fa-solid fa-star text-2xs"></i>
+                      }
+                      @for (star of getEmptyStars(averageRating || 0); track $index) {
+                        <i class="fa-solid fa-star text-2xs text-zinc-700"></i>
+                      }
+                    </span>
+                    <span>
+                      {{ averageRating ? averageRating.toFixed(1) : '0.0' }}
+                      <span class="text-zinc-500">({{ reviewsCount }} reviews)</span>
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-1.5">
+                    <i class="fa-regular fa-clock text-yellow-400"></i>
+                    <span>{{ formattedDuration }}</span>
+                  </div>
+
+                  <div class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-location-dot text-yellow-400"></i>
+                    <span>{{ activity.cityName }}</span>
+                  </div>
+
+                  <div class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-coins text-yellow-400"></i>
+                    <span>${{ activity.minPrice }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 md:pb-1">
+               <button
+  type="button"
+  (click)="toggleWishlist()"
+  [disabled]="isWishlistLoading"
+  class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-sm font-medium text-white backdrop-blur-md transition hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-60"
 >
-  <div class="relative max-h-full w-full max-w-5xl">
-    <div class="relative rounded-2xl border border-white/10 bg-[#1d1a13] shadow-sm">
-      <!-- Header -->
-      <div class="flex items-center justify-between border-b border-white/10 p-4 md:p-5">
-        <h3 class="text-xl font-semibold text-yellow-400">
-          Gallery
-        </h3>
+  @if (isWishlistLoading) {
+    <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+  } @else {
+    <i
+      class="text-xs"
+      [class.fa-solid]="isWishlisted"
+      [class.fa-regular]="!isWishlisted"
+      [class.fa-heart]="true"
+      [class.text-red-500]="isWishlisted"
+      [class.text-white]="!isWishlisted"
+    ></i>
+  }
 
-        <button
-          type="button"
-          data-modal-hide="gallery-modal"
-          class="inline-flex cursor-pointer h-8 w-8 items-center justify-center rounded-lg bg-transparent text-zinc-400 transition hover:bg-white/10 hover:text-white"
-        >
-          <i class="fa-solid cursor-pointer fa-xmark text-lg"></i>
-        </button>
+  {{ isWishlisted ? 'Saved' : 'Save' }}
+</button>
+
+                <button
+                  type="button"
+                  (click)="shareActivity()"
+                  class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-sm font-medium text-white backdrop-blur-md transition hover:bg-white/15"
+                >
+                  <i class="fa-solid fa-arrow-up-from-bracket text-xs"></i>
+                  Share
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </section>
 
-      <!-- Body -->
-      <div class="p-4 md:p-5">
-        <div
-          id="gallery-carousel"
-          class="relative w-full"
-          data-carousel="static"
-        >
-          <div class="relative h-72 overflow-hidden rounded-xl md:h-125">
-            <div class="hidden duration-700 ease-in-out" data-carousel-item="active">
-              <img
-                src="/Photo/Aswan.png"
-                class="block h-full w-full object-cover"
-                alt="Gallery image 1"
-              />
+    <div class="mx-auto max-w-7xl px-4 py-8 md:px-6 lg:px-8">
+      <section class="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div class="space-y-6">
+          <div class="grid gap-3 rounded-2xl border border-white/5 bg-[#27241b] p-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-xl bg-white/2 p-3">
+              <p class="text-2xs font-semibold uppercase tracking-[0.16em] text-zinc-500">Duration</p>
+              <p class="mt-2 text-sm font-semibold text-white">{{ formattedDuration }}</p>
             </div>
 
-            <div class="hidden duration-700 ease-in-out" data-carousel-item>
-              <img
-                src="/Photo/Alexandria.png"
-                class="block h-full w-full object-cover"
-                alt="Gallery image 2"
-              />
+            <div class="rounded-xl bg-white/2 p-3">
+              <p class="text-2xs font-semibold uppercase tracking-[0.16em] text-zinc-500">Group Size</p>
+              <p class="mt-2 text-sm font-semibold text-white">{{ activity.groupSize || '--' }}</p>
             </div>
 
-            <div class="hidden duration-700 rounded-2xl ease-in-out" data-carousel-item>
-              <img
-                src="/Photo/Cairo.png"
-                class="block h-full rounded-2xl w-full object-contain"
-                alt="Gallery image 3"
-              />
+            <div class="rounded-xl bg-white/2 p-3">
+              <p class="text-2xs font-semibold uppercase tracking-[0.16em] text-zinc-500">Price Basis</p>
+              <p class="mt-2 text-sm font-semibold text-white">{{ activity.priceBasis || '--' }}</p>
+            </div>
+
+            <div class="rounded-xl bg-white/2 p-3">
+              <p class="text-2xs font-semibold uppercase tracking-[0.16em] text-zinc-500">Cancellation</p>
+              <p class="mt-2 text-sm font-semibold text-emerald-400">{{ activity.cancellation || '--' }}</p>
             </div>
           </div>
 
-          <!-- Controls -->
-          <button
-            type="button"
-            class="group cursor-pointer absolute left-0 top-0 z-30 flex h-full items-center justify-center px-4 focus:outline-none"
-            data-carousel-prev
-          >
-            <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition group-hover:bg-black/50">
-              <i class="fa-solid fa-chevron-left text-sm"></i>
-            </span>
-          </button>
+          <div>
+            <h2 class="text-2xl font-bold text-white">About this Activity</h2>
 
-          <button
-            type="button"
-            class="group cursor-pointer absolute right-0 top-0 z-30 flex h-full items-center justify-center px-4 focus:outline-none"
-            data-carousel-next
-          >
-            <span class="inline-flex cursor-pointer h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition group-hover:bg-black/50">
-              <i class="fa-solid cursor-pointer fa-chevron-right text-sm"></i>
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+            <div class="mt-4 space-y-4 text-[15px] leading-7 text-zinc-400">
+              <p>{{ activity.description }}</p>
+            </div>
+          </div>
 
-        <!-- Required Documents -->
-        <div class="rounded-2xl border border-white/5 bg-[#27241b] p-4">
-          <div class="flex items-start gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-400/10 text-yellow-400">
-              <i class="fa-regular fa-file-lines"></i>
+          <div>
+            <div class="mb-4 flex items-center justify-between">
+              <h2 class="text-[28px] font-bold text-yellow-500">Gallery</h2>
+
+              <button
+                type="button"
+                (click)="openGallery()"
+                class="cursor-pointer text-[16px] font-semibold text-yellow-500 transition hover:text-yellow-200"
+              >
+                View All Photos
+              </button>
             </div>
 
-            <div class="flex-1">
-              <h3 class="text-lg font-semibold text-white">Required Documents</h3>
+            <div class="grid gap-3 md:grid-cols-[2fr_1fr_1fr]">
+              <div class="overflow-hidden rounded-2xl border border-white/5 bg-[#27241b]">
+                <img
+                  [src]="galleryImages[0] || heroImage"
+                  alt="Gallery"
+                  class="h-55 w-full object-cover"
+                />
+              </div>
+
+              <div class="overflow-hidden rounded-2xl border border-white/5 bg-[#27241b]">
+                <img
+                  [src]="galleryImages[1] || heroImage"
+                  alt="Gallery"
+                  class="h-55 w-full object-cover"
+                />
+              </div>
+
+              <div class="overflow-hidden rounded-2xl border border-white/5 bg-[#27241b]">
+                <img
+                  [src]="galleryImages[2] || heroImage"
+                  alt="Gallery"
+                  class="h-55 w-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-white/5 bg-[#27241b] p-4">
+            <div class="flex items-start gap-3">
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-400/10 text-yellow-400">
+                <i class="fa-regular fa-file-lines"></i>
+              </div>
+
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold text-white">Required Documents</h3>
+                <p class="mt-1 text-sm text-zinc-500">
+                  Please prepare these documents before arrival.
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-4 rounded-xl border border-white/5 bg-white/2 p-3">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/3 text-zinc-300">
+                    <i class="fa-regular fa-id-card"></i>
+                  </div>
+
+                  <div>
+                    <p class="text-sm font-medium text-white">
+                      {{ activity.requiredDocuments || 'No specific documents listed' }}
+                    </p>
+                  </div>
+                </div>
+
+                <span class="inline-flex w-fit items-center rounded-md border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-2xs font-bold uppercase tracking-wide text-red-400">
+                  Mandatory
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-white/5 bg-[#27241b] p-5">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 class="text-2xl font-bold text-white">Reviews</h2>
+                <p class="mt-2 text-sm leading-6 text-zinc-400">
+                  {{ reviewsCount }} traveler reviews for {{ activity.activityName }}.
+                </p>
+              </div>
+
+              <div class="w-fit rounded-xl border border-white/5 bg-black/10 px-4 py-3">
+                <p class="text-3xl font-bold text-white">
+                  {{ averageRating ? averageRating.toFixed(1) : '0.0' }}
+                </p>
+                <p class="mt-1 text-2xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                  Traveler Rating
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-5 space-y-3">
+              @if (isReviewsLoading) {
+                @for (item of [1,2,3]; track $index) {
+                  <div class="h-28 animate-pulse rounded-xl border border-white/5 bg-black/10"></div>
+                }
+              } @else if (reviews.length > 0) {
+                @for (review of reviews; track review.reviewId) {
+                  <article class="rounded-xl border border-white/5 bg-black/10 p-4">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p class="text-sm font-semibold text-white">{{ review.reviewerName }}</p>
+                        <p class="mt-1 text-xs text-zinc-500">
+                          {{ review.reviewerCity }} - {{ formatReviewDate(review.createdAtUtc) }}
+                        </p>
+                      </div>
+
+                      <div class="flex items-center gap-1">
+                        @for (star of getStars(review.rating); track $index) {
+                          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
+                        }
+                        @for (star of getEmptyStars(review.rating); track $index) {
+                          <i class="fa-solid fa-star text-2xs text-zinc-700"></i>
+                        }
+                      </div>
+                    </div>
+
+                    <p class="mt-3 text-sm leading-6 text-zinc-400">
+                      {{ review.comment }}
+                    </p>
+                  </article>
+                }
+              } @else {
+                <div class="rounded-xl border border-white/5 bg-black/10 p-5 text-center text-zinc-400">
+                  No reviews yet.
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <aside class="space-y-5">
+          <div class="overflow-hidden rounded-2xl border border-white/5 bg-[#27241b]">
+            <div class="relative h-52.5 overflow-hidden bg-[#1d1a13]">
+              <img
+                [src]="heroImage"
+                alt="Map Preview"
+                class="h-full w-full object-cover opacity-[0.10]"
+              />
+
+              <div class="absolute inset-0 bg-[#1b160d]/85"></div>
+
+              <div class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-400/10 text-yellow-400">
+                  <i class="fa-solid fa-location-dot text-lg"></i>
+                </div>
+
+                <button
+                  type="button"
+                  (click)="openMap()"
+                  class="cursor-pointer rounded-full bg-white px-4 py-2 text-xs font-semibold text-black shadow-lg"
+                >
+                  View on Map
+                </button>
+              </div>
+
+              <div class="absolute right-3 top-3 rounded-md bg-black/35 px-2 py-1 text-2xs text-zinc-400">
+                {{ coordinatesText }}
+              </div>
+            </div>
+
+            <div class="p-4">
+              <h3 class="text-base font-semibold text-white">Meeting Point</h3>
+              <p class="mt-2 text-sm leading-6 text-zinc-400">
+                {{ locationText }}
+              </p>
+
+              <button
+                type="button"
+                (click)="openMap()"
+                class="mt-2 inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-yellow-400 hover:text-yellow-300"
+              >
+                Get Directions
+                <i class="fa-solid fa-angle-right text-[11px]"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-white/5 bg-[#27241b] p-4">
+            <div class="mb-5">
+              <h3 class="text-xl font-bold text-yellow-500">Add Your Review</h3>
               <p class="mt-1 text-sm text-zinc-500">
-                Please prepare these documents before arrival.
+                Share your experience and let other travelers know what you think.
               </p>
             </div>
-          </div>
 
-          <div class="mt-4 rounded-xl border border-white/5 bg-white/2 p-3">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div class="flex items-center gap-3">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/3 text-zinc-300">
-                  <i class="fa-regular fa-id-card"></i>
-                </div>
+            <form class="grid gap-3" (ngSubmit)="submitReview()">
+              <input
+                type="text"
+                [(ngModel)]="reviewForm.reviewerCity"
+                (input)="onReviewerCityInput()"
+                name="reviewerCity"
+                placeholder="Your city"
+                class="w-full rounded-xl border border-white/10 bg-[#1d1a13] px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-yellow-400/40 capitalize"
+              />
 
-                <div>
-                  <p class="text-sm font-medium text-white">Passport / National ID</p>
-                </div>
+              <div class="relative">
+                <select
+                  [(ngModel)]="reviewForm.rating"
+                  name="rating"
+                  class="w-full cursor-pointer appearance-none rounded-xl border border-white/10 bg-[#1d1a13] px-4 py-3 pr-10 text-sm text-yellow-500 outline-none transition focus:border-yellow-400/40"
+                >
+                  <option [ngValue]="5">5 Stars</option>
+                  <option [ngValue]="4">4 Stars</option>
+                  <option [ngValue]="3">3 Stars</option>
+                  <option [ngValue]="2">2 Stars</option>
+                  <option [ngValue]="1">1 Star</option>
+                </select>
               </div>
 
-              <span class="inline-flex w-fit items-center rounded-md border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-2xs font-bold uppercase tracking-wide text-red-400">
-                Mandatory
-              </span>
-            </div>          
-          </div>
-        </div>
-        <div class="rounded-2xl border border-white/5 bg-[#27241b] p-5">
-  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h2 class="text-2xl font-bold text-white">Reviews</h2>
-      <p class="mt-2 text-sm leading-6 text-zinc-400">
-        128 traveler reviews for Pyramids of Giza Tour.
-      </p>
-    </div>
+              <textarea
+                [(ngModel)]="reviewForm.comment"
+                name="comment"
+                rows="4"
+                placeholder="Write your review"
+                class="w-full rounded-xl border border-white/10 bg-[#1d1a13] px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-yellow-400/40"
+              ></textarea>
 
-    <div class="w-fit rounded-xl border border-white/5 bg-black/10 px-4 py-3">
-      <p class="text-3xl font-bold text-white">4.8</p>
-      <p class="mt-1 text-2xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
-        Traveler Rating
-      </p>
-    </div>
-  </div>
+              @if (reviewError) {
+                <div class="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {{ reviewError }}
+                </div>
+              }
 
-  <div class="mt-5 space-y-3">
-    <article class="rounded-xl border border-white/5 bg-black/10 p-4">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p class="text-sm font-semibold text-white">Ahmed Hassan</p>
-          <p class="mt-1 text-xs text-zinc-500">Cairo - March 2026</p>
-        </div>
-
-        <div class="flex items-center gap-1">
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-        </div>
-      </div>
-
-      <p class="mt-3 text-sm leading-6 text-zinc-400">
-        Amazing experience. The guide was very knowledgeable and the whole trip was perfectly organized.
-      </p>
-    </article>
-
-    <article class="rounded-xl border border-white/5 bg-black/10 p-4">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p class="text-sm font-semibold text-white">Sara Ali</p>
-          <p class="mt-1 text-xs text-zinc-500">Alexandria - February 2026</p>
-        </div>
-
-        <div class="flex items-center gap-1">
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-zinc-700"></i>
-        </div>
-      </div>
-
-      <p class="mt-3 text-sm leading-6 text-zinc-400">
-        Beautiful activity and very enjoyable. I only wish we had a bit more time at the site.
-      </p>
-    </article>
-
-    <article class="rounded-xl border border-white/5 bg-black/10 p-4">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p class="text-sm font-semibold text-white">John Smith</p>
-          <p class="mt-1 text-xs text-zinc-500">London - January 2026</p>
-        </div>
-
-        <div class="flex items-center gap-1">
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-          <i class="fa-solid fa-star text-2xs text-yellow-400"></i>
-        </div>
-      </div>
-
-      <p class="mt-3 text-sm leading-6 text-zinc-400">
-        One of the best tours I have ever taken. Highly recommended for anyone visiting Egypt.
-      </p>
-    </article>
-  </div>
-
-
-</div>
-      </div>
-
-      <!-- Right Column -->
-      <aside class="space-y-5">
-
-        <!-- Map Card -->
-        <div class="overflow-hidden rounded-2xl border border-white/5 bg-[#27241b]">
-          <div class="relative h-52.5 overflow-hidden bg-[#1d1a13]">
-            <img
-              src="/Photo/a9.jpg"
-              alt="Map Preview"
-              class="h-full w-full object-cover opacity-[0.10]"
-            />
-
-            <div class="absolute inset-0 bg-[#1b160d]/85"></div>
-
-            <div class="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4">
-              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-400/10 text-yellow-400">
-                <i class="fa-solid fa-location-dot text-lg"></i>
+              <div class="flex justify-end">
+                <button
+                  type="submit"
+                  [disabled]="isSubmittingReview"
+                  class="cursor-pointer rounded-xl bg-yellow-400 px-5 py-3 text-sm font-semibold text-black transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {{ isSubmittingReview ? 'Submitting...' : 'Submit Review' }}
+                </button>
               </div>
-
-              <button class="rounded-full bg-white px-4 py-2 text-xs font-semibold text-black shadow-lg">
-                View on Map
-              </button>
-            </div>
-
-            <div class="absolute right-3 top-3 rounded-md bg-black/35 px-2 py-1 text-2xs text-zinc-400">
-              25.718° N · 32.639° E
-            </div>
+            </form>
           </div>
+        </aside>
+      </section>
+    </div>
+  }
 
-          <div class="p-4">
-            <h3 class="text-base font-semibold text-white">Meeting Point</h3>
-            <p class="mt-2 text-sm leading-6 text-zinc-400">
-              West Bank Ferry Dock, Luxor
-            </p>
+  @if (isGalleryOpen) {
+    <div class="fixed inset-0 z-50 bg-black/80 px-4 py-6">
+      <div class="mx-auto flex h-full max-w-6xl items-center justify-center">
+        <div class="relative w-full max-h-full overflow-y-auto rounded-2xl border border-white/10 bg-[#1d1a13] shadow-sm">
+          <div class="flex items-center justify-between border-b border-white/10 p-4 md:p-5">
+            <h3 class="text-xl font-semibold text-yellow-400">
+              Gallery
+            </h3>
 
-            <button class="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-yellow-400 hover:text-yellow-300">
-              Get Directions
-              <i class="fa-solid fa-angle-right text-[11px]"></i>
+            <button
+              type="button"
+              (click)="closeGallery()"
+              class="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-transparent text-zinc-400 transition hover:bg-white/10 hover:text-white"
+            >
+              <i class="fa-solid fa-xmark text-lg"></i>
             </button>
           </div>
+
+          <div class="p-4 md:p-5">
+            <div class="relative w-full">
+              <div class="relative h-72 overflow-hidden rounded-xl md:h-125">
+                @for (image of galleryImages; track image; let i = $index) {
+                  <div
+                    class="absolute inset-0 transition-opacity duration-500"
+                    [class.opacity-100]="i === selectedGalleryIndex"
+                    [class.opacity-0]="i !== selectedGalleryIndex"
+                    [class.pointer-events-none]="i !== selectedGalleryIndex"
+                  >
+                    <img
+                      [src]="image"
+                      [alt]="'Gallery image ' + (i + 1)"
+                      class="block h-full w-full object-contain "
+                    />
+                  </div>
+                }
+              </div>
+
+              @if (galleryImages.length > 1) {
+                <button
+                  type="button"
+                  (click)="prevGalleryImage()"
+                  class="group absolute left-0 top-0 z-30 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none"
+                >
+                  <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition group-hover:bg-black/50">
+                    <i class="fa-solid fa-chevron-left text-sm"></i>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="nextGalleryImage()"
+                  class="group absolute right-0 top-0 z-30 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none"
+                >
+                  <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition group-hover:bg-black/50">
+                    <i class="fa-solid fa-chevron-right text-sm"></i>
+                  </span>
+                </button>
+              }
+            </div>
+
+            @if (galleryImages.length > 1) {
+              <div class="mt-4 flex items-center justify-center gap-2">
+                @for (image of galleryImages; track image; let i = $index) {
+                  <button
+                    type="button"
+                    (click)="goToGalleryImage(i)"
+                    class="h-2.5 w-2.5 cursor-pointer rounded-full transition"
+                    [class.bg-yellow-400]="i === selectedGalleryIndex"
+                    [class.bg-white/25]="i !== selectedGalleryIndex"
+                  ></button>
+                }
+              </div>
+            }
+          </div>
         </div>
-
-      <div class="rounded-2xl border border-white/5 bg-[#27241b] p-4">
-  <div class="mb-5">
-    <h3 class="text-xl font-bold text-yellow-500">Add Your Review</h3>
-    <p class="mt-1 text-sm text-zinc-500">
-      Share your experience and let other travelers know what you think.
-    </p>
-  </div>
-
-  <form class="grid gap-3">
-    <input
-      type="text"
-      required
-      placeholder="Your name"
-      class="w-full rounded-xl border border-white/10 bg-[#1d1a13] px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-yellow-400/40"
-    />
-
-    <input
-      type="text"
-      placeholder="Your city"
-      class="w-full rounded-xl border border-white/10 bg-[#1d1a13] px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-yellow-400/40"
-    />
-
-    <div class="relative">
-      <select
-        class="w-full appearance-none rounded-xl border border-white/10 bg-[#1d1a13] px-4 py-3 pr-10 text-sm text-yellow-500 outline-none transition focus:border-yellow-400/40"
-      >
-        <option value="5">5 Stars</option>
-        <option value="4">4 Stars</option>
-        <option value="3">3 Stars</option>
-        <option value="2">2 Stars</option>
-        <option value="1">1 Star</option>
-      </select>
+      </div>
     </div>
-
-    <textarea
-      required
-      minlength="10"
-      rows="4"
-      placeholder="Write your review"
-      class="w-full rounded-xl border border-white/10 bg-[#1d1a13] px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-yellow-400/40"
-    ></textarea>
-
-    <div class="flex justify-end">
-      <button
-        type="submit"
-        class="cursor-pointer rounded-xl bg-yellow-400 px-5 py-3 text-sm font-semibold text-black transition hover:bg-yellow-300"
-      >
-        Submit Review
-      </button>
-    </div>
-  </form>
-    </div>
-
-
-    
-         
-      </aside>
-    </section>
-  </div>
+  }
 </div>

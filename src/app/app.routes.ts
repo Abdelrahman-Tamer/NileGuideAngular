@@ -19,34 +19,32 @@ import { DashboardComponent } from './features/admin/dashboard/dashboard.compone
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
 
-  // User layout
   {
     path: '',
     component: UserLayoutComponent,
     children: [
       { path: 'home', children: Home_ROUTES },
       { path: 'activities', component: ActivitiesComponent },
-     { path: 'schedule', component: ScheduleComponent },
-     { path: 'map', component: MapComponent },
-     { path: 'Details', component: DetailsComponent },
-     { path: 'wishlist', component: WishlistComponent },
-     { path: 'profile', component: ProfileComponent },
-     { path: 'terms', component: TermsOfServiceComponent },
-     { path: 'help', component: HelpCenterComponent },
-     { path: 'contact', component: ContactComponent },
-     { path: 'privacy', component: PrivacyComponent },
-
-     { path: 'dashboard', component: DashboardComponent , children:DASHBOARD_ROUTES  },
-
+      { path: 'activities/:id', component: DetailsComponent },
+      { path: 'schedule', component: ScheduleComponent },
+      { path: 'map', component: MapComponent },
+      { path: 'wishlist', component: WishlistComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: 'terms', component: TermsOfServiceComponent },
+      { path: 'help', component: HelpCenterComponent },
+      { path: 'contact', component: ContactComponent },
+      { path: 'privacy', component: PrivacyComponent },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        children: DASHBOARD_ROUTES,
+      },
     ],
   },
 
-  // Auth layout
   {
     path: 'auth',
     component: GustLayoutComponent,
     children: Auth_ROUTES,
   },
-
- 
 ];
