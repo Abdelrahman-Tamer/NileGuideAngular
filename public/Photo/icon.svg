@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- 4-pointed sparkle star with concave edges -->
+  <path d="M12 1
+           C12.5 8.5, 15.5 11.5, 23 12
+           C15.5 12.5, 12.5 15.5, 12 23
+           C11.5 15.5, 8.5 12.5, 1 12
+           C8.5 11.5, 11.5 8.5, 12 1Z"
+        fill="#f2b90d"/>
+  <!-- Small circle at bottom-left -->
+  <circle cx="5" cy="20.5" r="1.8" fill="#f2b90d"/>
+</svg>

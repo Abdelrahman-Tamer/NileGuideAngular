@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#0B0B0B"/>
+  <!-- 4-pointed sparkle/star with concave edges -->
+  <path d="M256 60
+           C266 200, 312 246, 452 256
+           C312 266, 266 312, 256 452
+           C246 312, 200 266, 60 256
+           C200 246, 246 200, 256 60Z"
+        fill="#f2b90d"/>
+  <!-- Small circle at bottom-left -->
+  <circle cx="130" cy="400" r="30" fill="#f2b90d"/>
+</svg>

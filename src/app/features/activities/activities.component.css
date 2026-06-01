@@ -1,0 +1,5 @@
+.plan-inputs-en input {
+  direction: ltr;
+  unicode-bidi: plaintext;
+  text-align: left;
+}

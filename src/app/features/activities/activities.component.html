@@ -1,0 +1,499 @@
+<!-- Page Wrapper -->
+<div class="min-h-screen bg-[#12100d] pt-20 text-white">
+  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6 lg:px-8">
+    <section class="relative overflow-hidden rounded-[28px] bg-[#1b1812] px-6 py-10 md:px-10">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(250,204,21,0.12),transparent_40%)]"></div>
+
+      <div class="relative z-10 mx-auto max-w-3xl text-center">
+        <h1 class="font-serif text-3xl font-bold tracking-tight text-zinc-300 md:text-5xl">
+          Curated Experiences in Egypt
+        </h1>
+
+        <div class="mx-auto mt-6 flex max-w-2xl items-center gap-2 rounded-2xl border border-yellow-500/20 bg-[#27241b] p-2 focus-within:outline-none focus-within:ring-0">
+          <div class="flex flex-1 items-center gap-2 px-3">
+            <i class="fa-solid fa-magnifying-glass text-lg text-yellow-400/80"></i>
+            <input
+              type="text"
+              placeholder="Search activities, temples, or experiences..."
+              class="w-full border-none bg-transparent py-2 text-sm text-white placeholder:text-zinc-500 outline-none focus:border-transparent focus:outline-none focus:ring-0"
+              [(ngModel)]="searchTerm"
+              (keyup.enter)="onSearch()"
+            />
+          </div>
+
+          <button
+            class="cursor-pointer rounded-xl bg-yellow-400 px-4 py-2 text-sm font-semibold text-black"
+            (click)="onSearch()"
+          >
+            Search
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-10 grid gap-6 lg:grid-cols-[260px_1fr]">
+      <aside class="space-y-6 self-start lg:sticky lg:top-28 lg:h-fit">
+        <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-5">
+          <div class="mb-5 flex items-center justify-between">
+            <h3 class="text-[15px] font-semibold text-white">Categories</h3>
+          </div>
+
+         <div class="grid grid-cols-2 gap-x-4 gap-y-5 md:grid-cols-3 lg:grid-cols-1">
+            @for (category of categories; track category.categoryID) {
+              <button
+                type="button"
+                class="flex w-full cursor-pointer items-center gap-3 text-left"
+                (mousedown)="onCategoryPress($event, category.categoryID)"
+              >
+                <span
+                  class="flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-xs border text-2xs transition"
+                  [class.border-[#4a4337]]="!isCategorySelected(category.categoryID)"
+                  [class.bg-transparent]="!isCategorySelected(category.categoryID)"
+                  [class.border-yellow-400]="isCategorySelected(category.categoryID)"
+                  [class.bg-yellow-400]="isCategorySelected(category.categoryID)"
+                >
+                  @if (isCategorySelected(category.categoryID)) {
+                    <i class="fa-solid fa-check text-[#27241b]"></i>
+                  }
+                </span>
+
+                <span
+                  class="text-[15px] font-normal leading-6 transition"
+                  [class.text-[#c9c1b2]]="!isCategorySelected(category.categoryID)"
+                  [class.text-yellow-300]="isCategorySelected(category.categoryID)"
+                >
+                  {{ category.categoryName }}
+                </span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-white/10 bg-[#27241b] p-4">
+          <h3 class="mb-4 text-sm font-bold text-white">Cities</h3>
+
+          <div class="flex flex-wrap gap-3">
+            @for (city of cities; track city.cityID) {
+              <button
+                type="button"
+                class="cursor-pointer"
+                (mousedown)="onCityPress($event, city.cityID)"
+              >
+                <span
+                  class="rounded-full border bg-[#27241b] px-3 py-1.5 text-xs transition"
+                  [class.border-white/10]="!isCitySelected(city.cityID)"
+                  [class.text-zinc-300]="!isCitySelected(city.cityID)"
+                  [class.border-yellow-400/30]="isCitySelected(city.cityID)"
+                  [class.text-yellow-300]="isCitySelected(city.cityID)"
+                >
+                  {{ city.cityName }}
+                </span>
+              </button>
+            }
+          </div>
+        </div>
+      </aside>
+
+      <div id="activities-list">
+        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 class="text-lg font-semibold text-white/80">
+            Showing <span class="text-yellow-400">{{ totalCount }}</span> Activities
+          </h2>
+
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-zinc-500">Sort by:</span>
+            <select
+              [(ngModel)]="sortBy"
+              (change)="onSortChange()"
+              class="cursor-pointer rounded-xl border border-white/10 bg-[#27241b] px-3 py-2 text-xs text-zinc-300 outline-none"
+            >
+              <option value="default">Popularity</option>
+              <option value="priceLowToHigh">Price: Low to High</option>
+              <option value="priceHighToLow">Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+
+        @if (isLoading && activities.length > 0) {
+          <div class="mb-4 overflow-hidden rounded-full border border-yellow-500/20 bg-[#27241b]">
+            <div class="h-1 w-full animate-pulse bg-yellow-400"></div>
+          </div>
+        }
+
+        @if (isLoading && activities.length === 0) {
+          <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            @for (item of [1,2,3,4,5,6]; track $index) {
+              <article class="overflow-hidden rounded-2xl border border-[#3a3427] bg-[#27241b] p-3">
+                <div class="h-40 animate-pulse rounded bg-[#1f1b14]"></div>
+                <div class="space-y-3 pt-4">
+                  <div class="h-4 w-1/3 animate-pulse rounded bg-[#1f1b14]"></div>
+                  <div class="h-5 w-3/4 animate-pulse rounded bg-[#1f1b14]"></div>
+                  <div class="h-14 w-full animate-pulse rounded bg-[#1f1b14]"></div>
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            @for (activity of activities; track activity.activityID) {
+              <article class="card-activity overflow-hidden rounded-2xl border border-[#3a3427] bg-[#27241b] p-3 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
+                <div class="relative h-40 overflow-hidden rounded">
+                  <img
+                    [src]="activity.imageUrl"
+                    [alt]="activity.activityName"
+                    class="card-activity__image h-full w-full object-cover"
+                  />
+
+                  <button
+                    type="button"
+                    (click)="toggleWishlist(activity.activityID)"
+                    class="absolute left-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-[#3b4a52] text-white backdrop-blur-sm transition hover:scale-105"
+                  >
+                    @if (isWishlistLoading(activity.activityID)) {
+                      <i class="fa-solid fa-spinner fa-spin text-lg text-yellow-400"></i>
+                    } @else {
+                      <i
+                        class="text-lg"
+                        [class.fa-solid]="isWishlisted(activity.activityID)"
+                        [class.fa-regular]="!isWishlisted(activity.activityID)"
+                        [class.fa-heart]="true"
+                        [class.text-red-500]="isWishlisted(activity.activityID)"
+                        [class.text-white]="!isWishlisted(activity.activityID)"
+                      ></i>
+                    }
+                  </button>
+
+                  <div class="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-[#4b4a45]/90 px-3 py-1 text-[11px] font-semibold text-white">
+                    <span
+                      class="h-2 w-2 rounded-full"
+                      [class.bg-green-400]="activity.isActive"
+                      [class.bg-red-400]="!activity.isActive"
+                    ></span>
+                    {{ activity.isActive ? 'ACTIVE' : 'INACTIVE' }}
+                  </div>
+                </div>
+
+                <div class="pt-4">
+                  <div class="flex items-center justify-between gap-3">
+                    <span class="text-[11px] font-bold uppercase tracking-wide text-yellow-400">
+                      {{ activity.categoryName }}
+                    </span>
+
+                    <div class="flex items-center gap-1 text-sm text-white">
+                      <i class="fa-solid fa-star text-[11px] text-yellow-400"></i>
+                      <span class="font-medium">{{ getRoundedRating(activity.rating) }}</span>
+                      <span class="text-xs text-zinc-400">({{ activity.reviewsCount }})</span>
+                    </div>
+                  </div>
+
+                  <h3 class="mt-2 line-clamp-2 text-[17px] font-semibold leading-tight text-white/85">
+                    {{ activity.activityName }}
+                  </h3>
+
+                  <div class="flex justify-between">
+                    <div class="mt-3 inline-flex items-center gap-2 rounded-md border border-green-500/30 bg-green-500/10 px-2.5 py-1.5 text-xs font-medium text-green-400">
+                      <i class="fa-regular fa-circle-check text-[11px]"></i>
+                      {{ activity.requiredDocuments }}
+                    </div>
+                  </div>
+
+                  <p class="mt-4 line-clamp-2 text-sm leading-5 text-zinc-400">
+                    {{ activity.description }}
+                  </p>
+
+                  <div class="my-4 border-t border-[#3a3427]"></div>
+
+                  <div class="flex items-center justify-between gap-4">
+                    <div class="flex flex-col">
+                      <span class="text-sm uppercase tracking-wide text-green-600/90">Open</span>
+                      <p class="mt-1 text-[13px] font-semibold text-white/80">
+                        {{ getOpenTime(activity) }}
+                      </p>
+                    </div>
+
+                    <div class="flex flex-col text-right">
+                      <span class="text-sm uppercase tracking-wide text-red-600/90">Close</span>
+                      <p class="mt-1 text-[13px] font-semibold text-white/80">
+                        {{ getCloseTime(activity) }}
+                      </p>
+                    </div>
+
+                    <div class="h-8 w-px bg-[#3a3427]"></div>
+
+                    <div>
+                      <p class="mr-1.5 text-[25px] font-bold leading-none text-yellow-500/90">
+                        ${{ activity.minPrice }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="my-4 border-t border-[#3a3427]"></div>
+
+                  <div class="flex items-center gap-3">
+                    <span class="text-sm text-zinc-400">Book via:</span>
+                    <div class="flex items-center gap-4 text-yellow-400">
+                      @for (provider of activity.providers; track provider.link) {
+                        <a
+                          [href]="provider.link"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="cursor-pointer transition hover:text-yellow-300"
+                          [title]="provider.providerName"
+                        >
+                          <i [class]="getProviderIcon(provider) + ' text-sm'"></i>
+                        </a>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="mt-5 space-y-3">
+                    <button
+                      type="button"
+                      (click)="openPlanModal(activity.activityID)"
+                      class="w-full cursor-pointer rounded-xl bg-yellow-400 py-3 text-sm font-bold text-black transition hover:bg-yellow-300"
+                    >
+                      Add To Plan
+                    </button>
+
+                    <a
+                      [routerLink]="['/activities', activity.activityID]"
+                      class="block w-full cursor-pointer rounded-xl border border-[#3a3427] bg-transparent py-3 text-center text-sm font-semibold text-white transition hover:bg-white/5"
+                    >
+                      View Details
+                    </a>
+                  </div>
+                </div>
+              </article>
+            }
+          </div>
+        }
+
+        @if (!isLoading && activities.length === 0) {
+          <div class="mt-8 rounded-2xl border border-[#3a3427] bg-[#27241b] px-6 py-10 text-center">
+            <p class="text-lg font-semibold text-white">No activities found</p>
+            <p class="mt-2 text-sm text-zinc-400">
+              Try changing the selected filters or search term.
+            </p>
+          </div>
+        }
+
+        @if (!isLoading && totalPages > 1) {
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              (click)="goToPreviousPage()"
+              [disabled]="currentPage === 1"
+              class="cursor-pointer rounded-2xl border border-[#3a3427] bg-[#1b1812] px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:border-yellow-400 hover:text-yellow-400 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Previous
+            </button>
+
+            @for (page of pages; track page) {
+              <button
+                type="button"
+                (click)="changePage(page)"
+                class="flex cursor-pointer h-12 w-12 items-center justify-center rounded-full border text-sm font-bold transition"
+                [class.border-yellow-400]="currentPage === page"
+                [class.bg-yellow-400]="currentPage === page"
+                [class.text-black]="currentPage === page"
+                [class.border-[#3a3427]]="currentPage !== page"
+                [class.bg-[#1b1812]]="currentPage !== page"
+                [class.text-white]="currentPage !== page"
+                [class.hover:border-yellow-400]="currentPage !== page"
+                [class.hover:text-yellow-400]="currentPage !== page"
+              >
+                {{ page }}
+              </button>
+            }
+
+            <button
+              type="button"
+              (click)="goToNextPage()"
+              [disabled]="currentPage === totalPages"
+              class="cursor-pointer rounded-2xl border border-[#3a3427] bg-[#1b1812] px-5 py-3 text-sm font-semibold text-zinc-300 transition hover:border-yellow-400 hover:text-yellow-400 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+</div>
+
+@if (isPlanModalOpen) {
+  <div class="fixed inset-0 z-50 overflow-y-auto bg-black/70 px-3 py-4 sm:px-4 sm:py-6">
+    <div class="flex min-h-full items-center justify-center">
+      <div class="absolute inset-0" (click)="closePlanModal()"></div>
+
+      <div
+        class="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[28px] border border-[#3a3427] bg-[#1b1812] shadow-[0_20px_80px_rgba(0,0,0,0.55)] lg:max-h-none lg:overflow-visible"
+        lang="en"
+        dir="ltr"
+      >
+        <div class="border-b border-[#3a3427] bg-[radial-gradient(circle_at_top,rgba(250,204,21,0.10),transparent_45%)] px-6 py-5 sm:px-8">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-yellow-500/80">
+                Plan Activity
+              </p>
+              <h3 class="mt-2 text-2xl font-bold text-white">
+                Add to Schedule
+              </h3>
+              <p class="mt-2 text-sm text-white/60">
+                Choose your preferred date and start time.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              (click)="closePlanModal()"
+              class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="px-6 py-6 sm:px-8 sm:py-7">
+          @if (isPlanModalLoading) {
+            <div class="space-y-4">
+              <div class="h-5 w-2/3 animate-pulse rounded bg-[#27241b]"></div>
+              <div class="h-20 animate-pulse rounded-2xl bg-[#27241b]"></div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="h-14 animate-pulse rounded-2xl bg-[#27241b]"></div>
+                <div class="h-14 animate-pulse rounded-2xl bg-[#27241b]"></div>
+              </div>
+              <div class="h-20 animate-pulse rounded-2xl bg-[#27241b]"></div>
+            </div>
+          } @else if (selectedActivityDetails) {
+            <div class="space-y-6">
+              <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-4">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h4 class="text-lg font-bold text-white">
+                      {{ selectedActivityDetails.activityName }}
+                    </h4>
+                    <p class="mt-1 text-sm text-white/60">
+                      {{ selectedActivityDetails.cityName }} • {{ selectedActivityDetails.categoryName }}
+                    </p>
+                  </div>
+
+                  <div class="text-left sm:text-right">
+                    <p class="text-xs uppercase tracking-wide text-yellow-500/90">Starting From</p>
+                    <p class="mt-1 text-2xl font-bold text-yellow-400">
+                      ${{ selectedActivityDetails.minPrice }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-4">
+                  <p class="text-xs uppercase tracking-wide text-green-500/90">Open</p>
+                  <p class="mt-2 text-base font-semibold text-white/85">
+                    {{ planOpenTime }}
+                  </p>
+                </div>
+
+                <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-4">
+                  <p class="text-xs uppercase tracking-wide text-red-500/90">Close</p>
+                  <p class="mt-2 text-base font-semibold text-white/85">
+                    {{ planCloseTime }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-4">
+                  <p class="text-xs uppercase tracking-wide text-yellow-500/90">Duration</p>
+                  <p class="mt-2 text-base font-semibold text-white/85">
+                    {{ formattedSelectedDuration }}
+                  </p>
+                </div>
+
+                <div class="rounded-2xl border border-[#3a3427] bg-[#27241b] p-4">
+                  <p class="text-xs uppercase tracking-wide text-yellow-500/90">Computed End Time</p>
+                  <p class="mt-2 text-base font-semibold text-white/85">
+                    {{ computedEndTime }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="plan-inputs-en">
+                  <label class="mb-2 block text-sm font-medium text-white/80">
+                    Select Date
+                  </label>
+                  <input
+                    type="text"
+                    lang="en-US"
+                    dir="ltr"
+                    inputmode="numeric"
+                    placeholder="YYYY-MM-DD"
+                    [(ngModel)]="planDate"
+                    (input)="onPlanDateChange()"
+                    class="w-full rounded-2xl border border-[#3a3427] bg-[#27241b] px-4 py-3 text-sm text-white placeholder:text-zinc-500 outline-none transition focus:border-yellow-400"
+                  />
+                </div>
+
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-white/80">
+                    Start Time
+                  </label>
+
+               <div class="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_110px]">
+  <input
+    type="text"
+    lang="en-US"
+    dir="ltr"
+    inputmode="numeric"
+    placeholder="hh:mm"
+    [(ngModel)]="planStartTime"
+    (input)="onPlanStartTimeChange()"
+    class="w-full min-w-0 rounded-2xl border border-[#3a3427] bg-[#27241b] px-4 py-3 text-sm text-white placeholder:text-zinc-500 outline-none transition focus:border-yellow-400"
+  />
+
+  <select
+    [(ngModel)]="planStartPeriod"
+    (change)="onPlanStartPeriodChange()"
+    class="w-full cursor-pointer rounded-2xl border border-[#3a3427] bg-[#27241b] px-4 py-3 text-sm font-semibold text-white outline-none transition focus:border-yellow-400 sm:w-auto"
+  >
+    <option value="AM">AM</option>
+    <option value="PM">PM</option>
+  </select>
+</div>
+                </div>
+              </div>
+
+              @if (planValidationError) {
+                <div class="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                  {{ planValidationError }}
+                </div>
+              }
+
+              <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  (click)="closePlanModal()"
+                  class="cursor-pointer rounded-2xl border border-[#3a3427] bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/5"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  (click)="submitPlan()"
+                  [disabled]="isSubmittingPlan"
+                  class="cursor-pointer rounded-2xl bg-yellow-400 px-5 py-3 text-sm font-bold text-black transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Add To Schedule
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

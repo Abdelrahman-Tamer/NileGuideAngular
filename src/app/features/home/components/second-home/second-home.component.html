@@ -1,0 +1,185 @@
+
+<!-- HOW IT WORKS SECTION -->
+<section class="bg-[#201d18] text-white py-20">
+  <div class="mx-auto max-w-7xl px-4">
+    <!-- Title -->
+    <div class="text-center">
+      <h2 class="text-4xl font-bold tracking-tight">How It Works</h2>
+      <p class="mt-3 text-base text-white/70">Your journey in 4 simple steps</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+
+      <!-- 1 -->
+      <article class="card-step">
+        <span class="card-step__number">1</span>
+        <div class="card-step__icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" stroke="currentColor" stroke-width="2"/>
+            <path d="m14.5 9.5-2 5-5 2 2-5 5-2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="card-step__title">Discover<br/>Activities</h3>
+        <p class="card-step__desc">
+          Browse 200+ curated experiences across Egypt, from ancient wonders to modern adventures
+        </p>
+      </article>
+
+      <!-- 2 -->
+      <article class="card-step">
+        <span class="card-step__number">2</span>
+        <div class="card-step__icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 21s-7-4.6-9.3-9A5.5 5.5 0 0 1 12 5.8 5.5 5.5 0 0 1 21.3 12C19 16.4 12 21 12 21Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="card-step__title">Build Your<br/>Wishlist</h3>
+        <p class="card-step__desc">
+          Save your favorite activities and create a personalized collection of must-dos
+        </p>
+      </article>
+
+      <!-- 3 -->
+      <article class="card-step">
+        <span class="card-step__number">3</span>
+        <div class="card-step__icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M8 2v3M16 2v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M4 7h16v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M4 11h16" stroke="currentColor" stroke-width="2"/>
+            <path d="M14 15l-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M11 15h3v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="card-step__title">Create Your<br/>Schedule</h3>
+        <p class="card-step__desc">
+          Organize activities into a perfect day-by-day itinerary with our smart planner
+        </p>
+      </article>
+
+      <!-- 4 -->
+      <article class="card-step">
+        <span class="card-step__number">4</span>
+        <div class="card-step__icon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M2 16l20-6-20-6 4 6 16 0-16 0-4 6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M6 12v7l3-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="card-step__title">Ready for<br/>Adventure</h3>
+        <p class="card-step__desc">
+          Travel with confidence with instant booking confirmations and 24/7 support
+        </p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- POPULAR ACTIVITIES SECTION -->
+<section class=" text-white py-16">
+  <div class="mx-auto max-w-7xl px-4">
+
+    <!-- Header -->
+    <div class="mb-8 flex items-center justify-between">
+      <h2 class="text-4xl font-bold">Popular Activities</h2>
+
+      <a
+        routerLink="/activities"
+        class="inline-flex items-center cursor-pointer gap-2 text-yellow-500 hover:text-yellow-400 transition-colors"
+      >
+        View All
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
+          <path d="M10 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Cards -->
+     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+      <!-- Card 1 -->
+      <article class="card-activity">
+        <div class="card-activity__image-wrap">
+          <img src="/Photo/Hot Air Balloon.png" alt="Hot Air Balloon" class="card-activity__image" />
+          <div class="card-activity__rating">
+            <span style="color: var(--accent-gold);">★</span>
+            <span class="font-semibold" style="color: var(--accent-gold);">4.9</span>
+          </div>
+          <div class="card-activity__duration">
+            <span class="inline-block h-2 w-2 rounded-full" style="background-color: rgba(255,255,255,0.7);"></span>
+            <span>3 hours</span>
+          </div>
+        </div>
+        <div class="card-activity__body">
+          <h3 class="card-activity__title">Hot Air Balloon</h3>
+          <p class="card-activity__location">Luxor</p>
+          <p class="card-activity__price">From $120 USD</p>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="card-activity">
+        <div class="card-activity__image-wrap">
+          <img src="/Photo/Pyramids Tour.png" alt="Pyramids Tour" class="card-activity__image" />
+          <div class="card-activity__rating">
+            <span style="color: var(--accent-gold);">★</span>
+            <span class="font-semibold" style="color: var(--accent-gold);">4.8</span>
+          </div>
+          <div class="card-activity__duration">
+            <span class="inline-block h-2 w-2 rounded-full" style="background-color: rgba(255,255,255,0.7);"></span>
+            <span>4 hours</span>
+          </div>
+        </div>
+        <div class="card-activity__body">
+          <h3 class="card-activity__title">Pyramids Tour</h3>
+          <p class="card-activity__location">Cairo</p>
+          <p class="card-activity__price">From $80 USD</p>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="card-activity">
+        <div class="card-activity__image-wrap">
+          <img src="/Photo/Nile Cruise.png" alt="Nile Cruise" class="card-activity__image" />
+          <div class="card-activity__rating">
+            <span style="color: var(--accent-gold);">★</span>
+            <span class="font-semibold" style="color: var(--accent-gold);">5.0</span>
+          </div>
+          <div class="card-activity__duration">
+            <span class="inline-block h-2 w-2 rounded-full" style="background-color: rgba(255,255,255,0.7);"></span>
+            <span>5 days</span>
+          </div>
+        </div>
+        <div class="card-activity__body">
+          <h3 class="card-activity__title">Nile Cruise</h3>
+          <p class="card-activity__location">Luxor to Aswan</p>
+          <p class="card-activity__price">From $450 USD</p>
+        </div>
+      </article>
+
+      <!-- Card 4 -->
+      <article class="card-activity">
+        <div class="card-activity__image-wrap">
+          <img src="/Photo/a9.jpg" alt="Red Sea Diving" class="card-activity__image" />
+          <div class="card-activity__rating">
+            <span style="color: var(--accent-gold);">★</span>
+            <span class="font-semibold" style="color: var(--accent-gold);">4.7</span>
+          </div>
+          <div class="card-activity__duration">
+            <span class="inline-block h-2 w-2 rounded-full" style="background-color: rgba(255,255,255,0.7);"></span>
+            <span>2 hours</span>
+          </div>
+        </div>
+        <div class="card-activity__body">
+          <h3 class="card-activity__title">Red Sea Diving</h3>
+          <p class="card-activity__location">Sharm El Sheikh</p>
+          <p class="card-activity__price">From $110 USD</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>

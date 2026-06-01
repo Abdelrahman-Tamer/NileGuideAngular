@@ -1,0 +1,183 @@
+
+<main class="flex-1 pt-24 px-4 py-16 md:px-10 lg:px-20">
+  <div class="mx-auto max-w-6xl">
+    <div class="mb-12 text-center">
+      <div class="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-[#f2b90d]/20">
+        <i class="fa-solid fa-headset text-4xl text-[#f2b90d]"></i>
+      </div>
+
+      <h1 class="mb-4 text-4xl font-black text-white/90 md:text-6xl">Get in Touch</h1>
+
+      <p class="mx-auto max-w-2xl text-lg text-[#bab29c] md:text-xl">
+        Have a question or need assistance? We are here to help you plan your perfect
+        Egyptian adventure.
+      </p>
+    </div>
+
+    <div class="mb-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <section class="lg:col-span-2">
+        <div class="rounded-xl border border-[#393528] bg-[#27241b] p-8">
+          <div class="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-white">Send Us a Message</h2>
+              <p class="mt-2 text-sm text-[#bab29c]">
+                Fill in the form below and we will get back to you as soon as possible.
+              </p>
+            </div>
+          </div>
+
+          @if (isSuccess) {
+            <div
+              class="animate-fade-in mb-6 flex items-center gap-3 rounded-lg border border-green-700/50 bg-green-900/30 p-4"
+              aria-live="polite"
+            >
+              <i class="fa-solid fa-circle-check text-green-400"></i>
+              <span class="text-sm text-green-300">{{ feedbackMessage }}</span>
+            </div>
+          }
+
+          @if (isError) {
+            <div
+              class="animate-fade-in mb-6 flex items-center gap-3 rounded-lg border border-red-700/50 bg-red-900/30 p-4"
+              aria-live="assertive"
+            >
+              <i class="fa-solid fa-circle-exclamation text-red-400"></i>
+              <span class="text-sm text-red-300">{{ feedbackMessage }}</span>
+            </div>
+          }
+
+          <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
+            <div>
+              <label for="name" class="mb-2 block text-sm font-semibold text-white">Full Name</label>
+              <input
+                id="name"
+                type="text"
+                formControlName="name"
+                autocomplete="name"
+                placeholder="John Doe"
+                class="w-full rounded-lg border border-[#393528] bg-[#181611] px-4 py-3 text-white placeholder:text-[#bab29c] transition-all focus:border-[#f2b90d] focus:outline-none focus:ring-2 focus:ring-[#f2b90d]/20"
+                [class.border-red-500]="hasError('name')"
+              />
+
+              @if (hasError('name', 'required')) {
+                <p class="mt-2 text-xs text-red-400">Full name is required.</p>
+              }
+            </div>
+
+            <div>
+              <label for="email" class="mb-2 block text-sm font-semibold text-white">
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                autocomplete="email"
+                placeholder="john@example.com"
+                class="w-full rounded-lg border border-[#393528] bg-[#181611] px-4 py-3 text-white placeholder:text-[#bab29c] transition-all focus:border-[#f2b90d] focus:outline-none focus:ring-2 focus:ring-[#f2b90d]/20"
+                [class.border-red-500]="hasError('email')"
+              />
+
+              @if (hasError('email', 'required')) {
+                <p class="mt-2 text-xs text-red-400">Email address is required.</p>
+              }
+
+              @if (hasError('email', 'email')) {
+                <p class="mt-2 text-xs text-red-400">Please enter a valid email address.</p>
+              }
+            </div>
+
+            <div>
+              <label for="subject" class="mb-2 block text-sm font-semibold text-white">Subject</label>
+              <select
+                id="subject"
+                formControlName="subject"
+                class="w-full rounded-lg border border-[#393528] bg-[#181611] px-4 py-3 text-white transition-all focus:border-[#f2b90d] focus:outline-none focus:ring-2 focus:ring-[#f2b90d]/20"
+                [class.border-red-500]="hasError('subject')"
+              >
+                <option value="">Select a subject</option>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Activity Recommendations">Activity Recommendations</option>
+                <option value="Technical Support">Technical Support</option>
+                <option value="Feedback and Suggestions">Feedback and Suggestions</option>
+                <option value="Partnership Opportunity">Partnership Opportunity</option>
+                <option value="Other">Other</option>
+              </select>
+
+              @if (hasError('subject', 'required')) {
+                <p class="mt-2 text-xs text-red-400">Subject is required.</p>
+              }
+            </div>
+
+            <div>
+              <label for="message" class="mb-2 block text-sm font-semibold text-white">Message</label>
+              <textarea
+                id="message"
+                formControlName="message"
+                rows="6"
+                autocomplete="off"
+                placeholder="Tell us how we can help..."
+                class="w-full resize-none rounded-lg border border-[#393528] bg-[#181611] px-4 py-3 text-white placeholder:text-[#bab29c] transition-all focus:border-[#f2b90d] focus:outline-none focus:ring-2 focus:ring-[#f2b90d]/20"
+                [class.border-red-500]="hasError('message')"
+              ></textarea>
+
+              @if (hasError('message', 'required')) {
+                <p class="mt-2 text-xs text-red-400">Message is required.</p>
+              }
+            </div>
+
+            <button
+              type="submit"
+              class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#f2b90d] px-6 py-4 font-bold text-black transition-all hover:scale-[1.02] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+              [disabled]="isLoading"
+              [attr.aria-busy]="isLoading"
+            >
+              @if (!isLoading) {
+                <i class="fa-solid fa-paper-plane"></i>
+              }
+
+              @if (isLoading) {
+                <i class="fa-solid fa-spinner animate-spin"></i>
+              }
+
+              <span>{{ isLoading ? 'Sending...' : 'Send Message' }}</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <aside class="space-y-6 lg:col-span-1">
+        <div class="rounded-xl border border-[#393528] bg-[#27241b] p-6">
+          <div class="mb-4 flex items-center gap-3">
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[#f2b90d]/20">
+              <i class="fa-regular fa-clock text-[#f2b90d]"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white">Response Time</h3>
+          </div>
+
+          <p class="text-[#bab29c]">
+            We typically respond within 2 hours during business hours.
+          </p>
+        </div>
+
+        <div class="rounded-xl border border-[#393528] bg-[#27241b] p-6">
+          <div class="mb-4 flex items-center gap-3">
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[#f2b90d]/20">
+              <i class="fa-solid fa-envelope text-[#f2b90d]"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white">Email Us</h3>
+          </div>
+
+          <div class="space-y-3 text-sm">
+            <div>
+              <div class="text-[#bab29c]">General Support</div>
+              <a href="mailto:nileguide.noreply@gmail.com" class="text-[#f2b90d] hover:underline">
+                nileguide.noreply@gmail.com
+              </a>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>

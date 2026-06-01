@@ -1,0 +1,338 @@
+<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-12">
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
+
+  <!-- Search -->
+  <div class="relative w-full lg:flex-1">
+    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+
+    <input
+      type="text"
+      placeholder="Search users..."
+      (input)="userSearch = $any($event.target).value"
+      class="w-full rounded-2xl border border-[#3a3122] bg-[#1b1712] py-4 pl-12 pr-4 text-base text-white outline-none transition duration-300 placeholder:text-[#8b7b5f] focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]"/>
+  </div>
+
+  <!-- Role Dropdown -->
+  <div class="relative w-full lg:w-56">
+    <select
+      (change)="selectedRole = $any($event.target).value"
+      class="w-full appearance-none cursor-pointer rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]">
+      <option value="all">All Roles</option>
+      <option value="admin">Admin</option>
+      <option value="user">User</option>
+    </select>
+
+    <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+  </div>
+
+  <!-- Status Dropdown -->
+  <div class="relative w-full lg:w-48">
+    <select
+      (change)="selectedStatus = $any($event.target).value"
+      class="w-full appearance-none cursor-pointer rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]">
+      <option value="all">All Status</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+    </select>
+
+    <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+  </div>
+
+
+ <button
+  (click)="openAddUserModal()"
+  class="cursor-pointer w-full lg:w-auto rounded-xl bg-[#e0b100] px-5 py-4 text-base font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055]">
+  <i class="fa-solid fa-user-plus mr-2"></i>
+  Add New User
+</button>
+  
+
+</div>
+  <!-- Add New User -->
+
+@if (isAddUserModalOpen) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+    <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
+
+      <!-- Header -->
+      <div class="border-b border-[#3a3122] px-6 py-5">
+        <h2 class="text-2xl font-bold text-white">Add New User</h2>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="userForm" (ngSubmit)="addUser()" class="space-y-6 px-6 py-6">
+
+        <!-- Name + Email -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-white">Full Name</label>
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="e.g., Ahmed Mohamed"
+              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-white">Email</label>
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="example@email.com"
+              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+          </div>
+        </div>
+
+        <!-- Role + Joined -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-white">Role</label>
+            <div class="relative">
+              <select
+                formControlName="role"
+                class="w-full appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
+                <option value="User">User</option>
+                <option value="Admin">Admin</option>
+              </select>
+              <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+            </div>
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-white">Joined Date</label>
+            <input
+              type="text"
+              formControlName="joined"
+              placeholder="e.g., Jul 9, 2024"
+              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+          </div>
+        </div>
+
+        <!-- Wishlist + Image -->
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-white">Wishlist Count</label>
+            <input
+              type="number"
+              formControlName="wishlist"
+              placeholder="0"
+              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-white">Profile Image URL</label>
+            <input
+              type="text"
+              formControlName="image"
+              placeholder="https://example.com/profile.jpg"
+              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div>
+          <label class="mb-3 block text-sm font-semibold text-white">Status</label>
+          <div class="flex items-center gap-6">
+            <label class="flex items-center gap-2 text-white">
+              <input type="radio" formControlName="status" value="Active" class="accent-[#e0b100]" />
+              <span>Active</span>
+            </label>
+
+            <label class="flex items-center gap-2 text-white">
+              <input type="radio" formControlName="status" value="Inactive" class="accent-[#e0b100]" />
+              <span>Inactive</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex items-center justify-end gap-3">
+         
+            <button
+            type="button"
+            (click)="closeAddUserModal()"
+            class="cursor-pointer w-fit rounded-xl border border-[#3a3122] bg-[#1b1712] px-6 py-3 text-white  transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055] hover:border-[#e0b100]">
+            Cancel
+          </button>
+
+           <button
+  class="cursor-pointer flex-1 w-full lg:w-auto rounded-xl bg-[#e0b100] px-5 py-4 text-base font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055]">
+  <i class="fa-solid fa-user-plus mr-2"></i>
+            Add User
+</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+}
+
+   <!-- Users List -->
+  <div class="mt-6 overflow-hidden rounded-3xl border border-[#2c2418] bg-[#16120d]">
+    <div class="flex flex-col gap-3 border-b border-[#2c2418] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+      <h2 class="text-2xl font-bold text-white">Users Management</h2>
+      <span class="text-sm text-[#b8aa8d]">{{users.length}} total users</span>
+    </div>
+
+    <!-- Table header only -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-[#19140f] text-left">
+          <tr class="border-b border-[#2c2418] text-sm font-semibold text-[#e0b100]">
+            <th class="px-6 py-4">User</th>
+            <th class="px-6 py-4">Email</th>
+            <th class="px-6 py-4">Role</th>
+            <th class="px-6 py-4">Joined</th>
+            <th class="px-6 py-4">Wishlist</th>
+            <th class="px-6 py-4">Status</th>
+            <th class="px-6 py-4">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (user of paginatedUsers; track user.id) {
+<tr class="border-b border-[#2c2418] transition duration-300 hover:bg-[#1d1812]">
+    <!-- User -->
+    <td class="px-6 py-5">
+                <div class="flex items-center gap-4">
+                  <img
+                    [src]="user.image"
+                    [alt]="user.name"
+                    class="h-12 w-12 rounded-full border-2 border-[#e0b100] object-cover"
+                  />
+
+                  <div>
+                    <h3 class="text-base font-bold text-white">{{ user.name }}</h3>
+                  </div>
+                </div>
+              </td>
+
+    <!-- Email -->
+    <td class="px-6 py-5">
+      <span class="rounded-full  px-3 py-1 text-base font-medium text-[#b8aa8d]">
+       {{user.email}}
+      </span>
+    </td>
+
+    <!-- Role -->
+     <td class="px-6 py-5">
+                <span
+                  class="rounded-full px-3 py-1 text-sm font-medium"
+                  [class.bg-[#5c470d]]="user.role === 'Admin'"
+                  [class.text-[#facc15]]="user.role === 'Admin'"
+                  [class.bg-[#1d3557]]="user.role === 'User'"
+                  [class.text-[#60a5fa]]="user.role === 'User'"
+                >
+                  {{ user.role }}
+                </span>
+              </td>
+
+    <!-- Joined -->
+    <td class="px-6 py-5 text-base text-[#d6d1c7]">
+      {{user.joined}}
+    </td>
+
+    <!-- Wishlist -->
+    <td class="px-10 py-5 text-base text-[#d6d1c7]">
+      {{user.wishlist}}
+    </td>
+
+    <!-- Status -->
+    <td class="px-6 py-5">
+      <span
+  class="rounded-full px-3 py-1 text-sm font-medium"
+  [class.bg-[#1d3a2a]]="user.status === 'Active'"
+  [class.text-[#4ade80]]="user.status === 'Active'"
+  [class.bg-[#2c2f36]]="user.status === 'Inactive'"
+  [class.text-[#aeb4bf]]="user.status === 'Inactive'"
+>
+  {{ user.status }}
+</span>
+    </td>
+
+    <!-- Actions -->
+    <td class="px-6 py-5">
+      <div class="flex items-center gap-3">
+        <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-[#231d14] text-[#e0b100] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                    <i class="fa-regular fa-eye"></i>
+                  </button>
+
+                  <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-[#231d14] text-[#60a5fa] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                    <i class="fa-regular fa-clipboard"></i>
+                  </button>
+
+                  <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-[#231d14] text-[#fb923c] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                    <i class="fa-solid fa-ban"></i>
+                  </button>
+
+                  <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-[#231d14] text-[#f87171] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+      </div>
+    </td>
+  </tr>
+          }
+  
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex flex-col gap-4 border-t border-[#2c2418] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+  <p class="text-sm text-[#b8aa8d]">
+    Showing <span class="font-semibold text-white">{{ startItem }} - {{ endItem }}</span> of
+    <span class="font-semibold text-white">{{users.length}}</span>
+  </p>
+
+  <div class="flex items-center gap-2">
+<button
+  (click)="previousPage()"
+  [disabled]="currentPage === 1"
+  class="rounded-xl border px-4 py-2 text-sm"
+  [class.cursor-pointer]="currentPage !== 1"
+  [class.border-[#3a3122]]="currentPage !== 1"
+  [class.bg-[#1b1712]]="currentPage !== 1"
+  [class.text-[#d6d1c7]]="currentPage !== 1"
+  [class.hover:border-[#e0b100]]="currentPage !== 1"
+  [class.hover:text-white]="currentPage !== 1"
+  [class.bg-[#15171a]]="currentPage === 1"
+  [class.text-[#63615d]]="currentPage === 1"
+>
+  Previous
+</button>   
+
+     @for (page of pages; track page) {
+      <button
+        (click)="goToPage(page)"
+        class="rounded-xl px-4 py-2 text-sm cursor-pointer"
+        [class.bg-[#e0b100]]="currentPage === page"
+        [class.text-black]="currentPage === page"
+        [class.border]="currentPage !== page"
+        [class.border-[#3a3122]]="currentPage !== page"
+        [class.bg-[#1b1712]]="currentPage !== page"
+        [class.text-white]="currentPage !== page"
+      >
+        {{ page }}
+      </button>
+     }
+
+<button
+  (click)="nextPage()"
+  [disabled]="currentPage === totalPages"
+  class="rounded-xl border px-4 py-2 text-sm"
+  [class.cursor-pointer]="currentPage !== totalPages"
+  [class.border-[#3a3122]]="currentPage !== totalPages"
+  [class.bg-[#1b1712]]="currentPage !== totalPages"
+  [class.text-[#d6d1c7]]="currentPage !== totalPages"
+  [class.hover:border-[#e0b100]]="currentPage !== totalPages"
+  [class.hover:text-white]="currentPage !== totalPages"
+  [class.bg-[#15171a]]="currentPage === totalPages"
+  [class.text-[#63615d]]="currentPage === totalPages"
+>
+  Next
+</button>
+  </div>
+</div>
+
+  </div>
+  
+</div>

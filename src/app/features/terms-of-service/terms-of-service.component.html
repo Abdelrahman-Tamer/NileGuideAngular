@@ -1,0 +1,424 @@
+<div class="min-h-screen bg-[#181611] px-4 py-16 pt-24 text-white md:px-10 lg:px-20">
+  <div class="mx-auto max-w-7xl">
+    <!-- Hero Section -->
+    <div class="mb-12 text-center">
+      <div class="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-[#f2b90d]/20">
+        <i class="fa-solid fa-gavel text-4xl text-[#f2b90d]"></i>
+      </div>
+
+      <h1 class="mb-4 text-4xl font-black text-white/80 md:text-6xl">
+        Terms of Service
+      </h1>
+
+      <p class="text-lg text-[#bab29c]">Last updated: December 29, 2025</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-4">
+      <!-- Table of Contents -->
+      <aside class="lg:col-span-1">
+        <div class="sticky top-24 rounded-xl border border-[#393528] bg-[#27241b] p-6">
+          <h2 class="mb-4 text-lg font-bold text-white">Table of Contents</h2>
+
+          <nav class="space-y-2 text-sm">
+            <button
+              type="button"
+              (click)="scrollToSection('acceptance')"
+              class="block w-full cursor-pointer text-left text-[#bab29c] transition hover:text-[#f2b90d]"
+            >
+              1. Acceptance of Terms
+            </button>
+
+            <button
+              type="button"
+              (click)="scrollToSection('account')"
+              class="block w-full cursor-pointer text-left text-[#bab29c] transition hover:text-[#f2b90d]"
+            >
+              2. Account Registration
+            </button>
+
+            <button
+              type="button"
+              (click)="scrollToSection('user-conduct')"
+              class="block w-full cursor-pointer text-left text-[#bab29c] transition hover:text-[#f2b90d]"
+            >
+              3. User Conduct
+            </button>
+
+            <button
+              type="button"
+              (click)="scrollToSection('bookings')"
+              class="block w-full cursor-pointer text-left text-[#bab29c] transition hover:text-[#f2b90d]"
+            >
+              4. External Bookings & Third-Party Services
+            </button>
+
+            <button
+              type="button"
+              (click)="scrollToSection('intellectual')"
+              class="block w-full cursor-pointer text-left text-[#bab29c] transition hover:text-[#f2b90d]"
+            >
+              5. Intellectual Property
+            </button>
+
+            <button
+              type="button"
+              (click)="scrollToSection('privacy')"
+              class="block w-full cursor-pointer text-left text-[#bab29c] transition hover:text-[#f2b90d]"
+            >
+              6. Privacy & Data
+            </button>
+
+            <button
+              type="button"
+              (click)="scrollToSection('liability')"
+              class="block w-full cursor-pointer text-left text-[#bab29c] transition hover:text-[#f2b90d]"
+            >
+              7. Limitation of Liability
+            </button>
+
+            <button
+              type="button"
+              (click)="scrollToSection('termination')"
+              class="block w-full cursor-pointer text-left text-[#bab29c] transition hover:text-[#f2b90d]"
+            >
+              8. Termination
+            </button>
+
+            <button
+              type="button"
+              (click)="scrollToSection('changes')"
+              class="block w-full cursor-pointer text-left text-[#bab29c] transition hover:text-[#f2b90d]"
+            >
+              9. Changes to Terms
+            </button>
+
+            <button
+              type="button"
+              (click)="scrollToSection('contact')"
+              class="block w-full cursor-pointer text-left text-[#bab29c] transition hover:text-[#f2b90d]"
+            >
+              10. Contact Us
+            </button>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="lg:col-span-3">
+        <div class="space-y-8 rounded-xl border border-[#393528] bg-[#27241b] p-8">
+          <!-- Notice -->
+          <div class="rounded-lg border border-[#f2b90d]/30 bg-[#f2b90d]/10 p-6">
+            <div class="flex gap-3">
+              <i class="fa-solid fa-circle-info shrink-0 text-[#f2b90d]"></i>
+              <div>
+                <h3 class="mb-2 font-bold text-white">Important Notice</h3>
+                <p class="text-sm text-[#bab29c]">
+                  By accessing and using NileGuide, you agree to be bound by these
+                  Terms of Service. If you do not agree to these terms, please do not
+                  use our services.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 1 -->
+          <section id="acceptance">
+            <h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+              <span class="text-[#f2b90d]">1.</span>
+              Acceptance of Terms
+            </h2>
+
+            <div class="space-y-4 leading-relaxed text-[#bab29c]">
+              <p>
+                Welcome to NileGuide. These Terms of Service ("Terms") govern your
+                access to and use of our website, mobile application, and related
+                services (collectively, the "Service"). By creating an account or using
+                our Service, you acknowledge that you have read, understood, and agree
+                to be bound by these Terms.
+              </p>
+
+              <p>
+                If you are using the Service on behalf of an organization, you represent
+                and warrant that you have the authority to bind that organization to
+                these Terms, and your acceptance of these Terms will be treated as
+                acceptance by that organization.
+              </p>
+            </div>
+          </section>
+
+          <div class="border-t border-[#393528]"></div>
+
+          <!-- Section 2 -->
+          <section id="account">
+            <h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+              <span class="text-[#f2b90d]">2.</span>
+              Account Registration
+            </h2>
+
+            <div class="space-y-4 leading-relaxed text-[#bab29c]">
+              <p>
+                To access certain features of the Service, you must create an account.
+                When creating your account, you agree to:
+              </p>
+
+              <ul class="list-inside list-disc space-y-2 pl-4">
+                <li>Provide accurate, current, and complete information</li>
+                <li>Maintain and promptly update your account information</li>
+                <li>Maintain the security of your password and account</li>
+                <li>Accept all responsibility for activities under your account</li>
+                <li>Notify us immediately of any unauthorized access</li>
+              </ul>
+
+              <p>
+                You must be at least 18 years old to create an account. By creating an
+                account, you represent that you meet this age requirement.
+              </p>
+            </div>
+          </section>
+
+          <div class="border-t border-[#393528]"></div>
+
+          <!-- Section 3 -->
+          <section id="user-conduct">
+            <h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+              <span class="text-[#f2b90d]">3.</span>
+              User Conduct
+            </h2>
+
+            <div class="space-y-4 leading-relaxed text-[#bab29c]">
+              <p>You agree not to use the Service to:</p>
+
+              <ul class="list-inside list-disc space-y-2 pl-4">
+                <li>Violate any applicable laws or regulations</li>
+                <li>Infringe upon the rights of others</li>
+                <li>Transmit harmful, offensive, or fraudulent content</li>
+                <li>Interfere with or disrupt the Service or servers</li>
+                <li>Attempt to gain unauthorized access to the Service</li>
+                <li>Use automated systems to access the Service without permission</li>
+                <li>Impersonate any person or entity</li>
+                <li>Collect information about other users without consent</li>
+              </ul>
+
+              <p>
+                We reserve the right to investigate and take appropriate action against
+                anyone who violates these provisions, including removing content and
+                terminating accounts.
+              </p>
+            </div>
+          </section>
+
+          <div class="border-t border-[#393528]"></div>
+
+          <!-- Section 4 -->
+          <section id="bookings">
+            <h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+              <span class="text-[#f2b90d]">4.</span>
+              External Bookings & Third-Party Services
+            </h2>
+
+            <div class="space-y-4 leading-relaxed text-[#bab29c]">
+              <p>
+                NileGuide serves as an informational guide and connector to external
+                booking platforms:
+              </p>
+
+              <ul class="list-inside list-disc space-y-2 pl-4">
+                <li>We provide information and recommendations for activities and experiences in Egypt</li>
+                <li>Bookings are completed through external third-party booking platforms</li>
+                <li>Payments are processed directly by the external booking platforms, not by NileGuide</li>
+                <li>Each external platform has its own terms of service and privacy policies</li>
+                <li>Cancellation and refund policies are set by the external booking platforms</li>
+                <li>Availability and pricing are determined by the external providers</li>
+              </ul>
+
+              <p>
+                NileGuide is not responsible for bookings, payments, cancellations,
+                refunds, or the quality of services provided by external booking
+                platforms or activity providers. Your transactions are governed by the
+                terms of the respective external platforms.
+              </p>
+            </div>
+          </section>
+
+          <div class="border-t border-[#393528]"></div>
+
+          <!-- Section 5 -->
+          <section id="intellectual">
+            <h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+              <span class="text-[#f2b90d]">5.</span>
+              Intellectual Property
+            </h2>
+
+            <div class="space-y-4 leading-relaxed text-[#bab29c]">
+              <p>
+                The Service and its entire contents, features, and functionality
+                (including but not limited to all information, software, text, displays,
+                images, video, and audio) are owned by NileGuide, its licensors, or
+                other providers of such material and are protected by copyright,
+                trademark, patent, trade secret, and other intellectual property laws.
+              </p>
+
+              <p>You may use the Service for personal, non-commercial use only. You may not:</p>
+
+              <ul class="list-inside list-disc space-y-2 pl-4">
+                <li>Modify, reproduce, or distribute content from the Service</li>
+                <li>Use content for commercial purposes without our permission</li>
+                <li>Remove copyright or proprietary notices</li>
+                <li>Reverse engineer or decompile any aspect of the Service</li>
+              </ul>
+            </div>
+          </section>
+
+          <div class="border-t border-[#393528]"></div>
+
+          <!-- Section 6 -->
+          <section id="privacy">
+            <h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+              <span class="text-[#f2b90d]">6.</span>
+              Privacy & Data
+            </h2>
+
+            <div class="space-y-4 leading-relaxed text-[#bab29c]">
+              <p>
+                Your privacy is important to us. Our Privacy Policy explains how we
+                collect, use, and protect your personal information. By using the
+                Service, you consent to our collection and use of your data as described
+                in the Privacy Policy.
+              </p>
+
+              <p>
+                You can review our complete Privacy Policy
+                <a href="/privacy" class="text-[#f2b90d] hover:underline">here</a>.
+              </p>
+            </div>
+          </section>
+
+          <div class="border-t border-[#393528]"></div>
+
+          <!-- Section 7 -->
+          <section id="liability">
+            <h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+              <span class="text-[#f2b90d]">7.</span>
+              Limitation of Liability
+            </h2>
+
+            <div class="space-y-4 leading-relaxed text-[#bab29c]">
+              <p>
+                TO THE FULLEST EXTENT PERMITTED BY LAW, NILEGUIDE SHALL NOT BE LIABLE
+                FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE
+                DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY
+                OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE
+                LOSSES.
+              </p>
+
+              <p>
+                In no event shall NileGuide's total liability to you for all damages,
+                losses, and causes of action exceed the amount you have paid to
+                NileGuide in the twelve (12) months prior to the claim.
+              </p>
+
+              <p>
+                We do not guarantee that the Service will be uninterrupted, secure, or
+                error-free. You use the Service at your own risk.
+              </p>
+            </div>
+          </section>
+
+          <div class="border-t border-[#393528]"></div>
+
+          <!-- Section 8 -->
+          <section id="termination">
+            <h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+              <span class="text-[#f2b90d]">8.</span>
+              Termination
+            </h2>
+
+            <div class="space-y-4 leading-relaxed text-[#bab29c]">
+              <p>
+                We may terminate or suspend your account and access to the Service
+                immediately, without prior notice or liability, for any reason,
+                including if you breach these Terms.
+              </p>
+
+              <p>
+                Upon termination, your right to use the Service will cease immediately.
+                All provisions of these Terms which by their nature should survive
+                termination shall survive, including ownership provisions, warranty
+                disclaimers, and limitations of liability.
+              </p>
+
+              <p>
+                You may terminate your account at any time through your account settings
+                or by contacting us at
+                <a href="mailto:support@nileguide.com" class="text-[#f2b90d] hover:underline">
+                  support@nileguide.com
+                </a>.
+              </p>
+            </div>
+          </section>
+
+          <div class="border-t border-[#393528]"></div>
+
+          <!-- Section 9 -->
+          <section id="changes">
+            <h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+              <span class="text-[#f2b90d]">9.</span>
+              Changes to Terms
+            </h2>
+
+            <div class="space-y-4 leading-relaxed text-[#bab29c]">
+              <p>
+                We reserve the right to modify these Terms at any time. If we make
+                material changes, we will notify you by email or through a prominent
+                notice on the Service prior to the changes taking effect.
+              </p>
+
+              <p>
+                Your continued use of the Service after such modifications constitutes
+                your acceptance of the updated Terms. If you do not agree to the
+                modified Terms, you must stop using the Service.
+              </p>
+            </div>
+          </section>
+
+          <div class="border-t border-[#393528]"></div>
+
+          <!-- Section 10 -->
+          <section id="contact">
+            <h2 class="mb-4 flex items-center gap-2 text-2xl font-bold text-white">
+              <span class="text-[#f2b90d]">10.</span>
+              Contact Us
+            </h2>
+
+            <div class="space-y-4 leading-relaxed text-[#bab29c]">
+              <p>If you have any questions about these Terms of Service, please contact us:</p>
+
+              <ul class="space-y-2">
+                <li>
+                  <strong class="text-white">Email:</strong>
+                  <a href="mailto:legal@nileguide.com" class="text-[#f2b90d] hover:underline">
+                    legal@nileguide.com
+                  </a>
+                </li>
+                <li>
+                  <strong class="text-white">Support:</strong>
+                  <a href="/contact" class="text-[#f2b90d] hover:underline">
+                    Contact Form
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- Footer Notice -->
+          <div class="mt-8 border-t border-[#393528] pt-8">
+            <p class="text-center text-sm text-[#bab29c]">
+              © 2026 NileGuide. All rights reserved. These Terms of Service are effective as of
+              December 29, 2025.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

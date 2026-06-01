@@ -1,0 +1,14 @@
+.category-chart {
+  background: conic-gradient(
+    #e0b100 0deg 124deg,
+    #ffffff 125deg 126deg,
+    #d4af37 126deg 214deg,
+    #ffffff 215deg 216deg,
+    #b97832 216deg 286deg,
+    #ffffff 287deg 288deg,
+    #8f6c17 288deg 329deg,
+    #ffffff 330deg 331deg,
+    #6d570f 331deg 358deg,
+    #ffffff 359deg 360deg
+  );
+}

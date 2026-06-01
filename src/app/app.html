@@ -1,0 +1,13 @@
+@if (showNavbarFooter) {
+  <app-navbar></app-navbar>
+}
+<div class="min-h-screen  bg-[#1b1915] text-warning-medium font-bold">
+    <router-outlet/>
+     <div class="h-px w-full bg-white/10"></div>
+</div>
+@if (showNavbarFooter) {
+  <app-footer></app-footer>
+}
+<!-- 
+<ngx-spinner type="ball-scale-multiple"></ngx-spinner> 
+-->

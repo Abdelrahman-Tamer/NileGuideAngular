@@ -1,0 +1,105 @@
+/* ============================================
+   NileGuide Design System - Theme Tokens
+   ============================================ */
+
+:root {
+  /* Core palette inspired by the Figma activities screen */
+  --color-sand-950: #151209;
+  --color-sand-900: #181611;
+  --color-sand-850: #211d14;
+  --color-sand-800: #27241b;
+  --color-sand-700: #393528;
+  --color-sand-600: #544e3b;
+  --color-sand-500: #7f7763;
+  --color-sand-400: #bab29c;
+  --color-sand-300: #d9d1bf;
+  --color-gold-500: #f2b90d;
+  --color-gold-600: #deab0c;
+  --color-success-500: #22c55e;
+
+  /* Backgrounds */
+  --bg-primary: var(--color-sand-950);
+  --bg-secondary: var(--color-sand-900);
+  --bg-tertiary: var(--color-sand-850);
+  --surface: var(--color-sand-800);
+  --surface-soft: #302b21;
+
+  /* Accent gold */
+  --accent-gold: var(--color-gold-500);
+  --accent-gold-hover: var(--color-gold-600);
+  --accent-gold-soft: rgba(242, 185, 13, 0.16);
+  --accent-gold-border: rgba(242, 185, 13, 0.35);
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: var(--color-sand-400);
+  --text-muted: var(--color-sand-500);
+  --text-dark: var(--color-sand-900);
+
+  /* Borders */
+  --border-primary: var(--color-sand-700);
+  --border-secondary: var(--color-sand-600);
+  --border-accent: rgba(242, 185, 13, 0.35);
+
+  /* Semantic */
+  --success: var(--color-success-500);
+  --warning: #d9a441;
+  --error: #d9534f;
+  --info: #3da5f5;
+
+  /* Overlays */
+  --overlay-dark: rgba(0, 0, 0, 0.45);
+  --overlay-strong: rgba(0, 0, 0, 0.62);
+
+  /* Shadows */
+  --shadow-card: 0 18px 45px rgba(0, 0, 0, 0.32);
+  --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.24);
+  --shadow-glow-gold:
+    0 0 0 1px rgba(242, 185, 13, 0.24),
+    0 12px 32px rgba(242, 185, 13, 0.1);
+
+  /* Radius */
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Typography and layout */
+  --font-family-heading: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family-body: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --page-content-max: 1280px;
+  --page-reading-max: 960px;
+}
+
+/* Tailwind v4 @theme extensions */
+@theme {
+  --color-ng-bg: var(--color-sand-950);
+  --color-ng-bg-secondary: var(--color-sand-900);
+  --color-ng-bg-tertiary: var(--color-sand-850);
+  --color-ng-surface: var(--color-sand-800);
+  --color-ng-surface-soft: #302b21;
+
+  --color-ng-gold: var(--color-gold-500);
+  --color-ng-gold-hover: var(--color-gold-600);
+  --color-ng-gold-soft: rgba(242, 185, 13, 0.16);
+  --color-ng-gold-border: rgba(242, 185, 13, 0.35);
+
+  --color-ng-text: #ffffff;
+  --color-ng-text-secondary: var(--color-sand-400);
+  --color-ng-text-muted: var(--color-sand-500);
+  --color-ng-text-dark: var(--color-sand-900);
+
+  --color-ng-border: var(--color-sand-700);
+  --color-ng-border-secondary: var(--color-sand-600);
+
+  --color-ng-success: var(--color-success-500);
+  --color-ng-error: #d9534f;
+  --color-ng-warning: #d9a441;
+  --color-ng-info: #3da5f5;
+}

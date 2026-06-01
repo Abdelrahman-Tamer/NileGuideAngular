@@ -1,0 +1,239 @@
+<div class="min-h-screen bg-[#12100d] pt-20 text-white">
+  <div class="mx-auto max-w-7xl px-4 py-8 md:px-6 lg:px-8">
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <h1 class="flex items-center gap-2 text-2xl font-bold sm:text-3xl">
+        <i class="fa-solid fa-calendar text-xl text-yellow-400 sm:text-2xl"></i>
+        My Egypt Schedule
+      </h1>
+
+      <button
+        type="button"
+        (click)="exportSchedule()"
+        class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10 sm:w-auto sm:text-base"
+      >
+        <i class="fa-solid fa-download text-sm sm:text-base"></i>
+        Export
+      </button>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="rounded-xl border border-white/10 bg-[#27241b] p-4 text-center">
+        <p class="text-sm text-yellow-500">Total Activities</p>
+        <p class="mt-2 text-2xl font-bold text-white/70">{{ totalActivities }}</p>
+      </div>
+
+      <div class="rounded-xl border border-white/10 bg-[#27241b] p-4 text-center">
+        <p class="text-sm text-yellow-500">Total Duration</p>
+        <p class="mt-2 text-2xl font-bold text-white/70">{{ totalDurationText }}</p>
+      </div>
+
+      <div class="rounded-xl border border-white/10 bg-[#27241b] p-4 text-center sm:col-span-2 lg:col-span-1">
+        <p class="text-sm text-yellow-500">Total Cost</p>
+        <p class="mt-2 text-2xl font-bold text-white/70">${{ totalCost }}</p>
+      </div>
+    </div>
+
+    @if (isLoading) {
+      <div class="mt-6 grid gap-4">
+        @for (item of [1,2,3]; track $index) {
+          <div class="h-28 animate-pulse rounded-2xl border border-white/10 bg-[#27241b]"></div>
+        }
+      </div>
+    } @else if (!isLoading && scheduleItems.length === 0) {
+      <div class="mt-6 rounded-2xl border border-white/10 bg-[#27241b] p-8 text-center">
+        <p class="text-lg font-semibold text-white">Your schedule is empty</p>
+        <p class="mt-2 text-sm text-zinc-400">
+          Add activities from the activities page to start planning your trip.
+        </p>
+
+        <a
+          routerLink="/activities"
+          class="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-lg bg-yellow-400 px-4 py-3 text-sm font-bold text-black transition hover:bg-yellow-300"
+        >
+          <i class="fa-solid fa-plus"></i>
+          Add Activities
+        </a>
+      </div>
+    } @else {
+      <div class="mt-6 hidden overflow-hidden rounded-2xl border border-white/10 bg-[#27241b] lg:block">
+        <div
+          class="grid grid-cols-9 gap-4 border-b border-white/10 px-4 py-3 text-sm uppercase tracking-wide text-yellow-500">
+          <span>Time</span>
+          <span class="col-span-2">Activity</span>
+          <span>Location</span>
+          <span>Open</span>
+          <span>Close</span>
+          <span>Duration</span>
+          <span>Cost</span>
+          <span>Actions</span>
+        </div>
+
+        @for (item of scheduleItems; track item.planItemId) {
+          <div
+            class="grid grid-cols-9 items-center gap-4 border-b border-white/5 px-4 py-4 text-sm transition hover:bg-white/3">
+            <div>
+              <p class="text-sm text-white/90">{{ formatDisplayDate(item.scheduledDate) }}</p>
+              <p class="pl-0.5 text-white/70">{{ formatDisplayTime(item.startTime) }}</p>
+              <p class="text-[13px] text-white/70"><span class="text-yellow-600">to</span> {{ formatDisplayTime(item.endTime) }}</p>
+            </div>
+
+            <div class="col-span-2">
+              <p class="font-semibold text-yellow-600">{{ item.activityName }}</p>
+              <p class="line-clamp-2 mt-2 text-xs leading-4 text-white/70">
+                {{ item.description }}
+              </p>
+            </div>
+
+            <span class="text-[16px] text-white/70">{{ item.cityName }}</span>
+            <span class="text-[16px] text-white/70">{{ item.openTime || '--' }}</span>
+            <span class="text-[16px] text-white/70">{{ item.closeTime || '--' }}</span>
+            <span class="text-lg text-white/70">{{ getDurationLabel(item.durationMinutes) }}</span>
+            <span class="text-lg font-semibold text-white/70">${{ item.price }}</span>
+
+            <div class="flex items-center gap-3 text-yellow-400">
+              <a
+                [routerLink]="['/activities', item.activityId]"
+                class="cursor-pointer transition hover:text-white"
+                title="View details"
+              >
+                <i class="fa-solid fa-eye"></i>
+              </a>
+
+              @if (item.bookingLinks?.length) {
+                <a
+                  [href]="item.bookingLinks[0].link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="cursor-pointer transition hover:text-white"
+                  [title]="item.bookingLinks[0].providerName"
+                >
+                  <i [class]="getBookingIcon(item.bookingLinks[0])"></i>
+                </a>
+              }
+
+              <button
+                type="button"
+                (click)="removeFromSchedule(item.planItemId)"
+                class="cursor-pointer transition hover:text-red-500"
+                [disabled]="isRemoving(item.planItemId)"
+                title="Remove"
+              >
+                @if (isRemoving(item.planItemId)) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-trash"></i>
+                }
+              </button>
+            </div>
+          </div>
+        }
+
+        <div class="p-4">
+          <a
+            routerLink="/activities"
+            class="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-yellow-400 px-4 py-2 text-sm font-bold text-black transition hover:bg-yellow-300"
+          >
+            <i class="fa-solid fa-plus"></i>
+            Add New Activity
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-6 space-y-4 lg:hidden">
+        @for (item of scheduleItems; track item.planItemId) {
+          <div class="rounded-2xl border border-white/10 bg-[#27241b] p-4">
+            <div class="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <p class="text-[13px] text-white/90">{{ formatDisplayDate(item.scheduledDate) }}</p>
+                <p class="pl-0.5 text-sm text-white/70">{{ formatDisplayTime(item.startTime) }}</p>
+                <p class="text-[13px] text-white/70"><span class="text-yellow-600">to</span> {{ formatDisplayTime(item.endTime) }}</p>
+              </div>
+
+              <div class="flex items-center gap-3 text-yellow-400">
+                <a
+                  [routerLink]="['/activities', item.activityId]"
+                  class="cursor-pointer transition hover:text-white"
+                >
+                  <i class="fa-solid fa-eye"></i>
+                </a>
+
+                <button
+                  type="button"
+                  (click)="removeFromSchedule(item.planItemId)"
+                  class="cursor-pointer transition hover:text-red-500"
+                  [disabled]="isRemoving(item.planItemId)"
+                >
+                  @if (isRemoving(item.planItemId)) {
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                  } @else {
+                    <i class="fa-solid fa-trash"></i>
+                  }
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <p class="font-semibold text-yellow-600">{{ item.activityName }}</p>
+              <p class="line-clamp-2 mt-1 text-xs leading-4 text-white/60">
+                {{ item.description }}
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500">Location</p>
+                <p class="text-zinc-300">{{ item.cityName }}</p>
+              </div>
+
+              <div>
+                <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500">Duration</p>
+                <p class="text-zinc-300">{{ getDurationLabel(item.durationMinutes) }}</p>
+              </div>
+
+              <div>
+                <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500">Open</p>
+                <p class="text-zinc-300">{{ item.openTime || '--' }}</p>
+              </div>
+
+              <div>
+                <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500">Close</p>
+                <p class="text-zinc-300">{{ item.closeTime || '--' }}</p>
+              </div>
+
+              <div>
+                <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500">Cost</p>
+                <p class="font-semibold text-zinc-300">${{ item.price }}</p>
+              </div>
+
+              <div>
+                <p class="mb-1 text-xs uppercase tracking-wide text-yellow-500">Booking</p>
+                <div class="flex items-center gap-3 text-yellow-400">
+                  @if (item.bookingLinks?.length) {
+                    <a
+                      [href]="item.bookingLinks[0].link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="cursor-pointer transition hover:text-white"
+                    >
+                      <i [class]="getBookingIcon(item.bookingLinks[0])"></i>
+                    </a>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <div>
+          <a
+            routerLink="/activities"
+            class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-yellow-400 px-4 py-3 text-sm font-bold text-black transition hover:bg-yellow-300 sm:w-auto"
+          >
+            <i class="fa-solid fa-plus"></i>
+            Add New Activity
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+</div>

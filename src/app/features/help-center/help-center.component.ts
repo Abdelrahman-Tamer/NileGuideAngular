@@ -1,0 +1,16 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-help-center',
+  standalone: true,
+  imports: [],
+  templateUrl: './help-center.component.html',
+  styleUrl: './help-center.component.css',
+})
+export class HelpCenterComponent {
+  openFaq: number | null = null;
+
+  toggleFaq(id: number): void {
+    this.openFaq = this.openFaq === id ? null : id;
+  }
+}

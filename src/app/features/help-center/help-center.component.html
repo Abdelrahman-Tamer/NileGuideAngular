@@ -1,0 +1,370 @@
+<div class="flex min-h-screen flex-col bg-[#181611] pt-18 text-white">
+  <main class="flex-1 px-4 py-16 md:px-10 lg:px-20">
+    <!-- Hero -->
+    <div class="mx-auto mb-16 max-w-6xl text-center">
+      <div class="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-[#f2b90d]/20">
+        <i class="fa-solid fa-circle-question text-4xl text-[#f2b90d]"></i>
+      </div>
+
+      <h1 class="mb-4 text-4xl font-black md:text-6xl text-white/80">Help Center</h1>
+      <p class="mx-auto mb-8 max-w-2xl text-lg text-[#bab29c] md:text-xl">
+        Find answers to common questions and get the support you need
+      </p>
+
+      <div class="mx-auto max-w-2xl">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[#bab29c]"></i>
+          <input
+            type="text"
+            placeholder="Search for help..."
+            class="w-full rounded-xl border border-[#393528] bg-[#27241b] py-4 pl-12 pr-4 text-white placeholder:text-[#bab29c] outline-none transition-all focus:border-[#f2b90d] focus:ring-2 focus:ring-[#f2b90d]/20"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="mx-auto mb-16 max-w-6xl">
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div class="rounded-xl border border-[#393528] bg-[#27241b] p-6 text-center transition-all hover:border-[#f2b90d]/50">
+          <div class="mb-2 text-4xl font-black text-[#f2b90d]">200+</div>
+          <div class="text-[#bab29c]">Articles</div>
+        </div>
+
+        <div class="rounded-xl border border-[#393528] bg-[#27241b] p-6 text-center transition-all hover:border-[#f2b90d]/50">
+          <div class="mb-2 text-4xl font-black text-[#f2b90d]">24/7</div>
+          <div class="text-[#bab29c]">Support Available</div>
+        </div>
+
+        <div class="rounded-xl border border-[#393528] bg-[#27241b] p-6 text-center transition-all hover:border-[#f2b90d]/50">
+          <div class="mb-2 text-4xl font-black text-[#f2b90d]">&lt; 2h</div>
+          <div class="text-[#bab29c]">Average Response</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="mx-auto max-w-4xl">
+      <!-- Getting Started -->
+      <div class="mb-12">
+        <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold text-white">
+          <i class="fa-solid fa-rocket text-[#f2b90d]"></i>
+          <span>Getting Started</span>
+        </h2>
+
+        <div class="space-y-4">
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(1)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">How do I create an account?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 1"
+              ></i>
+            </button>
+
+            @if (openFaq === 1) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                Creating an account is simple! Click the "Sign Up" button in the top right corner,
+                fill in your details including name, email, and password, then verify your email
+                address. Once verified, you can start exploring Egypt's wonders with personalized
+                recommendations.
+              </div>
+            }
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(2)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">What features are available in NileGuide?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 2"
+              ></i>
+            </button>
+
+            @if (openFaq === 2) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                NileGuide offers personalized trip planning, activity recommendations, interactive maps,
+                itinerary planning, wishlist creation, AI-powered chatbot assistance, and comprehensive
+                guides to Egypt's historical sites. We connect you to trusted external booking platforms
+                for reservations.
+              </div>
+            }
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(3)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">How do I reset my password?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 3"
+              ></i>
+            </button>
+
+            @if (openFaq === 3) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                Click "Forgot Password?" on the login page, enter your registered email address, and
+                you'll receive a password reset link. Follow the link to create a new secure password.
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Management -->
+      <div class="mb-12">
+        <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold text-white">
+          <i class="fa-solid fa-user text-[#f2b90d]"></i>
+          <span>Account Management</span>
+        </h2>
+
+        <div class="space-y-4">
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(4)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">How do I update my profile?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 4"
+              ></i>
+            </button>
+
+            @if (openFaq === 4) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                Navigate to your Profile page from the navigation menu, click "Edit Profile," update
+                your information including travel preferences and interests, then save your changes.
+                Your profile helps us provide better personalized recommendations.
+              </div>
+            }
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(5)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">Can I delete my account?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 5"
+              ></i>
+            </button>
+
+            @if (openFaq === 5) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                Yes, you can delete your account from the Settings page. Please note this action is
+                permanent and will remove all your data, itineraries, and preferences. We recommend
+                exporting your data first if needed.
+              </div>
+            }
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(6)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">How do I manage notification preferences?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 6"
+              ></i>
+            </button>
+
+            @if (openFaq === 6) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                Go to Settings, select "Notifications," and customize which notifications you'd like
+                to receive via email, push, or in-app alerts. You can enable or disable specific
+                categories like trip reminders, activity updates, or promotional offers.
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Planning & Activities -->
+      <div class="mb-12">
+        <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold text-white">
+          <i class="fa-solid fa-calendar-days text-[#f2b90d]"></i>
+          <span>Planning & Activities</span>
+        </h2>
+
+        <div class="space-y-4">
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(7)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">How do I find and plan activities?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 7"
+              ></i>
+            </button>
+
+            @if (openFaq === 7) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                Browse activities on the Activities page, select your preferred experience, and click
+                on the activity to view more details. We'll guide you to trusted external booking
+                platforms where you can complete your reservation directly with the activity provider.
+              </div>
+            }
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(8)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">What is the cancellation policy?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 8"
+              ></i>
+            </button>
+
+            @if (openFaq === 8) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                Cancellation policies vary by the external booking platform and activity provider.
+                Please review the specific cancellation terms on the booking platform before completing
+                your reservation. Each provider has their own refund and cancellation policies.
+              </div>
+            }
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(9)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">Can I modify my planned activities?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 9"
+              ></i>
+            </button>
+
+            @if (openFaq === 9) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                You can modify your planned itinerary anytime from your Schedule page. Simply click
+                on any activity to edit or remove it. For bookings made through external platforms,
+                you'll need to contact them directly for modifications.
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical Support -->
+      <div class="mb-12">
+        <h2 class="mb-6 flex items-center gap-3 text-3xl font-bold text-white">
+          <i class="fa-solid fa-screwdriver-wrench text-[#f2b90d]"></i>
+          <span>Technical Support</span>
+        </h2>
+
+        <div class="space-y-4">
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(10)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">Which browsers are supported?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 10"
+              ></i>
+            </button>
+
+            @if (openFaq === 10) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                NileGuide works best on the latest versions of Chrome, Firefox, Safari, and Edge. We
+                recommend keeping your browser updated for the best experience and security.
+              </div>
+            }
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(11)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">Is there a mobile app?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 11"
+              ></i>
+            </button>
+
+            @if (openFaq === 11) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                Currently, NileGuide is a fully responsive web application that works perfectly on
+                mobile browsers. We're working on native iOS and Android apps coming soon!
+              </div>
+            }
+          </div>
+
+          <div class="overflow-hidden rounded-xl border border-[#393528] bg-[#27241b] transition-all hover:border-[#f2b90d]/30">
+            <button
+              type="button"
+              (click)="toggleFaq(12)"
+              class="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-[#393528]/30"
+            >
+              <span class="text-lg font-semibold text-white">I'm experiencing a technical issue. What should I do?</span>
+              <i
+                class="fa-solid fa-chevron-down text-[#f2b90d] transition-transform duration-300"
+                [class.rotate-180]="openFaq === 12"
+              ></i>
+            </button>
+
+            @if (openFaq === 12) {
+              <div class="px-6 pb-5 pt-2 leading-relaxed text-[#bab29c]">
+                First, try clearing your browser cache and cookies, then refresh the page. If the
+                issue persists, contact our support team with details about the problem, including
+                your browser version and any error messages you're seeing.
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="mt-16 rounded-xl border border-[#393528] bg-[#27241b] p-8 text-center">
+        <div class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#f2b90d]/20">
+          <i class="fa-solid fa-headset text-3xl text-[#f2b90d]"></i>
+        </div>
+
+        <h3 class="mb-2 text-2xl font-bold text-white">Still need help?</h3>
+        <p class="mb-6 text-[#bab29c]">Our support team is ready to assist you</p>
+
+        <a
+          href="/contact"
+          class="inline-flex items-center gap-2 rounded-xl bg-[#f2b90d] px-6 py-3 font-bold text-black transition-all hover:scale-105 hover:brightness-110"
+        >
+          <i class="fa-solid fa-envelope"></i>
+          <span>Contact Support</span>
+        </a>
+      </div>
+    </div>
+  </main>
+</div>

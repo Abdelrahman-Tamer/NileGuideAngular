@@ -1,0 +1,268 @@
+<div class="min-h-screen px-4 pt-24 py-10 text-white sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-5xl">
+
+    <!-- Header -->
+    <div class="mb-8 flex items-start gap-4">
+      <div class="relative">
+        <img
+          src="/Photo/Aswan.png"
+          alt="Profile"
+          class="h-24 w-24 rounded-full border-2 border-yellow-500 object-cover" />
+        <span class="absolute bottom-1 right-0 h-4 w-4 rounded-full border-2 border-[#12100d] bg-yellow-500"></span>
+      </div>
+
+      <div>
+        <h1 class="text-3xl font-bold leading-tight sm:text-4xl">
+          <span class="text-yellow-500">Welcome</span> to Egypt.<br />
+          Let's tailor your journey.
+        </h1>
+        <p class="mt-2 max-w-2xl text-sm text-white/60">
+          Tell us about yourself so our AI can craft the perfect itinerary, blending ancient wonders with modern comfort.
+        </p>
+      </div>
+    </div>
+    <div class="mt-8 border-t border-[#74654a] pt-6"></div>
+
+    <div class="sm:p-6">
+
+      <!-- Section Title -->
+      <div class="mb-5 flex items-center gap-2 text-sm font-semibold text-white">
+        <span class="flex h-6 w-6 items-center justify-center rounded-md bg-yellow-500/15 text-yellow-500">
+          <i class="fa-solid fa-user text-xs"></i>
+        </span>
+        Basic Information
+      </div>
+
+      <!-- Basic Info -->
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <label class="mb-2 block text-xs font-medium text-white/70">How old are you?</label>
+          <input
+            type="text"
+            placeholder="e.g. 28"
+            class="h-11 w-full rounded-lg border border-[#3a3122] bg-[#27241b] px-4 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500" />
+        </div>
+
+<div>
+  <label class="mb-2 block text-xs font-medium text-white/70">Where are you visiting from?</label>
+  <div class="relative">
+    <select
+      class="h-11 w-full appearance-none rounded-lg border border-[#3a3122] bg-[#27241b] px-4 pr-10 text-sm text-yellow-500 outline-none transition focus:border-yellow-500">
+      <option selected disabled class="text-yellow-500">Select Nationality</option>
+      @for (n of NATIONALITIES; track n) {
+        <option [value]="n">{{ n }}</option>
+      }
+    </select>
+
+  </div>
+</div>
+      </div>
+
+      <!-- Date Section -->
+      <div class="mt-8 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2 text-sm font-semibold text-white">
+          <span class="flex h-6 w-6 items-center justify-center rounded-md bg-yellow-500/15 text-yellow-500">
+            <i class="fa-solid fa-calendar-days text-xs"></i>
+          </span>
+          When are you planning to visit?
+        </div>
+
+        <button class="text-xs text-yellow-500 transition hover:text-yellow-400">
+          I don't have dates yet
+        </button>
+      </div>
+
+      <!-- Replaced Datepicker -->
+     <div class="mt-4 rounded-xl border border-[#3a3122] bg-[#1d1912] p-4 sm:p-5">
+  <div id="date-range-picker" DateRangePicker class="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div class="relative w-full">
+      <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+        <i class="fa-regular fa-calendar-days text-white/55"></i>
+      </div>
+
+      <input
+        id="datepicker-range-start"
+        name="start"
+        type="text"
+        class="block h-11 w-full rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-3 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
+        placeholder="Select date start">
+    </div>
+
+    <span class="shrink-0 text-center text-sm text-white/50">to</span>
+
+    <div class="relative w-full">
+      <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+        <i class="fa-regular fa-calendar-days text-white/55"></i>
+      </div>
+
+      <input
+        id="datepicker-range-end"
+        name="end"
+        type="text"
+        class="block h-11 w-full rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-3 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
+        placeholder="Select date end">
+    </div>
+  </div>
+</div>
+
+      <!-- Preferred Cities -->
+      <div class="mt-8">
+        <h3 class="mb-4 text-2xl font-bold text-yellow-500">Preferred Cities</h3>
+
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <label class="flex h-11 cursor-pointer items-center gap-3 rounded-lg border border-[#3a3122] bg-[#1d1912] px-4 text-sm text-white/85 transition hover:border-yellow-500/50">
+            <input type="checkbox" class="h-4 w-4 rounded border-[#5a4d35] bg-transparent text-yellow-500 focus:ring-yellow-500" />
+            Cairo
+          </label>
+
+          <label class="flex h-11 cursor-pointer items-center gap-3 rounded-lg border border-[#3a3122] bg-[#1d1912] px-4 text-sm text-white/85 transition hover:border-yellow-500/50">
+            <input type="checkbox" class="h-4 w-4 rounded border-[#5a4d35] bg-transparent text-yellow-500 focus:ring-yellow-500" />
+            Luxor
+          </label>
+
+          <label class="flex h-11 cursor-pointer items-center gap-3 rounded-lg border border-[#3a3122] bg-[#1d1912] px-4 text-sm text-white/85 transition hover:border-yellow-500/50">
+            <input type="checkbox" class="h-4 w-4 rounded border-[#5a4d35] bg-transparent text-yellow-500 focus:ring-yellow-500" />
+            Aswan
+          </label>
+
+          <label class="flex h-11 cursor-pointer items-center gap-3 rounded-lg border border-[#3a3122] bg-[#1d1912] px-4 text-sm text-white/85 transition hover:border-yellow-500/50">
+            <input type="checkbox" class="h-4 w-4 rounded border-[#5a4d35] bg-transparent text-yellow-500 focus:ring-yellow-500" />
+            Sharm El-Sheikh
+          </label>
+
+          <label class="flex h-11 cursor-pointer items-center gap-3 rounded-lg border border-[#3a3122] bg-[#1d1912] px-4 text-sm text-white/85 transition hover:border-yellow-500/50">
+            <input type="checkbox" class="h-4 w-4 rounded border-[#5a4d35] bg-transparent text-yellow-500 focus:ring-yellow-500" />
+            Alexandria
+          </label>
+
+          <label class="flex h-11 cursor-pointer items-center gap-3 rounded-lg border border-[#3a3122] bg-[#1d1912] px-4 text-sm text-white/85 transition hover:border-yellow-500/50">
+            <input type="checkbox" class="h-4 w-4 rounded border-[#5a4d35] bg-transparent text-yellow-500 focus:ring-yellow-500" />
+            Giza
+          </label>
+
+          <label class="flex h-11 cursor-pointer items-center gap-3 rounded-lg border border-[#3a3122] bg-[#1d1912] px-4 text-sm text-white/85 transition hover:border-yellow-500/50">
+            <input type="checkbox" class="h-4 w-4 rounded border-[#5a4d35] bg-transparent text-yellow-500 focus:ring-yellow-500" />
+            Hurghada
+          </label>
+
+          <label class="flex h-11 cursor-pointer items-center gap-3 rounded-lg border border-[#3a3122] bg-[#1d1912] px-4 text-sm text-white/85 transition hover:border-yellow-500/50">
+            <input type="checkbox" class="h-4 w-4 rounded border-[#5a4d35] bg-transparent text-yellow-500 focus:ring-yellow-500" />
+            Dahab
+          </label>
+        </div>
+      </div>
+
+      <!-- Budget -->
+      <div class="mt-8">
+  <div class="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
+    <span class="flex h-6 w-6 items-center justify-center rounded-md bg-yellow-500/15 text-yellow-500">
+      <i class="fa-solid fa-wallet text-xs"></i>
+    </span>
+    What is your approximate budget per person?
+  </div>
+
+  <div class="grid gap-3 sm:grid-cols-3">
+    <label class="cursor-pointer">
+      <input type="radio" name="budget" value="economy" class="peer hidden" />
+      <div class="rounded-xl border border-[#3a3122] bg-[#1d1912] px-4 py-4 text-center transition hover:border-yellow-500/50 peer-checked:border-yellow-500 peer-checked:bg-yellow-500/10">
+        <div class="text-lg font-bold text-white peer-checked:text-yellow-500">$</div>
+        <div class="mt-1 text-xs text-white/45 peer-checked:font-medium peer-checked:text-yellow-500">Economy</div>
+      </div>
+    </label>
+
+    <label class="cursor-pointer">
+      <input type="radio" name="budget" value="comfort" class="peer hidden" checked />
+      <div class="rounded-xl border border-[#3a3122] bg-[#1d1912] px-4 py-4 text-center transition hover:border-yellow-500/50 peer-checked:border-yellow-500 peer-checked:bg-yellow-500/10">
+        <div class="text-lg font-bold text-white peer-checked:text-yellow-500">$$</div>
+        <div class="mt-1 text-xs text-white/45 peer-checked:font-medium peer-checked:text-yellow-500">Comfort</div>
+      </div>
+    </label>
+
+    <label class="cursor-pointer">
+      <input type="radio" name="budget" value="luxury" class="peer hidden" />
+      <div class="rounded-xl border border-[#3a3122] bg-[#1d1912] px-4 py-4 text-center transition hover:border-yellow-500/50 peer-checked:border-yellow-500 peer-checked:bg-yellow-500/10">
+        <div class="text-lg font-bold text-white peer-checked:text-yellow-500">$$$</div>
+        <div class="mt-1 text-xs text-white/45 peer-checked:font-medium peer-checked:text-yellow-500">Luxury</div>
+      </div>
+    </label>
+  </div>
+</div>
+
+      
+<!-- Interests -->
+<div class="mt-8">
+  <h4 class="mb-3 text-sm font-semibold text-white">What interests you most?</h4>
+
+  <div class="flex flex-wrap gap-2">
+    <label class="cursor-pointer">
+      <input type="checkbox" name="interest" value="History & Culture" class="peer hidden" checked />
+      <span class="block rounded-full bg-[#27241b] px-4 py-2 text-xs text-white/75 transition peer-checked:bg-yellow-500 peer-checked:font-semibold peer-checked:text-black">
+        History &amp; Culture
+      </span>
+    </label>
+
+    <label class="cursor-pointer">
+      <input type="checkbox" name="interest" value="Pyramids" class="peer hidden" />
+      <span class="block rounded-full bg-[#27241b] px-4 py-2 text-xs text-white/75 transition peer-checked:bg-yellow-500 peer-checked:font-semibold peer-checked:text-black">
+        Pyramids
+      </span>
+    </label>
+
+    <label class="cursor-pointer">
+      <input type="checkbox" name="interest" value="Local Food" class="peer hidden" />
+      <span class="block rounded-full bg-[#27241b] px-4 py-2 text-xs text-white/75 transition peer-checked:bg-yellow-500 peer-checked:font-semibold peer-checked:text-black">
+        Local Food
+      </span>
+    </label>
+
+    <label class="cursor-pointer">
+      <input type="checkbox" name="interest" value="Nile Cruise" class="peer hidden" checked />
+      <span class="block rounded-full bg-[#27241b] px-4 py-2 text-xs text-white/75 transition peer-checked:bg-yellow-500 peer-checked:font-semibold peer-checked:text-black">
+        Nile Cruise
+      </span>
+    </label>
+
+    <label class="cursor-pointer">
+      <input type="checkbox" name="interest" value="Red Sea Diving" class="peer hidden" />
+      <span class="block rounded-full bg-[#27241b] px-4 py-2 text-xs text-white/75 transition peer-checked:bg-yellow-500 peer-checked:font-semibold peer-checked:text-black">
+        Red Sea Diving
+      </span>
+    </label>
+
+    <label class="cursor-pointer">
+      <input type="checkbox" name="interest" value="Luxury & Relaxation" class="peer hidden" />
+      <span class="block rounded-full bg-[#27241b] px-4 py-2 text-xs text-white/75 transition peer-checked:bg-yellow-500 peer-checked:font-semibold peer-checked:text-black">
+        Luxury &amp; Relaxation
+      </span>
+    </label>
+
+    <label class="cursor-pointer">
+      <input type="checkbox" name="interest" value="Museums" class="peer hidden" />
+      <span class="block rounded-full bg-[#27241b] px-4 py-2 text-xs text-white/75 transition peer-checked:bg-yellow-500 peer-checked:font-semibold peer-checked:text-black">
+        Museums
+      </span>
+    </label>
+
+    <label class="cursor-pointer">
+      <input type="checkbox" name="interest" value="Adventure" class="peer hidden" />
+      <span class="block rounded-full bg-[#27241b] px-4 py-2 text-xs text-white/75 transition peer-checked:bg-yellow-500 peer-checked:font-semibold peer-checked:text-black">
+        Adventure
+      </span>
+    </label>
+  </div>
+</div>
+
+      <!-- Footer -->
+      <div class="mt-8 border-t border-[#74654a] pt-6">
+        <div class="flex justify-end">
+          <button class="inline-flex items-center gap-2 rounded-xl bg-yellow-500 px-5 py-3 text-sm font-bold text-black shadow-[0_8px_20px_rgba(234,179,8,0.25)] transition hover:bg-yellow-400">
+            <i class="fa-regular fa-floppy-disk"></i>
+            Save My Profile
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,151 @@
+
+<!-- TESTIMONIALS SECTION -->
+<section class="bg-[#201d18] text-white py-20">
+  <div class="mx-auto max-w-7xl px-4">
+
+    <!-- Title -->
+    <div class="text-center">
+      <h2 class="text-4xl font-bold">What Travelers Say</h2>
+    </div>
+
+    <!-- Cards -->
+     <div class="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+      <!-- Card 1 -->
+      <article class="card-testimonial">
+        <div class="card-testimonial__stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="card-testimonial__quote">
+          "The AI planner suggested a hidden gem in Luxor I would have never found.
+          NileGuide made our honeymoon unforgettable."
+        </p>
+        <div class="card-testimonial__user">
+          <img src="/Photo/1.png" alt="Sarah Jenkins" class="card-testimonial__avatar" />
+          <div>
+            <p class="card-testimonial__name">Sarah Jenkins</p>
+            <p class="card-testimonial__origin">United Kingdom</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="card-testimonial">
+        <div class="card-testimonial__stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="card-testimonial__quote">
+          "Premium experience from start to finish. The details on history and local culture
+          are incredibly deep."
+        </p>
+        <div class="card-testimonial__user">
+          <img src="/Photo/2.png" alt="Michael Chen" class="card-testimonial__avatar" />
+          <div>
+            <p class="card-testimonial__name">Michael Chen</p>
+            <p class="card-testimonial__origin">Canada</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="card-testimonial">
+        <div class="card-testimonial__stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="card-testimonial__quote">
+          "I was skeptical about AI planning, but it nailed our preferences perfectly.
+          Aswan was magical."
+        </p>
+        <div class="card-testimonial__user">
+          <img src="/Photo/3.png" alt="Elena Rossi" class="card-testimonial__avatar" />
+          <div>
+            <p class="card-testimonial__name">Elena Rossi</p>
+            <p class="card-testimonial__origin">Italy</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- NEWSLETTER SECTION -->
+<section class=" py-20 text-white">
+  <div class="mx-auto max-w-7xl px-4">
+    <div
+      class="relative overflow-hidden rounded-3xl border border-yellow-600 bg-[#14120d] px-6 py-14 shadow-2xl
+             md:px-14"
+    >
+      <!-- diagonal pattern -->
+      <div
+        class="pointer-events-none absolute inset-0 opacity-25"
+        style="background-image: repeating-linear-gradient(135deg, rgba(226, 170, 15, 0.381) 0 2px, transparent 2px 16px);"
+      ></div>
+
+      <!-- content -->
+      <div class="relative mx-auto max-w-3xl text-center">
+        <!-- icon -->
+        <div class="mx-auto flex items-center justify-center text-yellow-400">
+        <i class="fa-regular fa-envelope text-6xl"></i>
+        </div>
+
+        <h2 class="mt-6 text-4xl font-bold">Get Travel Inspiration</h2>
+
+        <p class="mx-auto mt-4 max-w-2xl text-base text-white/70">
+          Subscribe to our newsletter for insider guides, special deals, and hidden gems across Egypt
+        </p>
+
+        <!-- form -->
+
+
+<form
+  (ngSubmit)="subscribe()"
+  class="mx-auto mt-10 flex max-w-xl flex-col gap-3 sm:flex-row sm:gap-4"
+>
+  <input
+    type="email"
+    name="email"
+    [(ngModel)]="email"
+    placeholder="Enter your email"
+    class="h-12 w-full rounded-xl border border-white/10 bg-black/35 px-5 text-white placeholder:text-white/40
+           outline-none focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20"
+    required
+    email
+  />
+
+  <button
+    type="submit"
+    [disabled]="isLoading"
+    class="h-12 cursor-pointer rounded-xl bg-yellow-500 px-8 font-semibold text-black transition-colors hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-60"
+  >
+    {{ isLoading ? 'Subscribing...' : 'Subscribe' }}
+  </button>
+  
+</form>
+@if (successMessage) {
+  <div
+    class="message-box mx-auto mt-6 max-w-xl rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-200"
+    [class.show]="showSuccessMessage"
+  >
+    {{ successMessage }}
+  </div>
+}
+
+@if (errorMessage) {
+  <div
+    class="message-box mx-auto mt-6 max-w-xl rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200"
+    [class.show]="showErrorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+}
+
+      <!--   <p class="mt-4 flex items-center justify-center gap-2 text-sm text-white/55">
+          <span class="text-yellow-400">🔒</span>
+          We respect your privacy. Unsubscribe anytime.
+        </p> -->
+      </div>
+    </div>
+  </div>
+</section>

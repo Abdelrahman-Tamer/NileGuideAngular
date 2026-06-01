@@ -1,0 +1,280 @@
+
+<nav class="fixed top-0 start-0 z-20 w-full border-b border-yellow-600 bg-black backdrop-blur">
+  <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between px-4 py-3">
+
+    <!-- Brand -->
+    <a routerLink="/home" class="flex items-center gap-3">
+      <span class="inline-flex h-8 w-8 items-center justify-center rounded-base border
+       border-yellow-600/40 text-yellow-500">
+        <img src="/Photo/icon.svg" class="w-5" alt="">
+      </span>
+      <span class="text-lg font-semibold tracking-[0.25em] text-yellow-500">NILEGUIDE</span>
+    </a>
+
+    <!-- Desktop buttons -->
+    <div class="order-2 hidden md:flex items-center gap-4">
+    
+    @if(!isLogin){
+        <a
+        routerLink="auth/login"
+        class="rounded-xl border border-yellow-500 px-6 py-2 text-base font-semibold text-yellow-500
+               hover:bg-yellow-500 hover:text-black duration-300 transition-colors"
+      >
+        Sign In
+      </a>
+
+      <a
+        routerLink="auth/register"
+        class="rounded-xl bg-yellow-500 px-6 py-2 text-base font-semibold text-black
+               hover:bg-black hover:text-yellow-500 border hover:border-yellow-500 duration-300 transition-colors"
+      >
+        Get Started
+      </a>
+
+    }
+    
+    @else{
+            <button
+      type="button"
+      routerLink="/wishlist"
+      class="hidden text-yellow-500 transition cursor-pointer hover:text-red-600 md:inline-flex"
+      title="Wishlist" >
+      <i class="fa-regular fa-heart text-[24px]"></i>
+    </button>
+        <div class="relative cursor-pointer profile-menu-wrapper">
+          
+        <button
+          type="button"
+          (click)="toggleProfileMenu()"
+          class="flex items-center gap-3 cursor-pointer"
+        >
+          <span
+            class="flex h-11 w-11 items-center cursor-pointer justify-center rounded-full border border-yellow-600 bg-yellow-500 text-base font-medium uppercase text-black"
+          >
+            AH
+          </span>
+
+          <i
+            class="fa-solid fa-chevron-down text-xs text-yellow-500 transition-transform duration-300"
+            [class.rotate-180]="isProfileMenuOpen"
+          ></i>
+        </button>
+        
+
+        @if (isProfileMenuOpen) {
+          <div
+            class="absolute right-0 top-[calc(100%+14px)] w-60 overflow-hidden rounded-2xl border border-yellow-500 bg-black shadow-2xl"
+          >
+            <a
+              routerLink="/profile"
+              (click)="closeProfileMenu()"
+              class="flex items-center gap-4 px-6 py-5 text-white transition hover:bg-[#111111]"
+            >
+              <i class="fa-regular fa-user text-lg text-yellow-500"></i>
+              <span class="text-[18px] font-medium">Profile</span>
+            </a>
+
+            <div class="h-px bg-yellow-500/20"></div>
+
+            <a
+              routerLink="/dashboard"
+              (click)="closeProfileMenu()"
+              class="flex items-center gap-4 px-6 py-5 text-white transition hover:bg-[#111111]"
+            >
+              <i class="fa-solid fa-table-columns text-lg text-yellow-500"></i>
+              <span class="text-[18px] font-medium">Dashboard</span>
+            </a>
+
+            <div class="h-px bg-yellow-500/20"></div>
+
+            <button
+              type="button"
+              (click)="logout()"
+              class="flex w-full items-center gap-4 px-6 py-5 text-left text-white transition hover:bg-[#111111]"
+            >
+              <i class="fa-solid fa-arrow-right-from-bracket text-lg text-yellow-500"></i>
+              <span class="text-[18px] font-medium">Logout</span>
+            </button>
+            
+          </div>
+          
+        }
+      </div>
+    }
+
+    
+
+    </div>
+
+    <!-- Mobile toggle -->
+    <button
+      type="button"
+      (click)="toggleMobileMenu()"
+      class="order-2 inline-flex h-10 w-10 items-center justify-center rounded-base text-body hover:bg-neutral-secondary-soft hover:text-heading focus:outline-none focus:ring-2 focus:ring-yellow-500/40 md:hidden"
+      [attr.aria-expanded]="isMobileMenuOpen"
+      aria-controls="navbar-cta"
+    >
+      <span class="sr-only">Open main menu</span>
+      <svg class="h-6 w-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14" />
+      </svg>
+    </button>
+
+    <!-- Links -->
+    <div
+      id="navbar-cta"
+      class="order-3 w-full md:order-1 md:flex md:w-auto md:items-center md:justify-center"
+      [class.hidden]="!isMobileMenuOpen"
+      [class.block]="isMobileMenuOpen"
+    >
+      <ul
+        class="mt-3 flex flex-col gap-1 rounded-base border border-yellow-600/20 bg-black p-3 font-medium
+               md:mt-0 md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0"
+      >
+        <li>
+          <a
+            routerLink="/home"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="closeMobileMenu()"
+            class="block rounded-base px-3 py-2 text-white hover:text-yellow-500 md:px-0 md:hover:bg-transparent"
+          >
+            Home
+          </a>
+        </li>
+
+        <li>
+          <a
+            routerLink="/activities"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="closeMobileMenu()"
+            class="block rounded-base px-3 py-2 text-white hover:text-yellow-500 md:px-0 md:hover:bg-transparent"
+          >
+            Activities
+          </a>
+        </li>
+
+        <li>
+          <a
+            routerLink="/schedule"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="closeMobileMenu()"
+            class="block rounded-base px-3 py-2 text-white hover:text-yellow-500 md:px-0 md:hover:bg-transparent"
+          >
+            Schedule
+          </a>
+        </li>
+
+        <li>
+          <a
+            routerLink="/map"
+            routerLinkActive="active-link"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="closeMobileMenu()"
+            class="block rounded-base px-3 py-2 text-white hover:text-yellow-500 md:px-0 md:hover:bg-transparent"
+          >
+            Map
+          </a>
+        </li>
+
+        <!-- Mobile buttons -->
+       @if(!isLogin){
+         <li class="mt-4 flex flex-col gap-3 md:hidden ">
+          <a
+            routerLink="/auth/login"
+            (click)="closeMobileMenu()"
+            class="w-full rounded-xl border border-yellow-500 px-6 py-3 text-center text-base font-semibold text-yellow-500
+                   hover:bg-yellow-500 hover:text-black transition-colors"
+          >
+            Sign In
+          </a>
+
+          <a
+            routerLink="auth/register"
+            (click)="closeMobileMenu()"
+            class="w-full rounded-xl bg-yellow-500 px-6 py-3 text-center text-base font-semibold text-black
+                   hover:bg-black hover:text-yellow-500 border hover:border-yellow-500 duration-300 transition-colors"
+          >
+            Get Started
+          </a>
+        </li>
+       }
+
+       @else {
+         <li class="mt-4 border-t border-yellow-600/20 pt-4 md:hidden">
+  <div class="flex flex-col gap-4">
+    <a
+      routerLink="/wishlist"
+      (click)="closeMobileMenu()"
+      class="flex items-center gap-3 px-1 py-2 text-yellow-500 transition hover:text-yellow-400"
+    >
+      <i class="fa-regular fa-heart text-[26px]"></i>
+    </a>
+
+    <div class="profile-menu-wrapper relative">
+      <button
+        type="button"
+        (click)="toggleProfileMenu()"
+        class="flex items-center gap-3 px-1 py-2 text-yellow-500"
+      >
+        <span
+          class="flex h-11 w-11 items-center justify-center rounded-full border border-yellow-600 bg-yellow-500 text-base font-medium uppercase text-black"
+        >
+          AH
+        </span>
+
+        <i
+          class="fa-solid fa-chevron-down text-xs transition-transform duration-300"
+          [class.rotate-180]="isProfileMenuOpen"
+        ></i>
+      </button>
+
+      @if (isProfileMenuOpen) {
+        <div
+          class="mt-3 overflow-hidden rounded-2xl border border-yellow-500 bg-black shadow-2xl"
+        >
+          <a
+            routerLink="/profile"
+            (click)="closeProfileMenu(); closeMobileMenu()"
+            class="flex items-center gap-4 px-6 py-5 text-white transition hover:bg-[#111111]"
+          >
+            <i class="fa-regular fa-user text-lg text-yellow-500"></i>
+            <span class="text-[18px] font-medium">Profile</span>
+          </a>
+
+          <div class="h-px bg-yellow-500/20"></div>
+
+          <a
+            routerLink="/dashboard"
+            (click)="closeProfileMenu(); closeMobileMenu()"
+            class="flex items-center gap-4 px-6 py-5 text-white transition hover:bg-[#111111]"
+          >
+            <i class="fa-solid fa-table-columns text-lg text-yellow-500"></i>
+            <span class="text-[18px] font-medium">Dashboard</span>
+          </a>
+
+          <div class="h-px bg-yellow-500/20"></div>
+
+          <button
+            type="button"
+            (click)="logout(); closeMobileMenu()"
+            class="flex w-full items-center gap-4 px-6 py-5 text-left text-white transition hover:bg-[#111111]"
+          >
+            <i class="fa-solid fa-arrow-right-from-bracket text-lg text-yellow-500"></i>
+            <span class="text-[18px] font-medium">Logout</span>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+      </li>
+       }
+      </ul>
+    </div>
+
+  </div>
+</nav>
+
+
