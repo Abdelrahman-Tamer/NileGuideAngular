@@ -1,338 +1,798 @@
 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-12">
   <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
 
-  <!-- Search -->
-  <div class="relative w-full lg:flex-1">
-    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+    <!-- Search -->
+    <div class="relative w-full lg:flex-1">
+      <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
 
-    <input
-      type="text"
-      placeholder="Search users..."
-      (input)="userSearch = $any($event.target).value"
-      class="w-full rounded-2xl border border-[#3a3122] bg-[#1b1712] py-4 pl-12 pr-4 text-base text-white outline-none transition duration-300 placeholder:text-[#8b7b5f] focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]"/>
+      <input
+        type="text"
+        placeholder="Search users..."
+        [value]="userSearch"
+        (input)="onSearchChange($any($event.target).value)"
+        class="w-full rounded-2xl border border-[#3a3122] bg-[#1b1712] py-4 pl-12 pr-4 text-base text-white outline-none transition duration-300 placeholder:text-[#8b7b5f] focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]" />
+    </div>
+
+    <!-- Role Dropdown -->
+    <div class="relative w-full lg:w-52">
+      <select
+        [value]="selectedRole"
+        (change)="onRoleChange($any($event.target).value)"
+        class="w-full cursor-pointer appearance-none rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]">
+        <option value="all">All Roles</option>
+        <option value="Admin">Admin</option>
+        <option value="User">User</option>
+      </select>
+
+      <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+    </div>
+
+    <!-- Status Dropdown -->
+    <div class="relative w-full lg:w-44">
+      <select
+        [value]="selectedStatus"
+        (change)="onStatusChange($any($event.target).value)"
+        class="w-full cursor-pointer appearance-none rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]">
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+
+      <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+    </div>
+
+    <!-- Add New User Button -->
+    <button
+      type="button"
+      (click)="openAddUserModal()"
+      class="w-full cursor-pointer rounded-xl bg-[#e0b100] px-5 py-4 text-base font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055] lg:w-auto">
+      <i class="fa-solid fa-user-plus mr-2"></i>
+      Add New User
+    </button>
   </div>
 
-  <!-- Role Dropdown -->
-  <div class="relative w-full lg:w-56">
-    <select
-      (change)="selectedRole = $any($event.target).value"
-      class="w-full appearance-none cursor-pointer rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]">
-      <option value="all">All Roles</option>
-      <option value="admin">Admin</option>
-      <option value="user">User</option>
-    </select>
+  <!-- Add New User Modal -->
+  @if (isAddUserModalOpen) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+      <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
 
-    <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
-  </div>
+        <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
+          <h2 class="text-2xl font-bold text-white">Add New User</h2>
 
-  <!-- Status Dropdown -->
-  <div class="relative w-full lg:w-48">
-    <select
-      (change)="selectedStatus = $any($event.target).value"
-      class="w-full appearance-none cursor-pointer rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]">
-      <option value="all">All Status</option>
-      <option value="active">Active</option>
-      <option value="inactive">Inactive</option>
-    </select>
-
-    <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
-  </div>
-
-
- <button
-  (click)="openAddUserModal()"
-  class="cursor-pointer w-full lg:w-auto rounded-xl bg-[#e0b100] px-5 py-4 text-base font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055]">
-  <i class="fa-solid fa-user-plus mr-2"></i>
-  Add New User
-</button>
-  
-
-</div>
-  <!-- Add New User -->
-
-@if (isAddUserModalOpen) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
-    <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
-
-      <!-- Header -->
-      <div class="border-b border-[#3a3122] px-6 py-5">
-        <h2 class="text-2xl font-bold text-white">Add New User</h2>
-      </div>
-
-      <!-- Form -->
-      <form [formGroup]="userForm" (ngSubmit)="addUser()" class="space-y-6 px-6 py-6">
-
-        <!-- Name + Email -->
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Full Name</label>
-            <input
-              type="text"
-              formControlName="name"
-              placeholder="e.g., Ahmed Mohamed"
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-          </div>
-
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Email</label>
-            <input
-              type="email"
-              formControlName="email"
-              placeholder="example@email.com"
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-          </div>
+          <button
+            type="button"
+            (click)="closeAddUserModal()"
+            class="flex h-9 w-9 items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
 
-        <!-- Role + Joined -->
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <form [formGroup]="userForm" (ngSubmit)="addUser()" class="space-y-6 px-6 py-6">
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Full Name</label>
+              <input
+                type="text"
+                formControlName="name"
+                placeholder="e.g., Ahmed Mohamed"
+                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Email</label>
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="example@email.com"
+                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+
+              @if (userForm.get('email')?.hasError('emailExists')) {
+                <p class="mt-1 text-sm font-semibold text-red-400">
+                  Email already exists
+                </p>
+              }
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Password</label>
+              <input
+                type="password"
+                formControlName="password"
+                placeholder="Enter password"
+                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Nationality</label>
+              <input
+                type="text"
+                formControlName="nationality"
+                placeholder="e.g., Egyptian"
+                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Date of Birth</label>
+              <input
+                type="date"
+                formControlName="dateOfBirth"
+                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Role</label>
+
+              <div class="relative">
+                <select
+                  formControlName="role"
+                  class="w-full appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
+                  <option value="User">User</option>
+                  <option value="Admin">Admin</option>
+                </select>
+
+                <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+              <label class="mb-3 block text-sm font-semibold text-white">
+                Profile Image
+              </label>
+
+              <div class="flex items-center gap-5">
+                <button
+                  type="button"
+                  (click)="profileImageInput.click()"
+                  class="group relative flex h-20 w-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-[#3a3122] bg-[#14110d] shadow-[0_0_22px_#e0b10018] transition-all duration-300 hover:scale-[1.03] hover:border-[#e0b100] hover:shadow-[0_0_24px_#e0b10033]">
+
+                  @if (selectedProfileImagePreview) {
+                    <img
+                      [src]="selectedProfileImagePreview"
+                      alt="Profile image preview"
+                      class="h-full w-full object-cover" />
+
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition duration-300 group-hover:bg-black/45 group-hover:opacity-100">
+                      <span class="rounded-full bg-black/50 px-3 py-1 text-xs font-bold">
+                        Change
+                      </span>
+                    </div>
+                  } @else {
+                    <div class="flex h-full w-full items-center justify-center rounded-full bg-[#201a12] text-[#e0b100]">
+                      <i class="fa-regular fa-user text-4xl"></i>
+                    </div>
+                  }
+
+                  <span
+                    class="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#1b1712] bg-[#e0b100] text-black shadow-[0_0_14px_#e0b10055]">
+                    <i class="fa-solid fa-camera text-sm"></i>
+                  </span>
+                </button>
+
+                <input
+                  #profileImageInput
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  class="hidden"
+                  (change)="onProfileImageSelected($event)" />
+
+                <div class="min-w-0">
+                  <p class="text-sm font-bold text-white">
+                    Upload user photo
+                  </p>
+
+                  <p class="mt-1 text-xs leading-5 text-[#a18f6a]">
+                    Choose an image from your device.
+                    <br />
+                    JPG, PNG or WEBP. Max 2MB.
+                  </p>
+
+                  @if (selectedProfileImagePreview) {
+                    <button
+                      type="button"
+                      (click)="removeSelectedProfileImage(profileImageInput)"
+                      class="mt-3 cursor-pointer rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-300 transition hover:border-red-400 hover:bg-red-500/20">
+                      <i class="fa-regular fa-trash-can mr-1"></i>
+                      Remove photo
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="mb-3 block text-sm font-semibold text-white">Status</label>
+
+              <div class="flex h-[46px] items-center gap-6">
+                <label class="flex items-center gap-2 text-white">
+                  <input type="radio" formControlName="status" value="Active" class="accent-[#e0b100]" />
+                  <span>Active</span>
+                </label>
+
+                <label class="flex items-center gap-2 text-white">
+                  <input type="radio" formControlName="status" value="Inactive" class="accent-[#e0b100]" />
+                  <span>Inactive</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <button
+              type="button"
+              (click)="closeAddUserModal()"
+              class="w-full cursor-pointer rounded-xl border border-[#3a3122] bg-[#1b1712] px-6 py-3 text-white transition-all duration-200 hover:scale-[1.03] hover:border-[#e0b100] hover:shadow-[0_0_18px_#e0b10055] sm:w-fit">
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="w-full cursor-pointer rounded-xl bg-[#e0b100] px-6 py-3 font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055] sm:w-fit">
+              <i class="fa-solid fa-user-plus mr-2"></i>
+              Add User
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- View User Modal -->
+  @if (isViewUserModalOpen && selectedUser) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+      <div class="w-full max-w-md rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
+
+        <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
+          <h2 class="text-2xl font-bold text-white">User Details</h2>
+
+          <button
+            type="button"
+            (click)="closeViewUserModal()"
+            class="flex h-9 w-9 items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="px-6 py-6">
+          <div class="flex flex-col items-center text-center">
+            @if (selectedUser.profilePictureUrl) {
+              <img
+                [src]="selectedUser.profilePictureUrl"
+                [alt]="selectedUser.fullName"
+                class="h-20 w-20 rounded-3xl object-cover ring-2 ring-[#e0b10033]" />
+            } @else {
+              <div
+                class="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#e0b1001a] text-2xl font-bold text-[#e0b100] ring-2 ring-[#e0b10033]">
+                {{ getUserInitials(selectedUser.fullName) }}
+              </div>
+            }
+
+            <h3 class="mt-4 text-xl font-bold text-white">
+              {{ selectedUser.fullName }}
+            </h3>
+
+            <p class="mt-1 text-sm font-semibold text-[#a18f6a]">
+              ID: {{ selectedUser.id }}
+            </p>
+
+            <p class="mt-2 break-all text-sm text-[#b8aa8d]">
+              {{ selectedUser.email }}
+            </p>
+          </div>
+
+          <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Role</p>
+              <p class="font-bold text-white">
+                {{ getRoleLabel(selectedUser.role) }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Status</p>
+              <p
+                class="font-bold"
+                [class.text-green-400]="selectedUser.isActive"
+                [class.text-red-400]="!selectedUser.isActive">
+                {{ selectedUser.isActive ? 'Active' : 'Inactive' }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Joined</p>
+              <p class="font-bold text-white">
+                {{ formatDate(selectedUser.joined) }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Wishlist</p>
+              <p class="font-bold text-white">
+                {{ getWishlistCount(selectedUser) }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Change Role Modal -->
+  @if (isRoleModalOpen && roleModalUser) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+      <div class="w-full max-w-md rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
+
+        <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
+          <h2 class="text-2xl font-bold text-white">Change Role</h2>
+
+          <button
+            type="button"
+            (click)="closeRoleModal()"
+            class="flex h-9 w-9 items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="space-y-5 px-6 py-6">
+          <div>
+            <p class="text-sm text-[#a18f6a]">User</p>
+            <p class="mt-1 font-bold text-white">{{ roleModalUser.fullName }}</p>
+          </div>
+
           <div>
             <label class="mb-2 block text-sm font-semibold text-white">Role</label>
+
             <div class="relative">
               <select
-                formControlName="role"
+                [value]="selectedRoleForModal"
+                (change)="selectedRoleForModal = $any($event.target).value"
                 class="w-full appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
                 <option value="User">User</option>
                 <option value="Admin">Admin</option>
               </select>
+
               <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
             </div>
           </div>
 
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Joined Date</label>
-            <input
-              type="text"
-              formControlName="joined"
-              placeholder="e.g., Jul 9, 2024"
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-          </div>
-        </div>
-
-        <!-- Wishlist + Image -->
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Wishlist Count</label>
-            <input
-              type="number"
-              formControlName="wishlist"
-              placeholder="0"
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-          </div>
-
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Profile Image URL</label>
-            <input
-              type="text"
-              formControlName="image"
-              placeholder="https://example.com/profile.jpg"
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-          </div>
-        </div>
-
-        <!-- Status -->
-        <div>
-          <label class="mb-3 block text-sm font-semibold text-white">Status</label>
-          <div class="flex items-center gap-6">
-            <label class="flex items-center gap-2 text-white">
-              <input type="radio" formControlName="status" value="Active" class="accent-[#e0b100]" />
-              <span>Active</span>
-            </label>
-
-            <label class="flex items-center gap-2 text-white">
-              <input type="radio" formControlName="status" value="Inactive" class="accent-[#e0b100]" />
-              <span>Inactive</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="flex items-center justify-end gap-3">
-         
+          <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <button
+              type="button"
+              (click)="closeRoleModal()"
+              class="w-full cursor-pointer rounded-xl border border-[#3a3122] bg-[#1b1712] px-6 py-3 text-white transition-all duration-200 hover:border-[#e0b100] sm:w-fit">
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              (click)="saveRole()"
+              class="w-full cursor-pointer rounded-xl bg-[#e0b100] px-6 py-3 font-semibold text-black transition-all duration-200 hover:shadow-[0_0_18px_#e0b10055] sm:w-fit">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Confirm Delete / Status Modal -->
+  @if (isConfirmModalOpen && confirmModalUser) {
+    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-black/75 px-4 backdrop-blur-sm">
+      <div class="w-full max-w-md rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
+
+        <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
+          <h2 class="text-2xl font-bold text-white">
+            {{ confirmModalTitle }}
+          </h2>
+
+          <button
             type="button"
-            (click)="closeAddUserModal()"
-            class="cursor-pointer w-fit rounded-xl border border-[#3a3122] bg-[#1b1712] px-6 py-3 text-white  transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055] hover:border-[#e0b100]">
-            Cancel
+            (click)="closeConfirmModal()"
+            [disabled]="isConfirmLoading"
+            class="flex h-9 w-9 items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="px-6 py-7 text-center">
+          <div
+            class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border"
+            [ngClass]="
+              confirmModalType === 'delete'
+                ? 'border-red-500/30 bg-red-500/10 text-red-400'
+                : confirmNextIsActive
+                  ? 'border-green-500/30 bg-green-500/10 text-green-400'
+                  : 'border-orange-500/30 bg-orange-500/10 text-orange-400'
+            ">
+
+            @if (confirmModalType === 'delete') {
+              <i class="fa-regular fa-trash-can text-2xl"></i>
+            } @else {
+              <i
+                class="fa-solid text-2xl"
+                [ngClass]="confirmNextIsActive ? 'fa-circle-check' : 'fa-ban'">
+              </i>
+            }
+          </div>
+
+          <p class="mb-2 text-lg font-bold text-white">
+            {{ confirmModalMessage }}
+          </p>
+
+          <p class="text-sm text-[#b8aa8d]">
+            @if (confirmModalType === 'delete') {
+              This user will be removed immediately.
+            } @else {
+              This user status will be updated immediately.
+            }
+          </p>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 border-t border-[#3a3122] px-6 py-5">
+          <button
+            type="button"
+            (click)="closeConfirmModal()"
+            [disabled]="isConfirmLoading"
+            class="cursor-pointer rounded-xl border border-[#3a3122] bg-[#1b1712] px-5 py-2.5 font-semibold text-white transition hover:border-[#e0b100] hover:bg-[#2b2419] disabled:cursor-not-allowed disabled:opacity-50">
+            No
           </button>
 
-           <button
-  class="cursor-pointer flex-1 w-full lg:w-auto rounded-xl bg-[#e0b100] px-5 py-4 text-base font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055]">
-  <i class="fa-solid fa-user-plus mr-2"></i>
-            Add User
-</button>
+          <button
+            type="button"
+            (click)="confirmAction()"
+            [disabled]="isConfirmLoading"
+            class="cursor-pointer rounded-xl bg-[#e0b100] px-5 py-2.5 font-bold text-black transition hover:scale-[1.03] hover:bg-[#f0c400] hover:shadow-[0_0_18px_#e0b10055] disabled:cursor-not-allowed disabled:opacity-50">
+
+            @if (isConfirmLoading) {
+              Processing...
+            } @else {
+              {{ confirmModalButtonText }}
+            }
+          </button>
         </div>
 
-      </form>
+      </div>
     </div>
-  </div>
-}
+  }
 
-   <!-- Users List -->
+  <!-- Users List -->
   <div class="mt-6 overflow-hidden rounded-3xl border border-[#2c2418] bg-[#16120d]">
     <div class="flex flex-col gap-3 border-b border-[#2c2418] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
       <h2 class="text-2xl font-bold text-white">Users Management</h2>
-      <span class="text-sm text-[#b8aa8d]">{{users.length}} total users</span>
+      <span class="text-sm text-[#b8aa8d]">{{ totalCount }} total users</span>
     </div>
 
-    <!-- Table header only -->
-    <div class="overflow-x-auto">
-      <table class="min-w-full">
-        <thead class="bg-[#19140f] text-left">
-          <tr class="border-b border-[#2c2418] text-sm font-semibold text-[#e0b100]">
-            <th class="px-6 py-4">User</th>
-            <th class="px-6 py-4">Email</th>
-            <th class="px-6 py-4">Role</th>
-            <th class="px-6 py-4">Joined</th>
-            <th class="px-6 py-4">Wishlist</th>
-            <th class="px-6 py-4">Status</th>
-            <th class="px-6 py-4">Actions</th>
-          </tr>
-        </thead>
+    <!-- Desktop / Tablet Table -->
+    <div class="hidden lg:block">
 
-        <tbody>
-          @for (user of paginatedUsers; track user.id) {
-<tr class="border-b border-[#2c2418] transition duration-300 hover:bg-[#1d1812]">
-    <!-- User -->
-    <td class="px-6 py-5">
-                <div class="flex items-center gap-4">
-                  <img
-                    [src]="user.image"
-                    [alt]="user.name"
-                    class="h-12 w-12 rounded-full border-2 border-[#e0b100] object-cover"
-                  />
-
-                  <div>
-                    <h3 class="text-base font-bold text-white">{{ user.name }}</h3>
-                  </div>
-                </div>
-              </td>
-
-    <!-- Email -->
-    <td class="px-6 py-5">
-      <span class="rounded-full  px-3 py-1 text-base font-medium text-[#b8aa8d]">
-       {{user.email}}
-      </span>
-    </td>
-
-    <!-- Role -->
-     <td class="px-6 py-5">
-                <span
-                  class="rounded-full px-3 py-1 text-sm font-medium"
-                  [class.bg-[#5c470d]]="user.role === 'Admin'"
-                  [class.text-[#facc15]]="user.role === 'Admin'"
-                  [class.bg-[#1d3557]]="user.role === 'User'"
-                  [class.text-[#60a5fa]]="user.role === 'User'"
-                >
-                  {{ user.role }}
-                </span>
-              </td>
-
-    <!-- Joined -->
-    <td class="px-6 py-5 text-base text-[#d6d1c7]">
-      {{user.joined}}
-    </td>
-
-    <!-- Wishlist -->
-    <td class="px-10 py-5 text-base text-[#d6d1c7]">
-      {{user.wishlist}}
-    </td>
-
-    <!-- Status -->
-    <td class="px-6 py-5">
-      <span
-  class="rounded-full px-3 py-1 text-sm font-medium"
-  [class.bg-[#1d3a2a]]="user.status === 'Active'"
-  [class.text-[#4ade80]]="user.status === 'Active'"
-  [class.bg-[#2c2f36]]="user.status === 'Inactive'"
-  [class.text-[#aeb4bf]]="user.status === 'Inactive'"
->
-  {{ user.status }}
-</span>
-    </td>
-
-    <!-- Actions -->
-    <td class="px-6 py-5">
-      <div class="flex items-center gap-3">
-        <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-[#231d14] text-[#e0b100] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
-                    <i class="fa-regular fa-eye"></i>
-                  </button>
-
-                  <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-[#231d14] text-[#60a5fa] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
-                    <i class="fa-regular fa-clipboard"></i>
-                  </button>
-
-                  <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-[#231d14] text-[#fb923c] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
-                    <i class="fa-solid fa-ban"></i>
-                  </button>
-
-                  <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-[#231d14] text-[#f87171] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
-                    <i class="fa-regular fa-trash-can"></i>
-                  </button>
+      <div class="grid grid-cols-12 gap-4 border-b border-[#2c2418] bg-[#19140f] px-5 py-4 text-[11px] font-semibold uppercase tracking-wide text-[#e0b100]">
+        <span class="col-span-3">User</span>
+        <span class="col-span-3">Email</span>
+        <span class="col-span-1 text-center">Role</span>
+        <span class="col-span-1 text-center">Joined</span>
+        <span class="col-span-1 text-center">Wishlist</span>
+        <span class="col-span-1 text-center">Status</span>
+        <span class="col-span-2 text-center">Actions</span>
       </div>
-    </td>
-  </tr>
-          }
-  
-        </tbody>
-      </table>
+
+      @if (isLoading && paginatedUsers.length === 0) {
+        <div class="px-6 py-10 text-center text-[#b8aa8d]">
+          Loading users...
+        </div>
+      } @else if (errorMessage) {
+        <div class="px-6 py-10 text-center text-red-400">
+          {{ errorMessage }}
+        </div>
+      } @else if (paginatedUsers.length === 0) {
+        <div class="px-6 py-10 text-center text-[#b8aa8d]">
+          No users found
+        </div>
+      } @else {
+        @for (user of paginatedUsers; track user.id) {
+          <div class="grid grid-cols-12 items-center gap-4 border-b border-[#2c2418] px-5 py-4 text-sm transition duration-300 hover:bg-[#1d1812]">
+
+            <!-- User -->
+            <div class="col-span-3">
+              <div class="flex items-center gap-4">
+                @if (user.profilePictureUrl) {
+                  <img
+                    [src]="user.profilePictureUrl"
+                    [alt]="user.fullName"
+                    class="h-14 w-14 shrink-0 rounded-2xl object-cover ring-2 ring-[#e0b10033]" />
+                } @else {
+                  <div
+                    class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#e0b1001a] text-base font-bold text-[#e0b100] ring-2 ring-[#e0b10033]">
+                    {{ getUserInitials(user.fullName) }}
+                  </div>
+                }
+
+                <div class="min-w-0">
+                  <h3 class="truncate text-base font-bold text-white">
+                    {{ user.fullName }}
+                  </h3>
+
+                  <p class="mt-1 truncate text-sm font-semibold text-[#a18f6a]">
+                    ID: {{ user.id }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="col-span-3">
+              <p class="truncate font-medium text-[#b8aa8d]">
+                {{ user.email }}
+              </p>
+            </div>
+
+            <!-- Role -->
+            <div class="col-span-1 flex justify-center">
+              @if (user.role === 'Admin') {
+                <span class="inline-flex rounded-full bg-[#e0b1001a] px-3 py-1 text-xs font-semibold text-[#e0b100] ring-1 ring-[#e0b10022]">
+                  Admin
+                </span>
+              } @else {
+                <span class="inline-flex rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 ring-1 ring-blue-500/20">
+                  User
+                </span>
+              }
+            </div>
+
+            <!-- Joined -->
+            <div class="col-span-1 text-center font-semibold text-[#d6d1c7]">
+              <span class="block truncate">
+                {{ formatDate(user.joined) }}
+              </span>
+            </div>
+
+            <!-- Wishlist -->
+            <div class="col-span-1 text-center font-semibold text-white">
+              {{ getWishlistCount(user) }}
+            </div>
+
+            <!-- Status -->
+            <div class="col-span-1 flex justify-center">
+              @if (user.isActive) {
+                <span class="inline-flex rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-400 ring-1 ring-green-500/20">
+                  Active
+                </span>
+              } @else {
+                <span class="inline-flex rounded-full bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-400 ring-1 ring-red-500/20">
+                  Inactive
+                </span>
+              }
+            </div>
+
+            <!-- Actions -->
+            <div class="col-span-2">
+              <div class="flex items-center justify-center gap-3">
+                <button
+                  type="button"
+                  (click)="viewUser(user.id)"
+                  title="View user"
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#e0b100] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="openRoleModal(user)"
+                  title="Change role"
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#60a5fa] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                  <i class="fa-regular fa-clipboard"></i>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="toggleUserStatus(user)"
+                  [title]="user.isActive ? 'Block user' : 'Activate user'"
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl transition duration-300 hover:scale-105 hover:bg-[#2b2419]"
+                  [ngClass]="user.isActive ? 'text-[#fb923c]' : 'text-[#22c55e]'">
+                  @if (user.isActive) {
+                    <i class="fa-solid fa-ban"></i>
+                  } @else {
+                    <i class="fa-solid fa-rotate-left"></i>
+                  }
+                </button>
+
+                <button
+                  type="button"
+                  (click)="deleteUser(user)"
+                  title="Delete user"
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#f87171] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      }
     </div>
 
+    <!-- Mobile / Small Tablet Cards -->
+    <div class="space-y-4 px-4 py-4 lg:hidden">
+
+      @if (isLoading && paginatedUsers.length === 0) {
+        <div class="rounded-2xl border border-[#2c2418] bg-[#1b1712] px-6 py-10 text-center text-[#b8aa8d]">
+          Loading users...
+        </div>
+      } @else if (errorMessage) {
+        <div class="rounded-2xl border border-[#2c2418] bg-[#1b1712] px-6 py-10 text-center text-red-400">
+          {{ errorMessage }}
+        </div>
+      } @else if (paginatedUsers.length === 0) {
+        <div class="rounded-2xl border border-[#2c2418] bg-[#1b1712] px-6 py-10 text-center text-[#b8aa8d]">
+          No users found
+        </div>
+      } @else {
+        @for (user of paginatedUsers; track user.id) {
+          <div class="rounded-2xl border border-[#2c2418] bg-[#1b1712] p-4 transition duration-300 hover:border-[#e0b10055] hover:shadow-[0_0_20px_#e0b10014]">
+
+            <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div class="flex min-w-0 items-center gap-3">
+                @if (user.profilePictureUrl) {
+                  <img
+                    [src]="user.profilePictureUrl"
+                    [alt]="user.fullName"
+                    class="h-14 w-14 shrink-0 rounded-2xl object-cover ring-2 ring-[#e0b10033]" />
+                } @else {
+                  <div
+                    class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#e0b1001a] text-base font-bold text-[#e0b100] ring-2 ring-[#e0b10033]">
+                    {{ getUserInitials(user.fullName) }}
+                  </div>
+                }
+
+                <div class="min-w-0">
+                  <h3 class="truncate text-base font-bold text-white">
+                    {{ user.fullName }}
+                  </h3>
+
+                  <p class="mt-1 truncate text-sm font-semibold text-[#a18f6a]">
+                    ID: {{ user.id }}
+                  </p>
+
+                  <p class="mt-1 truncate text-sm text-[#b8aa8d]">
+                    {{ user.email }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
+                <button
+                  type="button"
+                  (click)="viewUser(user.id)"
+                  title="View user"
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#e0b100] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="openRoleModal(user)"
+                  title="Change role"
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#60a5fa] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                  <i class="fa-regular fa-clipboard"></i>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="toggleUserStatus(user)"
+                  [title]="user.isActive ? 'Block user' : 'Activate user'"
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl transition duration-300 hover:scale-105 hover:bg-[#2b2419]"
+                  [ngClass]="user.isActive ? 'text-[#fb923c]' : 'text-[#22c55e]'">
+                  @if (user.isActive) {
+                    <i class="fa-solid fa-ban"></i>
+                  } @else {
+                    <i class="fa-solid fa-rotate-left"></i>
+                  }
+                </button>
+
+                <button
+                  type="button"
+                  (click)="deleteUser(user)"
+                  title="Delete user"
+                  class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#f87171] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Role</p>
+
+                @if (user.role === 'Admin') {
+                  <span class="inline-flex rounded-full bg-[#e0b1001a] px-3 py-1 text-xs font-semibold text-[#e0b100] ring-1 ring-[#e0b10022]">
+                    Admin
+                  </span>
+                } @else {
+                  <span class="inline-flex rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 ring-1 ring-blue-500/20">
+                    User
+                  </span>
+                }
+              </div>
+
+              <div>
+                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Joined</p>
+                <p class="truncate font-semibold text-[#d6d1c7]">
+                  {{ formatDate(user.joined) }}
+                </p>
+              </div>
+
+              <div>
+                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Wishlist</p>
+                <p class="font-semibold text-white">
+                  {{ getWishlistCount(user) }}
+                </p>
+              </div>
+
+              <div>
+                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Status</p>
+
+                @if (user.isActive) {
+                  <span class="inline-flex rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-400 ring-1 ring-green-500/20">
+                    Active
+                  </span>
+                } @else {
+                  <span class="inline-flex rounded-full bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-400 ring-1 ring-red-500/20">
+                    Inactive
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- Pagination -->
     <div class="flex flex-col gap-4 border-t border-[#2c2418] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-  <p class="text-sm text-[#b8aa8d]">
-    Showing <span class="font-semibold text-white">{{ startItem }} - {{ endItem }}</span> of
-    <span class="font-semibold text-white">{{users.length}}</span>
-  </p>
+      <p class="text-sm text-[#b8aa8d]">
+        Showing
+        <span class="font-semibold text-white">{{ startItem }} - {{ endItem }}</span>
+        of
+        <span class="font-semibold text-white">{{ totalCount }}</span>
+      </p>
 
-  <div class="flex items-center gap-2">
-<button
-  (click)="previousPage()"
-  [disabled]="currentPage === 1"
-  class="rounded-xl border px-4 py-2 text-sm"
-  [class.cursor-pointer]="currentPage !== 1"
-  [class.border-[#3a3122]]="currentPage !== 1"
-  [class.bg-[#1b1712]]="currentPage !== 1"
-  [class.text-[#d6d1c7]]="currentPage !== 1"
-  [class.hover:border-[#e0b100]]="currentPage !== 1"
-  [class.hover:text-white]="currentPage !== 1"
-  [class.bg-[#15171a]]="currentPage === 1"
-  [class.text-[#63615d]]="currentPage === 1"
->
-  Previous
-</button>   
+      <div class="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
 
-     @for (page of pages; track page) {
-      <button
-        (click)="goToPage(page)"
-        class="rounded-xl px-4 py-2 text-sm cursor-pointer"
-        [class.bg-[#e0b100]]="currentPage === page"
-        [class.text-black]="currentPage === page"
-        [class.border]="currentPage !== page"
-        [class.border-[#3a3122]]="currentPage !== page"
-        [class.bg-[#1b1712]]="currentPage !== page"
-        [class.text-white]="currentPage !== page"
-      >
-        {{ page }}
-      </button>
-     }
+        @if (canGoPreviousPageGroup) {
+          <button
+            type="button"
+            (click)="previousPageGroup()"
+            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#3a3122] bg-[#1b1712] text-sm text-white transition hover:border-[#e0b100] hover:text-[#e0b100]">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+        }
 
-<button
-  (click)="nextPage()"
-  [disabled]="currentPage === totalPages"
-  class="rounded-xl border px-4 py-2 text-sm"
-  [class.cursor-pointer]="currentPage !== totalPages"
-  [class.border-[#3a3122]]="currentPage !== totalPages"
-  [class.bg-[#1b1712]]="currentPage !== totalPages"
-  [class.text-[#d6d1c7]]="currentPage !== totalPages"
-  [class.hover:border-[#e0b100]]="currentPage !== totalPages"
-  [class.hover:text-white]="currentPage !== totalPages"
-  [class.bg-[#15171a]]="currentPage === totalPages"
-  [class.text-[#63615d]]="currentPage === totalPages"
->
-  Next
-</button>
+        @for (page of visiblePages; track page) {
+          <button
+            type="button"
+            (click)="goToPage(page)"
+            [class]="currentPage === page
+              ? 'flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#e0b100] text-sm font-bold text-black'
+              : 'flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#3a3122] bg-[#1b1712] text-sm text-white transition hover:border-[#e0b100] hover:text-[#e0b100]'">
+            {{ page }}
+          </button>
+        }
+
+        @if (canGoNextPageGroup) {
+          <button
+            type="button"
+            (click)="nextPageGroup()"
+            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#3a3122] bg-[#1b1712] text-sm text-white transition hover:border-[#e0b100] hover:text-[#e0b100]">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        }
+
+      </div>
+    </div>
   </div>
-</div>
-
-  </div>
-  
 </div>

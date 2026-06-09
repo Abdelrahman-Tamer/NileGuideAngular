@@ -8,34 +8,56 @@
       <input
         type="text"
         placeholder="Search activities..."
-        (input)="activitySearch = $any($event.target).value"
-        class="w-full rounded-2xl border border-[#3a3122] bg-[#1b1712] py-4 pl-12 pr-4 text-base text-white outline-none transition duration-300 placeholder:text-[#8b7b5f] focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]"/>
+        [value]="activitySearch"
+        (input)="onSearchChange($any($event.target).value)"
+        class="w-full rounded-2xl border border-[#3a3122] bg-[#1b1712] py-4 pl-12 pr-4 text-base text-white outline-none transition duration-300 placeholder:text-[#8b7b5f] focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]" />
     </div>
 
     <!-- Category Dropdown -->
-    <div class="relative w-full lg:w-56 ">
+    <div class="relative w-full lg:w-52">
       <select
-        (change)="selectedCategory = $any($event.target).value"
-        class="w-full appearance-none cursor-pointer rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]">
+        [value]="selectedCategory"
+        (change)="onCategoryChange($any($event.target).value)"
+        class="w-full cursor-pointer appearance-none rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]">
 
         <option value="all">All Categories</option>
-        <option value="adventure">Adventure</option>
-        <option value="historical">Historical</option>
-        <option value="cruise">Cruise</option>
-        <option value="museum">Museum</option>
-        <option value="diving">Diving</option>
 
+        @for (category of filterCategories; track category.categoryID) {
+          <option [value]="category.categoryID">
+            {{ category.categoryName }}
+          </option>
+        }
+      </select>
+
+      <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+    </div>
+
+    <!-- City Dropdown -->
+    <div class="relative w-full lg:w-44">
+      <select
+        [value]="selectedCity"
+        (change)="onCityChange($any($event.target).value)"
+        class="w-full cursor-pointer appearance-none rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]">
+
+        <option value="all">All Cities</option>
+
+        @for (city of filterCities; track city.cityID) {
+          <option [value]="city.cityID">
+            {{ city.cityName }}
+          </option>
+        }
       </select>
 
       <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
     </div>
 
     <!-- Status Dropdown -->
-    <div class="relative w-full lg:w-48">
+    <div class="relative w-full lg:w-44">
       <select
-        (change)="selectedStatus = $any($event.target).value"
-        class="w-full  appearance-none cursor-pointer rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]"
-      >
+        [value]="selectedStatus"
+        (change)="onStatusChange($any($event.target).value)"
+        class="w-full cursor-pointer appearance-none rounded-2xl border border-[#3a3122] bg-[#1b1712] px-4 py-4 pr-12 text-base text-white outline-none transition duration-300 focus:border-[#e0b100] focus:shadow-[0_0_20px_#e0b10022]">
+
         <option value="all">All Status</option>
         <option value="active">Active</option>
         <option value="inactive">Inactive</option>
@@ -44,315 +66,716 @@
       <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
     </div>
 
+    <!-- Add New Activity Button -->
     <button
-  (click)="openAddActivityModal()"
-  class="cursor-pointer w-full lg:w-auto rounded-xl bg-[#e0b100] px-5 py-4 text-base font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055]">
-  <i class="fa-solid fa-circle-plus mr-2"></i>
-  Add New Activity
-</button>
+      type="button"
+      (click)="openAddActivityModal()"
+      class="w-full cursor-pointer rounded-xl bg-[#e0b100] px-5 py-4 text-base font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055] lg:w-auto">
+      <i class="fa-solid fa-circle-plus mr-2"></i>
+      Add New Activity
+    </button>
   </div>
-    <!-- Add New Activity -->
 
-    @if (isAddActivityModalOpen) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-    <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
+  <!-- Add / Update Activity Modal -->
+  @if (isAddActivityModalOpen) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+      <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
 
-      <div class="border-b border-[#3a3122] px-6 py-5">
-        <h2 class="text-2xl font-bold text-white">Add New Activity</h2>
-      </div>
+        <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
+          <h2 class="text-2xl font-bold text-white">
+            {{ activityFormMode === 'edit' ? 'Update Activity' : 'Add New Activity' }}
+          </h2>
 
-      <form [formGroup]="activityForm" (ngSubmit)="addActivity()" class="space-y-6 px-6 py-6">
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-white">Activity Name</label>
-          <input
-            type="text"
-            formControlName="name"
-            placeholder="e.g., Sunrise Hot Air Balloon"
-            class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-white">Description</label>
-          <textarea
-            rows="4"
-            formControlName="description"
-            placeholder="Brief description of the activity..."
-            class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]"></textarea>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Category</label>
-            <div class="relative">
-              <select
-                formControlName="category"
-                class="w-full appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
-                <option value="">Select category</option>
-                <option value="Adventure">Adventure</option>
-                <option value="Historical">Historical</option>
-                <option value="Cruise">Cruise</option>
-                <option value="Museum">Museum</option>
-                <option value="Diving">Diving</option>
-              </select>
-              <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
-            </div>
-          </div>
-
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Price (USD)</label>
-            <input
-              type="number"
-              formControlName="price"
-              placeholder="120"
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Location</label>
-            <div class="relative">
-              <select
-                formControlName="location"
-                class="w-full appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
-                <option value="">Select location</option>
-                <option value="Cairo">Cairo</option>
-                <option value="Giza">Giza</option>
-                <option value="Luxor">Luxor</option>
-                <option value="Aswan">Aswan</option>
-                <option value="Sharm El-Sheikh">Sharm El-Sheikh</option>
-              </select>
-              <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
-            </div>
-          </div>
-
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Duration</label>
-            <input
-              type="text"
-              formControlName="duration"
-              placeholder="3-4 Hours"
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Rating (1-5)</label>
-            <input
-              type="number"
-              step="0.1"
-              formControlName="rating"
-              placeholder="4.9"
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-          </div>
-
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Max Group Size</label>
-            <input
-              type="number"
-              formControlName="maxGroupSize"
-              placeholder="16"
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-          </div>
-        </div>
-
-        <div>
-          <label class="mb-3 block text-sm font-semibold text-white">Status</label>
-          <div class="flex items-center gap-6">
-            <label class="flex items-center gap-2 text-white">
-              <input type="radio" formControlName="status" value="Active" class="accent-[#e0b100]" />
-              <span>Active</span>
-            </label>
-
-            <label class="flex items-center gap-2 text-white">
-              <input type="radio" formControlName="status" value="Inactive" class="accent-[#e0b100]" />
-              <span>Inactive</span>
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <label class="mb-2 block text-sm font-semibold text-white">Image URL</label>
-          <input
-            type="text"
-            formControlName="imageUrl"
-            placeholder="https://example.com/image.jpg"
-            class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-        </div>
-
-        <div class="flex items-center justify-end gap-3">
           <button
             type="button"
             (click)="closeAddActivityModal()"
-            class="w-fit cursor-pointer rounded-xl border border-[#3a3122] bg-[#1b1712] px-6 py-3 text-white  transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055] hover:border-[#e0b100]">
-            Cancel
+            [disabled]="isSavingActivity"
+            class="flex h-9 w-9 items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+            <i class="fa-solid fa-xmark"></i>
           </button>
-
-           <button
-  class="flex-1 cursor-pointer w-full lg:w-auto rounded-xl bg-[#e0b100] px-5 py-4 text-base font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055]">
-  <i class="fa-solid fa-user-plus mr-2"></i>
-Add Activity
-</button>
         </div>
 
-      </form>
+        <form [formGroup]="activityForm" (ngSubmit)="saveActivity()" class="space-y-6 px-6 py-6">
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-white">Activity Name</label>
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="e.g., Sunrise Hot Air Balloon"
+              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-semibold text-white">Description</label>
+            <textarea
+              rows="4"
+              formControlName="description"
+              placeholder="Brief description of the activity..."
+              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Category</label>
+
+              <div class="relative">
+                <select
+                  formControlName="category"
+                  class="w-full appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
+                  <option value="">Select category</option>
+
+                  @for (category of filterCategories; track category.categoryID) {
+                    <option [value]="category.categoryName">
+                      {{ category.categoryName }}
+                    </option>
+                  }
+                </select>
+
+                <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+              </div>
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Price (USD)</label>
+              <input
+                type="number"
+                formControlName="price"
+                placeholder="120"
+                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Location</label>
+
+              <div class="relative">
+                <select
+                  formControlName="location"
+                  class="w-full appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
+                  <option value="">Select location</option>
+
+                  @for (city of filterCities; track city.cityID) {
+                    <option [value]="city.cityName">
+                      {{ city.cityName }}
+                    </option>
+                  }
+                </select>
+
+                <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+              </div>
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Duration</label>
+              <input
+                type="text"
+                formControlName="duration"
+                placeholder="180"
+                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Rating (1-5)</label>
+              <input
+                type="number"
+                step="0.1"
+                formControlName="rating"
+                placeholder="4.9"
+                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-semibold text-white">Max Group Size</label>
+              <input
+                type="number"
+                formControlName="maxGroupSize"
+                placeholder="16"
+                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+            </div>
+          </div>
+
+          <div>
+            <label class="mb-3 block text-sm font-semibold text-white">Status</label>
+
+            <div class="flex items-center gap-6">
+              <label class="flex items-center gap-2 text-white">
+                <input type="radio" formControlName="status" value="Active" class="accent-[#e0b100]" />
+                <span>Active</span>
+              </label>
+
+              <label class="flex items-center gap-2 text-white">
+                <input type="radio" formControlName="status" value="Inactive" class="accent-[#e0b100]" />
+                <span>Inactive</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Activity Image Upload -->
+          <div>
+            <label class="mb-3 block text-sm font-semibold text-white">
+              Activity Image
+            </label>
+
+            <div class="flex items-center gap-5">
+              <button
+                type="button"
+                (click)="activityImageInput.click()"
+                class="group relative flex h-20 w-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-[#3a3122] bg-[#14110d] shadow-[0_0_22px_#e0b10018] transition-all duration-300 hover:scale-[1.03] hover:border-[#e0b100] hover:shadow-[0_0_24px_#e0b10033]">
+
+                @if (selectedActivityImagePreview) {
+                  <img
+                    [src]="selectedActivityImagePreview"
+                    alt="Activity image preview"
+                    class="h-full w-full object-cover" />
+
+                  <div class="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition duration-300 group-hover:bg-black/45 group-hover:opacity-100">
+                    <span class="rounded-full bg-black/50 px-3 py-1 text-xs font-bold">
+                      Change
+                    </span>
+                  </div>
+                } @else {
+                  <div class="flex h-full w-full items-center justify-center rounded-full bg-[#201a12] text-[#e0b100]">
+                    <i class="fa-solid fa-image text-4xl"></i>
+                  </div>
+                }
+
+                <span
+                  class="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#1b1712] bg-[#e0b100] text-black shadow-[0_0_14px_#e0b10055]">
+                  <i class="fa-solid fa-camera text-sm"></i>
+                </span>
+              </button>
+
+              <input
+                #activityImageInput
+                type="file"
+                accept="image/png,image/jpeg,image/jpg,image/webp"
+                class="hidden"
+                (change)="onActivityImageSelected($event)" />
+
+              <div class="min-w-0">
+                <p class="text-sm font-bold text-white">
+                  Upload activity photo
+                </p>
+
+                <p class="mt-1 text-xs leading-5 text-[#a18f6a]">
+                  Choose an image from your device.
+                  <br />
+                  JPG, PNG or WEBP. Max 5MB.
+                </p>
+
+                @if (selectedActivityImagePreview) {
+                  <button
+                    type="button"
+                    (click)="removeSelectedActivityImage(activityImageInput)"
+                    class="mt-3 cursor-pointer rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-300 transition hover:border-red-400 hover:bg-red-500/20">
+                    <i class="fa-regular fa-trash-can mr-1"></i>
+                    Remove photo
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <button
+              type="button"
+              (click)="closeAddActivityModal()"
+              [disabled]="isSavingActivity"
+              class="w-full cursor-pointer rounded-xl border border-[#3a3122] bg-[#1b1712] px-6 py-3 text-white transition-all duration-200 hover:scale-[1.03] hover:border-[#e0b100] hover:shadow-[0_0_18px_#e0b10055] disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit">
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              [disabled]="isSavingActivity"
+              class="w-full cursor-pointer rounded-xl bg-[#e0b100] px-6 py-3 font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055] disabled:cursor-not-allowed disabled:opacity-50 sm:w-fit">
+
+              @if (isSavingActivity) {
+                Processing...
+              } @else {
+                <i class="fa-solid fa-circle-plus mr-2"></i>
+                {{ activityFormMode === 'edit' ? 'Update Activity' : 'Add Activity' }}
+              }
+            </button>
+          </div>
+
+        </form>
+      </div>
     </div>
-  </div>
-}
+  }
 
+  <!-- View Activity Modal -->
+  @if (isViewActivityModalOpen && selectedViewActivity) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+      <div class="max-h-[82vh] w-full max-w-2xl overflow-hidden rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
 
-   <!-- Activities List -->
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
+          <h2 class="text-2xl font-bold text-white">Activity Details</h2>
+
+          <button
+            type="button"
+            (click)="closeViewActivityModal()"
+            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="max-h-[calc(82vh-78px)] overflow-y-auto px-6 py-6">
+
+          <!-- Main Info -->
+          <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
+            @if (selectedViewActivity.imageUrl) {
+              <img
+                [src]="selectedViewActivity.imageUrl"
+                [alt]="selectedViewActivity.activityName"
+                class="h-28 w-28 shrink-0 rounded-3xl object-cover ring-2 ring-[#e0b10033]" />
+            } @else {
+              <div
+                class="flex h-28 w-28 shrink-0 items-center justify-center rounded-3xl bg-[#e0b1001a] text-2xl font-bold text-[#e0b100] ring-2 ring-[#e0b10033]">
+                {{ getActivityInitials(selectedViewActivity.activityName) }}
+              </div>
+            }
+
+            <div class="min-w-0 flex-1 text-center sm:text-left">
+              <h3 class="line-clamp-2 text-2xl font-bold leading-snug text-white">
+                {{ selectedViewActivity.activityName }}
+              </h3>
+
+              <p class="mt-1 text-sm font-semibold text-[#a18f6a]">
+                ID: {{ selectedViewActivity.activityID }}
+              </p>
+
+              <p class="mt-3 line-clamp-3 text-sm leading-6 text-[#b8aa8d]">
+                {{ selectedViewActivity.description }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Details Cards -->
+          <div class="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Category</p>
+              <p class="truncate font-bold text-white">
+                {{ selectedViewActivity.categoryName }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">City</p>
+              <p class="truncate font-bold text-white">
+                {{ selectedViewActivity.cityName }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Price</p>
+              <p class="font-bold text-white">
+                {{ selectedViewActivity.minPrice }} {{ selectedViewActivity.priceCurrency }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Status</p>
+              <p
+                class="font-bold"
+                [class.text-green-400]="selectedViewActivity.isActive"
+                [class.text-red-400]="!selectedViewActivity.isActive">
+                {{ selectedViewActivity.isActive ? 'Active' : 'Inactive' }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Rating</p>
+              <p class="font-bold text-white">
+                {{ selectedViewActivity.rating || 0 }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Reviews</p>
+              <p class="font-bold text-white">
+                {{ selectedViewActivity.reviewsCount || 0 }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Providers</p>
+              <p class="font-bold text-white">
+                {{ getActivityProvidersCount(selectedViewActivity) }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Documents</p>
+              <p class="truncate font-bold text-white">
+                {{ selectedViewActivity.requiredDocuments || 'N/A' }}
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+ 
+  <!-- Confirm Delete Modal -->
+  @if (isConfirmModalOpen && confirmModalActivity) {
+    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-black/75 px-4 backdrop-blur-sm">
+      <div class="w-full max-w-md rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
+
+        <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
+          <h2 class="text-2xl font-bold text-white">
+            {{ confirmModalTitle }}
+          </h2>
+
+          <button
+            type="button"
+            (click)="closeConfirmModal()"
+            [disabled]="isConfirmLoading"
+            class="flex h-9 w-9 items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="px-6 py-7 text-center">
+          <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/10 text-red-400">
+            <i class="fa-regular fa-trash-can text-2xl"></i>
+          </div>
+
+          <p class="mb-2 text-lg font-bold text-white">
+            {{ confirmModalMessage }}
+          </p>
+
+          <p class="text-sm text-[#b8aa8d]">
+            This activity will be removed immediately.
+          </p>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 border-t border-[#3a3122] px-6 py-5">
+          <button
+            type="button"
+            (click)="closeConfirmModal()"
+            [disabled]="isConfirmLoading"
+            class="cursor-pointer rounded-xl border border-[#3a3122] bg-[#1b1712] px-5 py-2.5 font-semibold text-white transition hover:border-[#e0b100] hover:bg-[#2b2419] disabled:cursor-not-allowed disabled:opacity-50">
+            No
+          </button>
+
+          <button
+            type="button"
+            (click)="confirmAction()"
+            [disabled]="isConfirmLoading"
+            class="cursor-pointer rounded-xl bg-[#e0b100] px-5 py-2.5 font-bold text-black transition hover:scale-[1.03] hover:bg-[#f0c400] hover:shadow-[0_0_18px_#e0b10055] disabled:cursor-not-allowed disabled:opacity-50">
+
+            @if (isConfirmLoading) {
+              Processing...
+            } @else {
+              {{ confirmModalButtonText }}
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- Activities List -->
   <div class="mt-6 overflow-hidden rounded-3xl border border-[#2c2418] bg-[#16120d]">
     <div class="flex flex-col gap-3 border-b border-[#2c2418] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
       <h2 class="text-2xl font-bold text-white">Activities Management</h2>
-      <span class="text-sm text-[#b8aa8d]">{{activities.length}} total activities</span>
+      <span class="text-sm text-[#b8aa8d]">{{ totalCount }} total activities</span>
     </div>
 
-    <!-- Table header only -->
-    <div class="overflow-x-auto">
-      <table class="min-w-full">
-        <thead class="bg-[#19140f] text-left">
-          <tr class="border-b border-[#2c2418] text-sm font-semibold text-[#e0b100]">
-            <th class="px-6 py-4">Activity</th>
-            <th class="px-6 py-4">Category</th>
-            <th class="px-6 py-4">Price</th>
-            <th class="px-6 py-4">Location</th>
-            <th class="px-6 py-4">Status</th>
-            <th class="px-6 py-4">Actions</th>
-            
-          </tr>
-        </thead>
-
-        <tbody>
-          @for (activity of paginatedActivities; track activity.id) {
-<tr class="border-b border-[#2c2418] transition duration-300 hover:bg-[#1d1812]">
-    <!-- Activity -->
-    <td class="px-6 py-5">
-      <div class="flex items-center gap-4">
-        <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#231d14] text-[#e0b100]">
-          <i class="fa-solid fa-ticket text-lg"></i>
-        </div>
-
-        <div>
-          <h3 class="text-base font-bold text-white">{{activity.name}}</h3>
-        </div>
+    <!-- Desktop / Tablet Table -->
+    <div class="hidden lg:block">
+      <div class="grid grid-cols-12 gap-4 border-b border-[#2c2418] bg-[#19140f] px-5 py-4 text-[11px] font-semibold uppercase tracking-wide text-[#e0b100]">
+        <span class="col-span-4">Activity</span>
+        <span class="col-span-2 text-center">Category</span>
+        <span class="col-span-1 text-center">Price</span>
+        <span class="col-span-2 text-center">Location</span>
+        <span class="col-span-1 text-center">Status</span>
+        <span class="col-span-2 text-center">Actions</span>
       </div>
-    </td>
 
-    <!-- Category -->
-    <td class="px-6 py-5">
-      <span class="rounded-full bg-[#e0b1001a] px-3 py-1 text-sm font-medium text-[#e0b100]">
-       {{activity.category}}
-      </span>
-    </td>
+      @if (isLoading && paginatedActivities.length === 0) {
+        <div class="px-6 py-10 text-center text-[#b8aa8d]">
+          Loading activities...
+        </div>
+      }
 
-    <!-- Price -->
-    <td class="px-6 py-5 text-base font-semibold text-white">
-      ${{activity.price}}
-    </td>
+      @if (!isLoading && errorMessage) {
+        <div class="px-6 py-10 text-center text-red-400">
+          {{ errorMessage }}
+        </div>
+      }
 
-    <!-- Location -->
-    <td class="px-6 py-5 text-base text-[#d6d1c7]">
-      {{activity.location}}
-    </td>
+      @if (!isLoading && !errorMessage && paginatedActivities.length === 0) {
+        <div class="px-6 py-10 text-center text-[#b8aa8d]">
+          No activities found
+        </div>
+      }
 
-    <!-- Status -->
-    <td class="px-6 py-5">
-      <span
-  class="rounded-full px-3 py-1 text-sm font-medium"
-  [class.bg-[#1d3a2a]]="activity.status === 'Active'"
-  [class.text-[#4ade80]]="activity.status === 'Active'"
-  [class.bg-[#2c2f36]]="activity.status === 'Inactive'"
-  [class.text-[#aeb4bf]]="activity.status === 'Inactive'"
->
-  {{ activity.status }}
-</span>
-      
-      
-    </td>
+      @for (activity of paginatedActivities; track activity.activityID) {
+        <div class="grid grid-cols-12 items-center gap-4 border-b border-[#2c2418] px-5 py-4 text-sm transition duration-300 hover:bg-[#1d1812]">
 
-    <!-- Actions -->
-    <td class="px-6 py-5">
-      <div class="flex items-center gap-3">
-        <button class="flex cursor-pointer h-9 w-9 items-center justify-center rounded-xl bg-[#231d14] text-[#e0b100] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
-          <i class="fa-regular fa-eye"></i>
-        </button>
+          <!-- Activity -->
+          <div class="col-span-4">
+            <div class="flex items-center gap-4">
+              @if (activity.imageUrl) {
+                <img
+                  [src]="activity.imageUrl"
+                  [alt]="activity.activityName"
+                  class="h-14 w-14 shrink-0 rounded-2xl object-cover" />
+              } @else {
+                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#231d14] text-[#e0b100]">
+                  <i class="fa-solid fa-ticket text-lg"></i>
+                </div>
+              }
 
-        <button class="flex cursor-pointer h-9 w-9 items-center justify-center rounded-xl bg-[#231d14] text-[#60a5fa] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
-          <i class="fa-solid fa-pen"></i>
-        </button>
+              <div class="min-w-0">
+                <h3 class="line-clamp-2 text-base font-bold leading-snug text-white">
+                  {{ activity.activityName }}
+                </h3>
 
-        <button class="flex cursor-pointer h-9 w-9 items-center justify-center rounded-xl bg-[#231d14] text-[#f87171] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
-          <i class="fa-regular fa-trash-can"></i>
-        </button>
-      </div>
-    </td>
-  </tr>
-          }
-  
-        </tbody>
-      </table>
+                <p class="mt-1 max-w-[280px] truncate text-sm text-[#a18f6a]">
+                  {{ activity.description }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="col-span-2 flex justify-center">
+            <span class="inline-flex max-w-[150px] items-center justify-center rounded-full bg-[#e0b1001a] px-3 py-2 text-center text-xs font-semibold leading-snug text-[#e0b100] ring-1 ring-[#e0b10022]">
+              <span class="truncate">
+                {{ activity.categoryName }}
+              </span>
+            </span>
+          </div>
+
+          <!-- Price -->
+          <div class="col-span-1 text-center font-semibold text-white">
+            <span class="whitespace-nowrap">
+              {{ activity.minPrice }} {{ activity.priceCurrency }}
+            </span>
+          </div>
+
+          <!-- Location -->
+          <div class="col-span-2 text-center font-semibold text-[#d6d1c7]">
+            <span class="block truncate">
+              {{ activity.cityName }}
+            </span>
+          </div>
+
+          <!-- Status -->
+          <div class="col-span-1 flex justify-center">
+            @if (activity.isActive) {
+              <span class="inline-flex rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-400 ring-1 ring-green-500/20">
+                Active
+              </span>
+            } @else {
+              <span class="inline-flex rounded-full bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-400 ring-1 ring-red-500/20">
+                Inactive
+              </span>
+            }
+          </div>
+
+          <!-- Actions -->
+          <div class="col-span-2">
+            <div class="flex items-center justify-center gap-3">
+              <button
+                type="button"
+                title="View activity"
+                (click)="viewActivity(activity)"
+                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#e0b100] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+
+              <button
+                type="button"
+                title="Update activity"
+                (click)="openEditActivityModal(activity)"
+                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#60a5fa] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+
+              <button
+                type="button"
+                title="Delete activity"
+                (click)="deleteActivity(activity)"
+                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#f87171] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
 
+    <!-- Mobile / Small Tablet Cards -->
+    <div class="space-y-4 px-4 py-4 lg:hidden">
+
+      @if (isLoading && paginatedActivities.length === 0) {
+        <div class="rounded-2xl border border-[#2c2418] bg-[#1b1712] px-6 py-10 text-center text-[#b8aa8d]">
+          Loading activities...
+        </div>
+      }
+
+      @if (!isLoading && errorMessage) {
+        <div class="rounded-2xl border border-[#2c2418] bg-[#1b1712] px-6 py-10 text-center text-red-400">
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (!isLoading && !errorMessage && paginatedActivities.length === 0) {
+        <div class="rounded-2xl border border-[#2c2418] bg-[#1b1712] px-6 py-10 text-center text-[#b8aa8d]">
+          No activities found
+        </div>
+      }
+
+      @for (activity of paginatedActivities; track activity.activityID) {
+        <div class="rounded-2xl border border-[#2c2418] bg-[#1b1712] p-4 transition duration-300 hover:border-[#e0b10055] hover:shadow-[0_0_20px_#e0b10014]">
+
+          <div class="mb-4 flex items-start justify-between gap-3">
+            <div class="flex min-w-0 items-center gap-3">
+              @if (activity.imageUrl) {
+                <img
+                  [src]="activity.imageUrl"
+                  [alt]="activity.activityName"
+                  class="h-14 w-14 shrink-0 rounded-2xl object-cover" />
+              } @else {
+                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#231d14] text-[#e0b100]">
+                  <i class="fa-solid fa-ticket text-lg"></i>
+                </div>
+              }
+
+              <div class="min-w-0">
+                <h3 class="line-clamp-2 text-base font-bold leading-snug text-white">
+                  {{ activity.activityName }}
+                </h3>
+
+                <p class="mt-1 line-clamp-2 text-sm text-[#a18f6a]">
+                  {{ activity.description }}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                title="View activity"
+                (click)="viewActivity(activity)"
+                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#e0b100] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+
+              <button
+                type="button"
+                title="Update activity"
+                (click)="openEditActivityModal(activity)"
+                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#60a5fa] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+
+              <button
+                type="button"
+                title="Delete activity"
+                (click)="deleteActivity(activity)"
+                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#f87171] transition duration-300 hover:scale-105 hover:bg-[#2b2419]">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Category</p>
+              <span class="inline-flex max-w-full rounded-full bg-[#e0b1001a] px-3 py-1 text-xs font-semibold text-[#e0b100] ring-1 ring-[#e0b10022]">
+                <span class="truncate">
+                  {{ activity.categoryName }}
+                </span>
+              </span>
+            </div>
+
+            <div>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Price</p>
+              <p class="font-semibold text-white">
+                {{ activity.minPrice }} {{ activity.priceCurrency }}
+              </p>
+            </div>
+
+            <div>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Location</p>
+              <p class="truncate font-semibold text-[#d6d1c7]">
+                {{ activity.cityName }}
+              </p>
+            </div>
+
+            <div>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Status</p>
+
+              @if (activity.isActive) {
+                <span class="inline-flex rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-400 ring-1 ring-green-500/20">
+                  Active
+                </span>
+              } @else {
+                <span class="inline-flex rounded-full bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-400 ring-1 ring-red-500/20">
+                  Inactive
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Pagination -->
     <div class="flex flex-col gap-4 border-t border-[#2c2418] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-  <p class="text-sm text-[#b8aa8d]">
-    Showing <span class="font-semibold text-white">{{ startItem }} - {{ endItem }}</span> of
-    <span class="font-semibold text-white">{{activities.length}}</span>
-  </p>
+      <p class="text-sm text-[#b8aa8d]">
+        Showing
+        <span class="font-semibold text-white">{{ startItem }} - {{ endItem }}</span>
+        of
+        <span class="font-semibold text-white">{{ totalCount }}</span>
+      </p>
 
-  <div class="flex items-center gap-2">
-<button
-  (click)="previousPage()"
-  [disabled]="currentPage === 1"
-  class="rounded-xl border px-4 py-2 text-sm"
-  [class.cursor-pointer]="currentPage !== 1"
-  [class.border-[#3a3122]]="currentPage !== 1"
-  [class.bg-[#1b1712]]="currentPage !== 1"
-  [class.text-[#d6d1c7]]="currentPage !== 1"
-  [class.hover:border-[#e0b100]]="currentPage !== 1"
-  [class.hover:text-white]="currentPage !== 1"
-  [class.bg-[#15171a]]="currentPage === 1"
-  [class.text-[#63615d]]="currentPage === 1"
->
-  Previous
-</button>   
+      <div class="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
 
-     @for (page of pages; track page) {
-      <button
-        (click)="goToPage(page)"
-        class="rounded-xl px-4 py-2 text-sm cursor-pointer"
-        [class.bg-[#e0b100]]="currentPage === page"
-        [class.text-black]="currentPage === page"
-        [class.border]="currentPage !== page"
-        [class.border-[#3a3122]]="currentPage !== page"
-        [class.bg-[#1b1712]]="currentPage !== page"
-        [class.text-white]="currentPage !== page"
-      >
-        {{ page }}
-      </button>
-     }
+        @if (canGoPreviousPageGroup) {
+          <button
+            type="button"
+            (click)="previousPageGroup()"
+            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#3a3122] bg-[#1b1712] text-sm text-white transition hover:border-[#e0b100] hover:text-[#e0b100]">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+        }
 
+        @for (page of visiblePages; track page) {
+          <button
+            type="button"
+            (click)="goToPage(page)"
+            [class]="currentPage === page
+              ? 'flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#e0b100] text-sm font-bold text-black'
+              : 'flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#3a3122] bg-[#1b1712] text-sm text-white transition hover:border-[#e0b100] hover:text-[#e0b100]'">
+            {{ page }}
+          </button>
+        }
 
-<button
-  (click)="nextPage()"
-  [disabled]="currentPage === totalPages"
-  class="rounded-xl border px-4 py-2 text-sm"
-  [class.cursor-pointer]="currentPage !== totalPages"
-  [class.border-[#3a3122]]="currentPage !== totalPages"
-  [class.bg-[#1b1712]]="currentPage !== totalPages"
-  [class.text-[#d6d1c7]]="currentPage !== totalPages"
-  [class.hover:border-[#e0b100]]="currentPage !== totalPages"
-  [class.hover:text-white]="currentPage !== totalPages"
-  [class.bg-[#15171a]]="currentPage === totalPages"
-  [class.text-[#63615d]]="currentPage === totalPages"
->
-  Next
-</button>
+        @if (canGoNextPageGroup) {
+          <button
+            type="button"
+            (click)="nextPageGroup()"
+            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#3a3122] bg-[#1b1712] text-sm text-white transition hover:border-[#e0b100] hover:text-[#e0b100]">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        }
+
+      </div>
+    </div>
   </div>
-</div>
-
-  </div>
-  
 </div>

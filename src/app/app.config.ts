@@ -7,8 +7,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { provideToastr } from 'ngx-toastr';
-import { provideHttpClient, withFetch } from '@angular/common/http';
-
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -26,8 +26,11 @@ export const appConfig: ApplicationConfig = {
       })
     ),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withFetch()),
-    provideTranslateService({
+provideHttpClient(
+  withFetch(),
+  withInterceptors([authInterceptor])
+),
+    provideTranslateService({ 
       loader: provideTranslateHttpLoader({
         prefix: '/i18n/',
         suffix: '.json'
