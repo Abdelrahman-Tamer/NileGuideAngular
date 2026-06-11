@@ -14,31 +14,75 @@
 
         <!-- Header -->
         <div class="mb-8 flex items-start gap-4">
-          <div class="relative">
-            <img
-              [src]="profileImageUrl"
-              alt="Profile"
-              class="h-24 w-24 rounded-full border-2 border-yellow-500 object-cover" />
+          <div class="relative h-24 w-24 shrink-0">
+
+            <input
+              #profileImageInput
+              type="file"
+              accept="image/png, image/jpeg, image/jpg"
+              class="hidden"
+              [disabled]="isUploading || isDeletingProfilePicture"
+              (change)="onProfileImageSelected($event)" />
+
+            <button
+              type="button"
+              title="Change profile picture"
+              class="group relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-2 border-yellow-500 bg-[#27241b] shadow-[0_0_0_4px_rgba(234,179,8,0.08)] transition hover:border-yellow-400 disabled:cursor-not-allowed disabled:opacity-70"
+              [disabled]="isUploading || isDeletingProfilePicture"
+              (click)="profileImageInput.click()">
+
+              @if (profileImageUrl) {
+                <img
+                  [src]="profileImageUrl"
+                  alt="Profile"
+                  class="h-full w-full object-cover transition duration-200 group-hover:scale-105"
+                  (error)="onProfileImageError()" />
+              } @else {
+                <span class="select-none text-2xl font-extrabold tracking-wide text-yellow-500">
+                  {{ profileInitials }}
+                </span>
+              }
+
+              <div class="absolute inset-0 bg-black/0 transition group-hover:bg-black/20"></div>
+
+              @if (isUploading) {
+                <div class="absolute inset-0 flex items-center justify-center bg-black/45">
+                  <i class="fa-solid fa-spinner fa-spin text-xl text-yellow-500"></i>
+                </div>
+              }
+            </button>
 
             <span class="absolute bottom-1 right-0 h-4 w-4 rounded-full border-2 border-[#12100d] bg-yellow-500"></span>
 
-            <label
-              class="absolute -bottom-2 left-1/2 flex h-8 w-8 -translate-x-1/2 cursor-pointer items-center justify-center rounded-full bg-yellow-500 text-black shadow-lg transition hover:bg-yellow-400"
-              title="Change profile picture">
+            <button
+              type="button"
+              title="Upload profile picture"
+              class="absolute -bottom-2 left-1/2 z-10 flex h-8 w-8 -translate-x-1/2 cursor-pointer items-center justify-center rounded-full bg-yellow-500 text-black shadow-lg transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-70"
+              [disabled]="isUploading || isDeletingProfilePicture"
+              (click)="profileImageInput.click()">
 
               @if (isUploading) {
                 <i class="fa-solid fa-spinner fa-spin text-xs"></i>
               } @else {
                 <i class="fa-solid fa-camera text-xs"></i>
               }
+            </button>
 
-              <input
-                type="file"
-                accept="image/*"
-                class="hidden"
-                [disabled]="isUploading"
-                (change)="onProfileImageSelected($event)" />
-            </label>
+            @if (profileImageUrl) {
+              <button
+                type="button"
+                title="Delete profile picture"
+                class="absolute -top-2 -right-2 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-red-500/40 bg-red-500 text-white shadow-lg transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                [disabled]="isUploading || isDeletingProfilePicture"
+                (click)="openDeleteProfilePictureModal($event)">
+
+                @if (isDeletingProfilePicture) {
+                  <i class="fa-solid fa-spinner fa-spin text-xs"></i>
+                } @else {
+                  <i class="fa-regular fa-trash-can text-xs"></i>
+                }
+              </button>
+            }
           </div>
 
           <div>
@@ -117,58 +161,58 @@
             </div>
 
             <div>
-  <label class="mb-2 block text-xs font-medium text-white/70">Date of Birth</label>
+              <label class="mb-2 block text-xs font-medium text-white/70">Date of Birth</label>
 
-  <div class="relative">
-    <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
-      <i class="fa-regular fa-calendar-days text-white/55"></i>
-    </div>
+              <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 start-0 z-10 flex items-center ps-3">
+                  <i class="fa-regular fa-calendar-days text-white/55"></i>
+                </div>
 
-    <!-- Visible input فقط للعرض -->
-    <input
-      type="text"
-      readonly
-      tabindex="-1"
-      [value]="formatDateForDisplay(profileForm.get('dateOfBirth')?.value)"
-      placeholder="mm/dd/yyyy"
-      class="pointer-events-none block h-11 w-full cursor-default select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
-      [class.border-red-500]="dateOfBirthInvalid" />
+                <input
+                  type="text"
+                  readonly
+                  [value]="formatDateForDisplay(profileForm.get('dateOfBirth')?.value)"
+                  placeholder="mm/dd/yyyy"
+                  class="block h-11 w-full cursor-pointer select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
+                  [class.border-red-500]="dateOfBirthInvalid"
+                  (click)="openDatePicker(dateOfBirthInput)" />
 
-    <!-- Real date input مخفي -->
-    <input
-      #dateOfBirthInput
-      type="date"
-      formControlName="dateOfBirth"
-      tabindex="-1"
-      class="pointer-events-none absolute inset-0 h-full w-full opacity-0"
-      (keydown)="preventDateTyping($event)"
-      (paste)="$event.preventDefault()" />
+                <input
+                  #dateOfBirthInput
+                  type="date"
+                  formControlName="dateOfBirth"
+                  tabindex="-1"
+                  class="pointer-events-none absolute inset-0 h-full w-full opacity-0"
+                  (keydown)="preventDateTyping($event)"
+                  (paste)="$event.preventDefault()" />
 
-    <!-- Right icon هي اللي بتفتح -->
-    <button
-      type="button"
-      title="Select date of birth"
-      class="absolute inset-y-0 end-0 z-10 flex items-center rounded-e-lg px-3 cursor-pointer text-yellow-500 transition hover:text-yellow-400"
-      (click)="openDatePicker(dateOfBirthInput)">
-      <i class="fa-regular fa-calendar-days"></i>
-    </button>
-  </div>
+                <button
+                  type="button"
+                  title="Select date of birth"
+                  class="absolute inset-y-0 end-0 z-10 flex cursor-pointer items-center rounded-e-lg px-3 text-yellow-500 transition hover:text-yellow-400"
+                  (click)="openDatePicker(dateOfBirthInput)">
+                  <i class="fa-regular fa-calendar-days"></i>
+                </button>
+              </div>
 
-  @if (dateOfBirthInvalid) {
-    <p class="mt-1 text-xs text-red-400">
-      Please select your date of birth.
-    </p>
-  }
-</div>
+              @if (dateOfBirthInvalid) {
+                <p class="mt-1 text-xs text-red-400">
+                  Please select your date of birth.
+                </p>
+              }
+            </div>
 
             <div>
-              <label class="mb-2 block text-xs font-medium text-white/70">Where are you visiting from?</label>
+              <label class="mb-2 block text-xs font-medium text-white/70">
+                Where are you visiting from?
+              </label>
 
               <div class="relative">
                 <select
                   formControlName="nationality"
-                  class="h-11 w-full appearance-none rounded-lg border border-[#3a3122] bg-[#27241b] px-4 pr-10 text-sm text-white outline-none transition focus:border-yellow-500"
-                  [class.border-red-500]="nationalityInvalid"> 
+                  style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none;"
+                  class="h-11 w-full cursor-pointer rounded-lg border border-[#3a3122] bg-[#27241b] px-4 pe-10 text-sm text-white outline-none transition focus:border-yellow-500"
+                  [class.border-red-500]="nationalityInvalid">
 
                   <option value="" disabled class="text-yellow-500">
                     Select Nationality
@@ -179,7 +223,7 @@
                   }
                 </select>
 
-                <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-white/50"></i>
+                <i class="fa-solid fa-chevron-down pointer-events-none absolute end-4 top-1/2 -translate-y-1/2 text-xs text-white/50"></i>
               </div>
 
               @if (nationalityInvalid) {
@@ -190,106 +234,130 @@
             </div>
           </div>
 
-          <!-- Date Section -->
-          <div class="mt-8 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2 text-sm font-semibold text-white">
-              <span class="flex h-6 w-6 items-center justify-center rounded-md bg-yellow-500/15 text-yellow-500">
-                <i class="fa-solid fa-calendar-days text-xs"></i>
-              </span>
-              When are you planning to visit?
+          <!-- Travel Dates Section -->
+          @if (!showTravelDates) {
+            <div class="mt-8 rounded-2xl border border-[#3a3122] bg-[#1d1912] p-5">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+                <div class="flex items-start gap-3">
+                  <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-yellow-500/15 text-yellow-500">
+                    <i class="fa-solid fa-calendar-days text-sm"></i>
+                  </span>
+
+                  <div>
+                    <h3 class="text-sm font-bold text-white">
+                      Do you have travel dates?
+                    </h3>
+
+                    <p class="mt-1 text-xs leading-relaxed text-white/55">
+                      Add your start and end dates if your trip is already planned.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-yellow-500 px-5 py-3 text-sm font-bold text-black shadow-[0_8px_20px_rgba(234,179,8,0.18)] transition hover:bg-yellow-400"
+                  (click)="addTravelDates()">
+                  <span class="inline-flex items-center gap-2">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    Add travel dates
+                  </span>
+                </button>
+              </div>
+            </div>
+          } @else {
+
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center gap-2 text-sm font-semibold text-white">
+                <span class="flex h-6 w-6 items-center justify-center rounded-md bg-yellow-500/15 text-yellow-500">
+                  <i class="fa-solid fa-calendar-days text-xs"></i>
+                </span>
+                When are you planning to visit?
+              </div>
+
+              <button
+                type="button"
+                class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-300 transition hover:border-red-500/60 hover:bg-red-500/15 hover:text-red-200"
+                (click)="removeTravelDates()">
+                <i class="fa-solid fa-xmark text-xs"></i>
+                Remove travel dates
+              </button>
             </div>
 
-            <button
-              type="button"
-              class="text-xs text-yellow-500 transition hover:text-yellow-400"
-              (click)="toggleHasTravelDates()">
+            <!-- Datepicker -->
+            <div class="mt-4 rounded-xl border border-[#3a3122] bg-[#1d1912] p-4 sm:p-5">
 
-              @if (profileForm.value.hasTravelDates) {
-                I don't have dates yet
-              } @else {
-                Add travel dates
-              }
-            </button>
-          </div>
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
 
-         <!-- Datepicker -->
-<div class="mt-4 rounded-xl border border-[#3a3122] bg-[#1d1912] p-4 sm:p-5">
+                <!-- Start Date -->
+                <div class="relative w-full">
+                  <div class="pointer-events-none absolute inset-y-0 start-0 z-10 flex items-center ps-3">
+                    <i class="fa-regular fa-calendar-days text-white/55"></i>
+                  </div>
 
-  <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <input
+                    type="text"
+                    readonly
+                    [value]="formatDateForDisplay(profileForm.get('travelStartDate')?.value)"
+                    placeholder="mm/dd/yyyy"
+                    class="block h-11 w-full cursor-pointer select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
+                    (click)="openTravelDatePicker(travelStartDateInput)" />
 
-    <!-- Start Date -->
-    <div class="relative w-full">
-      <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
-        <i class="fa-regular fa-calendar-days text-white/55"></i>
-      </div>
+                  <input
+                    #travelStartDateInput
+                    formControlName="travelStartDate"
+                    type="date"
+                    tabindex="-1"
+                    class="pointer-events-none absolute inset-0 h-full w-full opacity-0"
+                    (keydown)="preventDateTyping($event)"
+                    (paste)="$event.preventDefault()" />
 
-      <!-- Visible input فقط للعرض -->
-      <input
-        type="text"
-        readonly
-        tabindex="-1"
-        [value]="formatDateForDisplay(profileForm.get('travelStartDate')?.value)"
-        placeholder="mm/dd/yyyy"
-        class="pointer-events-none block h-11 w-full cursor-default select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0" />
+                  <button
+                    type="button"
+                    title="Select start date"
+                    class="absolute inset-y-0 end-0 z-10 flex cursor-pointer items-center rounded-e-lg px-3 text-yellow-500 transition hover:text-yellow-400"
+                    (click)="openTravelDatePicker(travelStartDateInput)">
+                    <i class="fa-regular fa-calendar-days"></i>
+                  </button>
+                </div>
 
-      <!-- Real date input مخفي -->
-      <input
-        #travelStartDateInput
-        formControlName="travelStartDate"
-        type="date"
-        tabindex="-1"
-        class="pointer-events-none absolute inset-0 h-full w-full opacity-0"
-        (keydown)="preventDateTyping($event)"
-        (paste)="$event.preventDefault()" />
+                <span class="shrink-0 text-center text-sm text-white/50">to</span>
 
-      <!-- Right icon مفتوحة -->
-      <button
-        type="button"
-        title="Select start date"
-        class="absolute inset-y-0 end-0 z-10 flex items-center rounded-e-lg px-3 cursor-pointer text-yellow-500 transition hover:text-yellow-400"
-        (click)="openTravelDatePicker(travelStartDateInput)">
-        <i class="fa-regular fa-calendar-days"></i>
-      </button>
-    </div>
+                <!-- End Date -->
+                <div class="relative w-full">
+                  <div class="pointer-events-none absolute inset-y-0 start-0 z-10 flex items-center ps-3">
+                    <i class="fa-regular fa-calendar-days text-white/55"></i>
+                  </div>
 
-    <span class="shrink-0 text-center text-sm text-white/50">to</span>
+                  <input
+                    type="text"
+                    readonly
+                    [value]="formatDateForDisplay(profileForm.get('travelEndDate')?.value)"
+                    placeholder="mm/dd/yyyy"
+                    class="block h-11 w-full cursor-pointer select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
+                    (click)="openTravelDatePicker(travelEndDateInput)" />
 
-    <!-- End Date -->
-    <div class="relative w-full">
-      <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
-        <i class="fa-regular fa-calendar-days text-white/55"></i>
-      </div>
+                  <input
+                    #travelEndDateInput
+                    formControlName="travelEndDate"
+                    type="date"
+                    tabindex="-1"
+                    class="pointer-events-none absolute inset-0 h-full w-full opacity-0"
+                    (keydown)="preventDateTyping($event)"
+                    (paste)="$event.preventDefault()" />
 
-      <!-- Visible input فقط للعرض -->
-      <input
-        type="text"
-        readonly
-        tabindex="-1"
-        [value]="formatDateForDisplay(profileForm.get('travelEndDate')?.value)"
-        placeholder="mm/dd/yyyy"
-        class="pointer-events-none block h-11 w-full cursor-default select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0" />
-
-      <!-- Real date input مخفي -->
-      <input
-        #travelEndDateInput
-        formControlName="travelEndDate"
-        type="date"
-        tabindex="-1"
-        class="pointer-events-none absolute inset-0 h-full w-full opacity-0"
-        (keydown)="preventDateTyping($event)"
-        (paste)="$event.preventDefault()" />
-
-      <!-- Right icon مفتوحة -->
-      <button
-        type="button"
-        title="Select end date"
-        class="absolute inset-y-0 end-0 z-10 flex items-center rounded-e-lg px-3 cursor-pointer text-yellow-500 transition hover:text-yellow-400"
-        (click)="openTravelDatePicker(travelEndDateInput)">
-        <i class="fa-regular fa-calendar-days"></i>
-      </button>
-    </div>
-  </div>
-</div>
+                  <button
+                    type="button"
+                    title="Select end date"
+                    class="absolute inset-y-0 end-0 z-10 flex cursor-pointer items-center rounded-e-lg px-3 text-yellow-500 transition hover:text-yellow-400"
+                    (click)="openTravelDatePicker(travelEndDateInput)">
+                    <i class="fa-regular fa-calendar-days"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
 
           <!-- Preferred Cities -->
           <div class="mt-8">
@@ -336,8 +404,8 @@
             <div class="flex justify-end">
               <button
                 type="submit"
-                [disabled]="isSaving || isUploading"
-                class="inline-flex items-center gap-2 rounded-xl bg-yellow-500 px-5 py-3 text-sm font-bold text-black shadow-[0_8px_20px_rgba(234,179,8,0.25)] transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-60">
+                [disabled]="isSaving || isUploading || isDeletingProfilePicture"
+                class="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-yellow-500 px-5 py-3 text-sm font-bold text-black shadow-[0_8px_20px_rgba(234,179,8,0.25)] transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-60">
 
                 @if (isSaving) {
                   <i class="fa-solid fa-spinner fa-spin"></i>
@@ -353,6 +421,73 @@
 
         </div>
       </form>
+
+      <!-- Delete Profile Picture Modal -->
+      @if (isDeleteProfilePictureModalOpen) {
+        <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 px-4 backdrop-blur-sm">
+
+          <div class="w-full max-w-md overflow-hidden rounded-2xl border border-[#3a3122] bg-[#15130f] text-white shadow-2xl">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
+              <h2 class="text-2xl font-bold">
+                Delete Picture
+              </h2>
+
+              <button
+                type="button"
+                class="cursor-pointer text-white/50 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                [disabled]="isDeletingProfilePicture"
+                (click)="closeDeleteProfilePictureModal()">
+                <i class="fa-solid fa-xmark text-xl"></i>
+              </button>
+            </div>
+
+            <!-- Body -->
+            <div class="px-6 py-7 text-center">
+
+              <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-red-500/40 bg-red-500/10 text-red-400">
+                <i class="fa-regular fa-trash-can text-2xl"></i>
+              </div>
+
+              <h3 class="mx-auto max-w-sm text-lg font-bold leading-relaxed text-white">
+                Are you sure you want to delete your profile picture?
+              </h3>
+
+              <p class="mt-3 text-sm font-semibold text-white/55">
+                Your current picture will be removed immediately.
+              </p>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end gap-3 border-t border-[#3a3122] px-6 py-5">
+
+              <button
+                type="button"
+                class="cursor-pointer rounded-xl border border-[#3a3122] px-6 py-3 text-sm font-bold text-white transition hover:border-yellow-500/50 hover:text-yellow-500 disabled:cursor-not-allowed disabled:opacity-60"
+                [disabled]="isDeletingProfilePicture"
+                (click)="closeDeleteProfilePictureModal()">
+                No
+              </button>
+
+              <button
+                type="button"
+                class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-yellow-500 px-6 py-3 text-sm font-bold text-black transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-60"
+                [disabled]="isDeletingProfilePicture"
+                (click)="confirmDeleteProfilePicture()">
+
+                @if (isDeletingProfilePicture) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  Deleting...
+                } @else {
+                  Yes, Delete
+                }
+              </button>
+
+            </div>
+          </div>
+        </div>
+      }
     }
   </div>
 </div>

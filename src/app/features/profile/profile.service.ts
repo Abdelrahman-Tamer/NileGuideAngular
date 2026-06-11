@@ -30,14 +30,24 @@ export class ProfileService {
     return this.http.put<UserProfileResponse>(this.profileUrl, payload);
   }
 
+  // POST /api/users/me/profile-picture
+  // form-data key: Image
   uploadProfilePicture(file: File): Observable<ProfilePictureResponse> {
     const formData = new FormData();
-    formData.append('file', file);
 
-    // لو عندك endpoint مختلفة لرفع الصورة ابعتهالي أظبطها
+    // الـ backend عندك مستني Image مش file
+    formData.append('Image', file, file.name);
+
     return this.http.post<ProfilePictureResponse>(
       `${this.baseUrl}/users/me/profile-picture`,
       formData
+    );
+  }
+
+  // DELETE /api/users/me/profile-picture
+  deleteProfilePicture(): Observable<{ message?: string }> {
+    return this.http.delete<{ message?: string }>(
+      `${this.baseUrl}/users/me/profile-picture`
     );
   }
 
@@ -51,6 +61,31 @@ export class ProfileService {
     return this.http.get<any>(`${this.baseUrl}/categories`).pipe(
       map((response) => this.normalizeLookupList(response, 'category'))
     );
+  }
+
+  resolveFileUrl(fileUrl: string | null | undefined): string {
+    const value = String(fileUrl || '').trim();
+
+    if (!value) {
+      return '';
+    }
+
+    if (
+      value.startsWith('http://') ||
+      value.startsWith('https://') ||
+      value.startsWith('data:') ||
+      value.startsWith('blob:')
+    ) {
+      return value;
+    }
+
+    const apiOrigin = this.baseUrl.replace(/\/api$/i, '');
+
+    if (value.startsWith('/')) {
+      return `${apiOrigin}${value}`;
+    }
+
+    return `${apiOrigin}/${value}`;
   }
 
   private normalizeLookupList(response: any, type: 'city' | 'category'): LookupItem[] {

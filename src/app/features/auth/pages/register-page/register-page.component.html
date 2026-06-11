@@ -1,4 +1,3 @@
-
 <section class="min-h-screen  flex items-center justify-center px-4 py-10 text-white">
   <div class="w-full max-w-6xl border border-yellow-500/10 overflow-hidden rounded-3xl bg-[#27241b] shadow-2xl grid lg:grid-cols-2">
 
@@ -94,82 +93,120 @@
           }
         </div>
 
-       <!-- Password -->
+       <!-- Date of Birth -->
 <div>
-  <label class="text-sm font-medium mb-2 block">Password</label>
-  <div class="relative">
-    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+  <label class="text-sm font-medium mb-2 block">Date of Birth</label>
 
-    <input
-      formControlName="password"
-      [type]="showPassword ? 'text' : 'password'"
-      placeholder="Enter your password"
-      class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
-             focus:ring-2 focus:ring-yellow-500/20"
-      [class.border-red-500]="f.password.touched && f.password.invalid"
-      [class.border-yellow-500/50]="!(f.password.touched && f.password.invalid)"
-    />
+  <div class="relative">
+    <i class="fa-regular fa-calendar-days absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+
+   <input
+  #dateOfBirthInput
+  formControlName="dateOfBirth"
+  type="date"
+  class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
+         focus:ring-2 focus:ring-yellow-500/20 cursor-pointer
+         [&::-webkit-calendar-picker-indicator]:opacity-0
+         [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+  [class.border-red-500]="f.dateOfBirth.touched && f.dateOfBirth.invalid"
+  [class.border-yellow-500/50]="!(f.dateOfBirth.touched && f.dateOfBirth.invalid)"
+  (click)="openDatePicker(dateOfBirthInput)"
+  (keydown)="blockDateTyping($event)"
+  (paste)="$event.preventDefault()"
+/>
 
     <button
       type="button"
-      (click)="togglePassword()"
-      class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-white/40 hover:text-white/70"
+      (click)="openDatePicker(dateOfBirthInput)"
+      class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-yellow-400 hover:text-yellow-300"
     >
-      <i
-        class="fa-regular cursor-pointer"
-        [class.fa-eye]="!showPassword"
-        [class.fa-eye-slash]="showPassword"
-      ></i>
+      <i class="fa-regular fa-calendar-days"></i>
     </button>
   </div>
 
-  <p class="mt-2 text-xs text-white/45">At least 8 chars, must include letters and numbers</p>
-
-  @if (f.password.touched && f.password.errors) {
+  @if (f.dateOfBirth.touched && f.dateOfBirth.errors) {
     <p class="mt-2 text-xs text-red-300">
-      @if (f.password.errors['required']) { <span>Password is required.</span> }
-      @if (f.password.errors['maxlength']) { <span>Maximum 100 characters.</span> }
-      @if (f.password.errors['pattern']) { <span>Must include letters and numbers.</span> }
+      @if (f.dateOfBirth.errors['required']) { <span>Date of birth is required.</span> }
     </p>
   }
 </div>
 
-       <!-- Confirm Password -->
-<div>
-  <label class="text-sm font-medium mb-2 block">Confirm Password</label>
-  <div class="relative">
-    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+        <!-- Password -->
+        <div>
+          <label class="text-sm font-medium mb-2 block">Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
 
-    <input
-      formControlName="confirmPassword"
-      [type]="showConfirmPassword ? 'text' : 'password'"
-      placeholder="Confirm your password"
-      class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
-             focus:ring-2 focus:ring-yellow-500/20"
-      [class.border-red-500]="f.confirmPassword.touched && (f.confirmPassword.invalid || registerForm.hasError('passwordMatch'))"
-      [class.border-yellow-500/50]="!(f.confirmPassword.touched && (f.confirmPassword.invalid || registerForm.hasError('passwordMatch')))"
-    />
+            <input
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Enter your password"
+              class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
+                     focus:ring-2 focus:ring-yellow-500/20"
+              [class.border-red-500]="f.password.touched && f.password.invalid"
+              [class.border-yellow-500/50]="!(f.password.touched && f.password.invalid)"
+            />
 
-    <button
-      type="button"
-      (click)="toggleConfirmPassword()"
-      class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-white/40 hover:text-white/70"
-    >
-      <i
-        class="fa-regular cursor-pointer"
-        [class.fa-eye]="!showConfirmPassword"
-        [class.fa-eye-slash]="showConfirmPassword"
-      ></i>
-    </button>
-  </div>
+            <button
+              type="button"
+              (click)="togglePassword()"
+              class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-white/40 hover:text-white/70"
+            >
+              <i
+                class="fa-regular cursor-pointer"
+                [class.fa-eye]="!showPassword"
+                [class.fa-eye-slash]="showPassword"
+              ></i>
+            </button>
+          </div>
 
-  @if (f.confirmPassword.touched && (f.confirmPassword.errors || registerForm.hasError('passwordMatch'))) {
-    <p class="mt-2 text-xs text-red-300">
-      @if (f.confirmPassword.errors?.['required']) { <span>Confirm password is required.</span> }
-      @if (registerForm.hasError('passwordMatch')) { <span>Passwords do not match.</span> }
-    </p>
-  }
-</div>
+          <p class="mt-2 text-xs text-white/45">At least 8 chars, must include letters and numbers</p>
+
+          @if (f.password.touched && f.password.errors) {
+            <p class="mt-2 text-xs text-red-300">
+              @if (f.password.errors['required']) { <span>Password is required.</span> }
+              @if (f.password.errors['maxlength']) { <span>Maximum 100 characters.</span> }
+              @if (f.password.errors['pattern']) { <span>Must include letters and numbers.</span> }
+            </p>
+          }
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label class="text-sm font-medium mb-2 block">Confirm Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+
+            <input
+              formControlName="confirmPassword"
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              placeholder="Confirm your password"
+              class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
+                     focus:ring-2 focus:ring-yellow-500/20"
+              [class.border-red-500]="f.confirmPassword.touched && (f.confirmPassword.invalid || registerForm.hasError('passwordMatch'))"
+              [class.border-yellow-500/50]="!(f.confirmPassword.touched && (f.confirmPassword.invalid || registerForm.hasError('passwordMatch')))"
+            />
+
+            <button
+              type="button"
+              (click)="toggleConfirmPassword()"
+              class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-white/40 hover:text-white/70"
+            >
+              <i
+                class="fa-regular cursor-pointer"
+                [class.fa-eye]="!showConfirmPassword"
+                [class.fa-eye-slash]="showConfirmPassword"
+              ></i>
+            </button>
+          </div>
+
+          @if (f.confirmPassword.touched && (f.confirmPassword.errors || registerForm.hasError('passwordMatch'))) {
+            <p class="mt-2 text-xs text-red-300">
+              @if (f.confirmPassword.errors?.['required']) { <span>Confirm password is required.</span> }
+              @if (registerForm.hasError('passwordMatch')) { <span>Passwords do not match.</span> }
+            </p>
+          }
+        </div>
 
         <!-- Agree -->
         <label class="flex items-center gap-3 text-sm text-white/70">

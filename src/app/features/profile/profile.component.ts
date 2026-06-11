@@ -13,10 +13,12 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 
 import { LookupItem, UserProfileResponse } from './profile';
 import { ProfileService } from './profile.service';
+import { NATIONALITIES } from '../../core/constants/nationalities';
 
 @Component({
   selector: 'app-profile',
@@ -26,59 +28,7 @@ import { ProfileService } from './profile.service';
   styleUrl: './profile.component.css'
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  nationalities: string[] = [
-    'Egyptian',
-    'Saudi Arabian',
-    'Emirati',
-    'Kuwaiti',
-    'Qatari',
-    'Bahraini',
-    'Omani',
-    'Jordanian',
-    'Lebanese',
-    'Syrian',
-    'Palestinian',
-    'Iraqi',
-    'Moroccan',
-    'Tunisian',
-    'Algerian',
-    'Libyan',
-    'Sudanese',
-    'American',
-    'British',
-    'French',
-    'German',
-    'Italian',
-    'Spanish',
-    'Canadian',
-    'Australian',
-    'Indian',
-    'Chinese',
-    'Japanese',
-    'Other'
-  ];
-
-  readonly fallbackCities: LookupItem[] = [
-    { id: 1, name: 'Cairo' },
-    { id: 2, name: 'Luxor' },
-    { id: 3, name: 'Aswan' },
-    { id: 4, name: 'Sharm El-Sheikh' },
-    { id: 5, name: 'Alexandria' },
-    { id: 6, name: 'Giza' },
-    { id: 7, name: 'Hurghada' },
-    { id: 8, name: 'Dahab' }
-  ];
-
-  readonly fallbackInterests: LookupItem[] = [
-    { id: 1, name: 'History & Culture' },
-    { id: 2, name: 'Pyramids' },
-    { id: 3, name: 'Local Food' },
-    { id: 4, name: 'Nile Cruise' },
-    { id: 5, name: 'Red Sea Diving' },
-    { id: 6, name: 'Luxury & Relaxation' },
-    { id: 7, name: 'Museums' },
-    { id: 8, name: 'Adventure' }
-  ];
+  nationalities: string[] = [...NATIONALITIES];
 
   cities: LookupItem[] = [];
   interestCategories: LookupItem[] = [];
@@ -87,10 +37,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
   isSaving = false;
   isUploading = false;
 
+  isDeletingProfilePicture = false;
+  isDeleteProfilePictureModalOpen = false;
+
   errorMessage = '';
   successMessage = '';
 
-  profileImageUrl = '/Photo/Aswan.png';
+  profileImageUrl = '';
+
+  showTravelDates = false;
 
   private currentProfile: UserProfileResponse | null = null;
   private requestId = 0;
@@ -100,6 +55,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private profileService: ProfileService,
+    private router: Router,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
@@ -109,7 +65,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       dateOfBirth: ['', Validators.required],
       nationality: ['', Validators.required],
 
-      hasTravelDates: [true],
+      hasTravelDates: [false],
       travelStartDate: [''],
       travelEndDate: [''],
 
@@ -142,27 +98,37 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.successMessage = '';
     this.cdr.markForCheck();
 
+    let lookupLoadFailed = false;
+
     forkJoin({
       profile: this.profileService.getProfile(),
       cities: this.profileService.getCities().pipe(
-        catchError(() => of(this.fallbackCities))
+        catchError((error) => {
+          console.error('Cities loading error:', error);
+          lookupLoadFailed = true;
+          return of([] as LookupItem[]);
+        })
       ),
       interests: this.profileService.getInterestCategories().pipe(
-        catchError(() => of(this.fallbackInterests))
+        catchError((error) => {
+          console.error('Interest categories loading error:', error);
+          lookupLoadFailed = true;
+          return of([] as LookupItem[]);
+        })
       )
     }).subscribe({
       next: ({ profile, cities, interests }) => {
         if (currentRequestId !== this.requestId) return;
 
-        this.cities = cities.length ? cities : this.fallbackCities;
-        this.interestCategories = interests.length
-          ? interests
-          : this.fallbackInterests;
+        this.cities = cities;
+        this.interestCategories = interests;
 
         this.setProfileData(profile);
 
         this.isLoading = false;
-        this.errorMessage = '';
+        this.errorMessage = lookupLoadFailed
+          ? 'Failed to load cities or categories. Please refresh and try again.'
+          : '';
 
         this.cdr.markForCheck();
       },
@@ -185,10 +151,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   setProfileData(profile: UserProfileResponse): void {
     this.currentProfile = profile;
 
-    this.profileImageUrl =
-      profile.profile_picture_url ||
-      profile.profilePictureUrl ||
-      '/Photo/Aswan.png';
+    this.profileImageUrl = this.getProfilePictureUrlFromProfile(profile);
 
     const nationality = profile.nationality || '';
 
@@ -196,7 +159,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.nationalities = [nationality, ...this.nationalities];
     }
 
-    const hasTravelDates = profile.hasTravelDates ?? false;
+    const hasTravelDates = !!profile.hasTravelDates;
+    this.showTravelDates = hasTravelDates;
 
     this.profileForm.patchValue({
       fullName: profile.fullName || '',
@@ -233,7 +197,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     const raw = this.profileForm.getRawValue();
 
-    const hasTravelDates = !!raw.hasTravelDates;
+    const hasTravelDates = this.showTravelDates;
     const travelStartDate = hasTravelDates ? raw.travelStartDate || null : null;
     const travelEndDate = hasTravelDates ? raw.travelEndDate || null : null;
 
@@ -293,7 +257,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
           });
         }
 
-        this.cdr.markForCheck();
+        this.goToActivitiesWithProfileFilters(
+          payload.preferredCityIds,
+          payload.interestCategoryIds
+        );
       },
       error: (error) => {
         console.error('Profile saving error:', error);
@@ -309,6 +276,39 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
+  addTravelDates(): void {
+    this.showTravelDates = true;
+
+    this.profileForm.patchValue({
+      hasTravelDates: true
+    });
+
+    this.syncTravelDateControls(true);
+    this.cdr.markForCheck();
+  }
+
+  removeTravelDates(): void {
+    this.showTravelDates = false;
+
+    this.profileForm.patchValue({
+      hasTravelDates: false,
+      travelStartDate: '',
+      travelEndDate: ''
+    });
+
+    this.syncTravelDateControls(false);
+    this.cdr.markForCheck();
+  }
+
+  toggleHasTravelDates(): void {
+    if (this.showTravelDates) {
+      this.removeTravelDates();
+      return;
+    }
+
+    this.addTravelDates();
+  }
+
   onProfileImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -317,8 +317,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!file.type.startsWith('image/')) {
-      this.errorMessage = 'Please select a valid image file.';
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+
+    if (!allowedTypes.includes(file.type)) {
+      this.errorMessage = 'Please select JPG or PNG image only.';
       input.value = '';
       this.cdr.markForCheck();
       return;
@@ -343,16 +345,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.isUploading = false;
 
-        const newImageUrl =
-          response.profile_picture_url ||
-          response.profilePictureUrl ||
-          response.imageUrl ||
-          response.url;
+        const newImageUrl = this.getProfilePictureUrlFromUploadResponse(response);
 
         if (newImageUrl) {
-          this.profileImageUrl = newImageUrl;
+          this.profileImageUrl = this.addCacheBuster(newImageUrl);
+
+          if (this.currentProfile) {
+            this.currentProfile = {
+              ...this.currentProfile,
+              profile_picture_url: newImageUrl,
+              profilePictureUrl: newImageUrl
+            };
+          }
         } else {
-          this.loadProfilePageData();
+          this.refreshProfileAfterPictureUpload();
         }
 
         this.successMessage = 'Profile picture updated successfully.';
@@ -375,36 +381,126 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
   }
 
-  openDatePicker(input: HTMLInputElement): void {
-    if (!input) {
+  onProfileImageError(): void {
+    this.profileImageUrl = '';
+    this.cdr.markForCheck();
+  }
+
+  openDeleteProfilePictureModal(event?: Event): void {
+    event?.stopPropagation();
+
+    if (!this.profileImageUrl || this.isUploading || this.isDeletingProfilePicture) {
       return;
     }
 
-    const pickerInput = input as HTMLInputElement & {
+    this.isDeleteProfilePictureModalOpen = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.cdr.markForCheck();
+  }
+
+  closeDeleteProfilePictureModal(): void {
+    if (this.isDeletingProfilePicture) {
+      return;
+    }
+
+    this.isDeleteProfilePictureModalOpen = false;
+    this.cdr.markForCheck();
+  }
+
+  confirmDeleteProfilePicture(): void {
+    if (!this.profileImageUrl) {
+      return;
+    }
+
+    this.isDeletingProfilePicture = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.cdr.markForCheck();
+
+    this.profileService.deleteProfilePicture().subscribe({
+      next: () => {
+        this.isDeletingProfilePicture = false;
+        this.isDeleteProfilePictureModalOpen = false;
+        this.profileImageUrl = '';
+
+        if (this.currentProfile) {
+          this.currentProfile = {
+            ...this.currentProfile,
+            profile_picture_url: null,
+            profilePictureUrl: null
+          };
+        }
+
+        this.successMessage = 'Profile picture deleted successfully.';
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        console.error('Profile picture delete error:', error);
+
+        this.isDeletingProfilePicture = false;
+        this.isDeleteProfilePictureModalOpen = false;
+
+        this.errorMessage = this.extractErrorMessage(
+          error,
+          'Failed to delete profile picture.'
+        );
+
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  get profileInitials(): string {
+    const fullName =
+      this.profileForm.get('fullName')?.value ||
+      this.currentProfile?.fullName ||
+      '';
+
+    const nameParts = String(fullName)
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (nameParts.length >= 2) {
+      return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
+    }
+
+    if (nameParts.length === 1) {
+      return nameParts[0][0].toUpperCase();
+    }
+
+    const email =
+      this.profileForm.get('email')?.value ||
+      this.currentProfile?.email ||
+      '';
+
+    if (email) {
+      return String(email)[0].toUpperCase();
+    }
+
+    return 'U';
+  }
+
+  openDatePicker(input: HTMLInputElement): void {
+    if (!input) return;
+
+    input.focus();
+
+    const dateInput = input as HTMLInputElement & {
       showPicker?: () => void;
     };
 
     try {
-      if (typeof pickerInput.showPicker === 'function') {
-        pickerInput.showPicker();
-        return;
-      }
+      dateInput.showPicker?.();
     } catch {
-      // Fallback for browsers that block showPicker in specific cases.
+      input.focus();
     }
-
-    input.focus();
-    input.click();
   }
 
   openTravelDatePicker(input: HTMLInputElement): void {
-    if (!this.profileForm.value.hasTravelDates) {
-      this.profileForm.patchValue({
-        hasTravelDates: true
-      });
-
-      this.syncTravelDateControls(true);
-      this.cdr.markForCheck();
+    if (!this.showTravelDates) {
+      this.addTravelDates();
 
       setTimeout(() => {
         this.openDatePicker(input);
@@ -417,7 +513,24 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   preventDateTyping(event: KeyboardEvent): void {
-    event.preventDefault();
+    this.blockDateTyping(event);
+  }
+
+  blockDateTyping(event: KeyboardEvent): void {
+    const allowedKeys = [
+      'Tab',
+      'Shift',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Enter',
+      'Escape'
+    ];
+
+    if (!allowedKeys.includes(event.key)) {
+      event.preventDefault();
+    }
   }
 
   formatDateForDisplay(value: string | null | undefined): string {
@@ -434,25 +547,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     const [year, month, day] = parts;
     return `${month}/${day}/${year}`;
-  }
-
-  toggleHasTravelDates(): void {
-    const currentValue = !!this.profileForm.value.hasTravelDates;
-    const nextValue = !currentValue;
-
-    this.profileForm.patchValue({
-      hasTravelDates: nextValue
-    });
-
-    if (!nextValue) {
-      this.profileForm.patchValue({
-        travelStartDate: '',
-        travelEndDate: ''
-      });
-    }
-
-    this.syncTravelDateControls(nextValue);
-    this.cdr.markForCheck();
   }
 
   toggleArrayValue(
@@ -509,12 +603,83 @@ export class ProfileComponent implements OnInit, OnDestroy {
     return !!control && control.invalid && (control.dirty || control.touched);
   }
 
+  private goToActivitiesWithProfileFilters(
+    preferredCityIds: number[],
+    interestCategoryIds: number[]
+  ): void {
+    const queryParams: {
+      cities?: string;
+      categories?: string;
+    } = {};
+
+    if (preferredCityIds.length > 0) {
+      queryParams.cities = preferredCityIds.join(',');
+    }
+
+    if (interestCategoryIds.length > 0) {
+      queryParams.categories = interestCategoryIds.join(',');
+    }
+
+    this.router.navigate(['/activities'], {
+      queryParams
+    });
+  }
+
+  private refreshProfileAfterPictureUpload(): void {
+    this.profileService.getProfile().subscribe({
+      next: (profile) => {
+        this.setProfileData(profile);
+        this.profileImageUrl = this.addCacheBuster(this.profileImageUrl);
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        console.error('Profile refresh after picture upload error:', error);
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  private getProfilePictureUrlFromProfile(profile: UserProfileResponse): string {
+    const imageUrl =
+      profile.profile_picture_url ||
+      profile.profilePictureUrl ||
+      '';
+
+    return this.profileService.resolveFileUrl(imageUrl);
+  }
+
+  private getProfilePictureUrlFromUploadResponse(response: any): string {
+    const imageUrl =
+      response?.profile_picture_url ||
+      response?.profilePictureUrl ||
+      '';
+
+    return this.profileService.resolveFileUrl(imageUrl);
+  }
+
+  private addCacheBuster(url: string): string {
+    if (!url || url.startsWith('data:') || url.startsWith('blob:')) {
+      return url;
+    }
+
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}t=${Date.now()}`;
+  }
+
   private syncTravelDateControls(hasTravelDates: boolean): void {
     const startControl = this.profileForm.get('travelStartDate');
     const endControl = this.profileForm.get('travelEndDate');
 
-    startControl?.enable({ emitEvent: false });
-    endControl?.enable({ emitEvent: false });
+    if (hasTravelDates) {
+      startControl?.setValidators([Validators.required]);
+      endControl?.setValidators([Validators.required]);
+    } else {
+      startControl?.clearValidators();
+      endControl?.clearValidators();
+    }
+
+    startControl?.updateValueAndValidity({ emitEvent: false });
+    endControl?.updateValueAndValidity({ emitEvent: false });
   }
 
   private toDateOnly(value: string | null | undefined): string | null {

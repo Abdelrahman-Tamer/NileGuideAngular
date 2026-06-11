@@ -46,7 +46,9 @@ export class RegisterPageComponent {
   errorMessage = '';
   successMessage = '';
   redirectCounter = 3;
-   showPassword = false;
+
+  showPassword = false;
+  showConfirmPassword = false;
 
   registerForm = this.fb.group(
     {
@@ -60,6 +62,7 @@ export class RegisterPageComponent {
         Validators.required,
         Validators.maxLength(100),
       ]),
+      dateOfBirth: this.fb.control('', [Validators.required]),
       password: this.fb.control('', [
         Validators.required,
         Validators.maxLength(100),
@@ -78,15 +81,46 @@ export class RegisterPageComponent {
     return this.registerForm.controls;
   }
 
-showConfirmPassword = false;
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
 
-togglePassword(): void {
-  this.showPassword = !this.showPassword;
-}
+  toggleConfirmPassword(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
 
-toggleConfirmPassword(): void {
-  this.showConfirmPassword = !this.showConfirmPassword;
-}
+  openDatePicker(input: HTMLInputElement): void {
+    if (!input) return;
+
+    input.focus();
+
+    const dateInput = input as HTMLInputElement & {
+      showPicker?: () => void;
+    };
+
+    try {
+      dateInput.showPicker?.();
+    } catch {
+      input.focus();
+    }
+  }
+
+  blockDateTyping(event: KeyboardEvent): void {
+    const allowedKeys = [
+      'Tab',
+      'Shift',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Enter',
+      'Escape',
+    ];
+
+    if (!allowedKeys.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
 
   private refreshView(): void {
     try {
@@ -114,6 +148,7 @@ toggleConfirmPassword(): void {
       email: this.f.email.value!.trim(),
       password: this.f.password.value!,
       nationality: this.f.nationality.value!.trim(),
+      dateOfBirth: this.f.dateOfBirth.value!,
     };
 
     this.auth
@@ -122,6 +157,7 @@ toggleConfirmPassword(): void {
       .subscribe({
         next: (res) => {
           localStorage.setItem(STORED_KEYS.USER_TOKEN, res.token);
+
           if (res.userId !== undefined && res.userId !== null) {
             localStorage.setItem(STORED_KEYS.USER_ID, String(res.userId));
           }
@@ -146,6 +182,7 @@ toggleConfirmPassword(): void {
             err?.error?.message ||
             err?.error?.title ||
             'Registration failed. Check inputs and try again.';
+
           this.isLoading = false;
           this.refreshView();
         },

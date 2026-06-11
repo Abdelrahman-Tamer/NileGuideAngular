@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { ActivitiesService } from './activities.service';
@@ -14,7 +14,7 @@ import {
   ActivityDetails,
   ActivityListItem,
   ActivityOpeningHour,
-  ActivityProvider,
+  ActivityProvider, 
   ActivitySortBy,
 } from './activities.interfaces';
 
@@ -31,6 +31,7 @@ export class ActivitiesComponent implements OnInit {
   private readonly scheduleService = inject(ScheduleService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly toastr = inject(ToastrService);
+  private readonly route = inject(ActivatedRoute);
 
   activities: ActivityListItem[] = [];
   categories: ActivityCategory[] = [];
@@ -66,7 +67,27 @@ export class ActivitiesComponent implements OnInit {
     this.getCategories();
     this.getCities();
     this.loadWishlistIds();
-    this.getActivities();
+    this.listenToProfileFilters();
+  }
+
+  private listenToProfileFilters(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      this.selectedCityIds = this.parseIds(params.get('cities'));
+      this.selectedCategoryIds = this.parseIds(params.get('categories'));
+      this.currentPage = 1;
+      this.getActivities();
+    });
+  }
+
+  private parseIds(value: string | null): number[] {
+    if (!value) {
+      return [];
+    }
+
+    return value
+      .split(',')
+      .map((id) => Number(id))
+      .filter((id) => !Number.isNaN(id));
   }
 
   get totalPages(): number {
