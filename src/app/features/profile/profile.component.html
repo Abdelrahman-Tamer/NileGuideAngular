@@ -12,6 +12,9 @@
 
       <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
 
+        <!-- Tailwind safelist for dynamic Flowbite Datepicker classes -->
+        <span class="hidden !bg-yellow-500 hover:!bg-yellow-400 !text-black !font-bold !rounded-xl !border-yellow-500 !opacity-100"></span>
+
         <!-- Header -->
         <div class="mb-8 flex items-start gap-4">
           <div class="relative h-24 w-24 shrink-0">
@@ -169,20 +172,16 @@
                 </div>
 
                 <input
+                  #dateOfBirthInput
+                  id="profile-date-of-birth"
                   type="text"
+                  formControlName="dateOfBirth"
+                  autocomplete="off"
                   readonly
-                  [value]="formatDateForDisplay(profileForm.get('dateOfBirth')?.value)"
-                  placeholder="mm/dd/yyyy"
+                  placeholder="Select date of birth"
                   class="block h-11 w-full cursor-pointer select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
                   [class.border-red-500]="dateOfBirthInvalid"
-                  (click)="openDatePicker(dateOfBirthInput)" />
-
-                <input
-                  #dateOfBirthInput
-                  type="date"
-                  formControlName="dateOfBirth"
-                  tabindex="-1"
-                  class="pointer-events-none absolute inset-0 h-full w-full opacity-0"
+                  (click)="openDatePicker()"
                   (keydown)="preventDateTyping($event)"
                   (paste)="$event.preventDefault()" />
 
@@ -190,7 +189,7 @@
                   type="button"
                   title="Select date of birth"
                   class="absolute inset-y-0 end-0 z-10 flex cursor-pointer items-center rounded-e-lg px-3 text-yellow-500 transition hover:text-yellow-400"
-                  (click)="openDatePicker(dateOfBirthInput)">
+                  (click)="openDatePicker()">
                   <i class="fa-regular fa-calendar-days"></i>
                 </button>
               </div>
@@ -285,10 +284,13 @@
               </button>
             </div>
 
-            <!-- Datepicker -->
+            <!-- Flowbite DateRangePicker -->
             <div class="mt-4 rounded-xl border border-[#3a3122] bg-[#1d1912] p-4 sm:p-5">
 
-              <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div
+                #travelDateRangePicker
+                id="profile-date-range-picker"
+                class="flex flex-col gap-3 sm:flex-row sm:items-center">
 
                 <!-- Start Date -->
                 <div class="relative w-full">
@@ -297,19 +299,16 @@
                   </div>
 
                   <input
-                    type="text"
-                    readonly
-                    [value]="formatDateForDisplay(profileForm.get('travelStartDate')?.value)"
-                    placeholder="mm/dd/yyyy"
-                    class="block h-11 w-full cursor-pointer select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
-                    (click)="openTravelDatePicker(travelStartDateInput)" />
-
-                  <input
                     #travelStartDateInput
+                    id="profile-travel-start-date"
                     formControlName="travelStartDate"
-                    type="date"
-                    tabindex="-1"
-                    class="pointer-events-none absolute inset-0 h-full w-full opacity-0"
+                    type="text"
+                    autocomplete="off"
+                    readonly
+                    placeholder="Start date"
+                    class="block h-11 w-full cursor-pointer select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
+                    [class.border-red-500]="travelStartDateInvalid"
+                    (click)="openTravelDatePicker(travelStartDateInput)"
                     (keydown)="preventDateTyping($event)"
                     (paste)="$event.preventDefault()" />
 
@@ -331,19 +330,16 @@
                   </div>
 
                   <input
-                    type="text"
-                    readonly
-                    [value]="formatDateForDisplay(profileForm.get('travelEndDate')?.value)"
-                    placeholder="mm/dd/yyyy"
-                    class="block h-11 w-full cursor-pointer select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
-                    (click)="openTravelDatePicker(travelEndDateInput)" />
-
-                  <input
                     #travelEndDateInput
+                    id="profile-travel-end-date"
                     formControlName="travelEndDate"
-                    type="date"
-                    tabindex="-1"
-                    class="pointer-events-none absolute inset-0 h-full w-full opacity-0"
+                    type="text"
+                    autocomplete="off"
+                    readonly
+                    placeholder="End date"
+                    class="block h-11 w-full cursor-pointer select-none rounded-lg border border-[#3a3122] bg-[#27241b] ps-9 pe-10 text-sm text-white placeholder:text-white/35 outline-none transition focus:border-yellow-500 focus:ring-0"
+                    [class.border-red-500]="travelEndDateInvalid"
+                    (click)="openTravelDatePicker(travelEndDateInput)"
                     (keydown)="preventDateTyping($event)"
                     (paste)="$event.preventDefault()" />
 

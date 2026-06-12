@@ -1,11 +1,14 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   Inject,
   OnDestroy,
   OnInit,
-  PLATFORM_ID
+  PLATFORM_ID,
+  ViewChild
 } from '@angular/core';
 import {
   FormBuilder,
@@ -20,6 +23,11 @@ import { LookupItem, UserProfileResponse } from './profile';
 import { ProfileService } from './profile.service';
 import { NATIONALITIES } from '../../core/constants/nationalities';
 
+// لو السطر ده عمل import error عندك، استخدم بداله:
+// import Datepicker from 'flowbite-datepicker/Datepicker';
+// import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
+import { Datepicker, DateRangePicker } from 'flowbite-datepicker';
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -27,7 +35,19 @@ import { NATIONALITIES } from '../../core/constants/nationalities';
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
-export class ProfileComponent implements OnInit, OnDestroy {
+export class ProfileComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('dateOfBirthInput')
+  dateOfBirthInput?: ElementRef<HTMLInputElement>;
+
+  @ViewChild('travelDateRangePicker')
+  travelDateRangePicker?: ElementRef<HTMLDivElement>;
+
+  @ViewChild('travelStartDateInput')
+  travelStartDateInput?: ElementRef<HTMLInputElement>;
+
+  @ViewChild('travelEndDateInput')
+  travelEndDateInput?: ElementRef<HTMLInputElement>;
+
   nationalities: string[] = [...NATIONALITIES];
 
   cities: LookupItem[] = [];
@@ -49,6 +69,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   private currentProfile: UserProfileResponse | null = null;
   private requestId = 0;
+
+  private dateOfBirthPicker: any;
+  private travelDateRangePickerInstance: any;
+  private datePickerObserver?: MutationObserver;
+
+  private dateOfBirthEventsBound = false;
+  private travelDateEventsBound = false;
+
+  private readonly syncDateOfBirthHandler = () => this.syncDateOfBirthValue();
+  private readonly syncTravelDatesHandler = () => this.syncTravelDateValues();
+  private readonly styleDatePickerHandler = () => {
+    setTimeout(() => this.styleFlowbiteDatePickers(), 0);
+  };
 
   profileForm: FormGroup;
 
@@ -82,8 +115,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.loadProfilePageData();
   }
 
+  ngAfterViewInit(): void {
+    this.initDatePickersAfterRender();
+  }
+
   ngOnDestroy(): void {
     this.requestId++;
+    this.destroyDatePickers();
   }
 
   loadProfilePageData(): void {
@@ -130,7 +168,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
           ? 'Failed to load cities or categories. Please refresh and try again.'
           : '';
 
-        this.cdr.markForCheck();
+        this.refreshView();
+        this.initDatePickersAfterRender();
       },
       error: (error) => {
         if (currentRequestId !== this.requestId) return;
@@ -143,7 +182,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           'Failed to load profile data.'
         );
 
-        this.cdr.markForCheck();
+        this.refreshView();
       }
     });
   }
@@ -181,17 +220,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
 
     this.syncTravelDateControls(hasTravelDates);
-    this.cdr.markForCheck();
+    this.refreshView();
+    this.initDatePickersAfterRender();
   }
 
   saveProfile(): void {
     this.errorMessage = '';
     this.successMessage = '';
 
+    this.syncAllDateValues();
+
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
       this.errorMessage = 'Please complete the required fields.';
-      this.cdr.markForCheck();
+      this.refreshView();
       return;
     }
 
@@ -203,7 +245,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     if (hasTravelDates && (!travelStartDate || !travelEndDate)) {
       this.errorMessage = 'Please select both travel start and end dates.';
-      this.cdr.markForCheck();
+      this.refreshView();
       return;
     }
 
@@ -214,7 +256,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       new Date(travelEndDate) < new Date(travelStartDate)
     ) {
       this.errorMessage = 'Travel end date cannot be before start date.';
-      this.cdr.markForCheck();
+      this.refreshView();
       return;
     }
 
@@ -233,7 +275,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     };
 
     this.isSaving = true;
-    this.cdr.markForCheck();
+    this.refreshView();
 
     this.profileService.updateProfile(payload).subscribe({
       next: (updatedProfile) => {
@@ -271,7 +313,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           'Failed to save profile.'
         );
 
-        this.cdr.markForCheck();
+        this.refreshView();
       }
     });
   }
@@ -284,10 +326,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
 
     this.syncTravelDateControls(true);
-    this.cdr.markForCheck();
+    this.refreshView();
+    this.initDatePickersAfterRender();
   }
 
   removeTravelDates(): void {
+    this.destroyTravelDateRangePicker();
+
     this.showTravelDates = false;
 
     this.profileForm.patchValue({
@@ -297,7 +342,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     });
 
     this.syncTravelDateControls(false);
-    this.cdr.markForCheck();
+    this.refreshView();
   }
 
   toggleHasTravelDates(): void {
@@ -322,7 +367,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     if (!allowedTypes.includes(file.type)) {
       this.errorMessage = 'Please select JPG or PNG image only.';
       input.value = '';
-      this.cdr.markForCheck();
+      this.refreshView();
       return;
     }
 
@@ -332,14 +377,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
     if (file.size > maxSizeInBytes) {
       this.errorMessage = `Image size must be less than ${maxSizeInMb}MB.`;
       input.value = '';
-      this.cdr.markForCheck();
+      this.refreshView();
       return;
     }
 
     this.isUploading = true;
     this.errorMessage = '';
     this.successMessage = '';
-    this.cdr.markForCheck();
+    this.refreshView();
 
     this.profileService.uploadProfilePicture(file).subscribe({
       next: (response) => {
@@ -364,7 +409,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.successMessage = 'Profile picture updated successfully.';
         input.value = '';
 
-        this.cdr.markForCheck();
+        this.refreshView();
       },
       error: (error) => {
         console.error('Profile picture upload error:', error);
@@ -376,14 +421,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
         );
 
         input.value = '';
-        this.cdr.markForCheck();
+        this.refreshView();
       }
     });
   }
 
   onProfileImageError(): void {
     this.profileImageUrl = '';
-    this.cdr.markForCheck();
+    this.refreshView();
   }
 
   openDeleteProfilePictureModal(event?: Event): void {
@@ -396,7 +441,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.isDeleteProfilePictureModalOpen = true;
     this.errorMessage = '';
     this.successMessage = '';
-    this.cdr.markForCheck();
+    this.refreshView();
   }
 
   closeDeleteProfilePictureModal(): void {
@@ -405,7 +450,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     this.isDeleteProfilePictureModalOpen = false;
-    this.cdr.markForCheck();
+    this.refreshView();
   }
 
   confirmDeleteProfilePicture(): void {
@@ -416,7 +461,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.isDeletingProfilePicture = true;
     this.errorMessage = '';
     this.successMessage = '';
-    this.cdr.markForCheck();
+    this.refreshView();
 
     this.profileService.deleteProfilePicture().subscribe({
       next: () => {
@@ -433,7 +478,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         }
 
         this.successMessage = 'Profile picture deleted successfully.';
-        this.cdr.markForCheck();
+        this.refreshView();
       },
       error: (error) => {
         console.error('Profile picture delete error:', error);
@@ -446,7 +491,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           'Failed to delete profile picture.'
         );
 
-        this.cdr.markForCheck();
+        this.refreshView();
       }
     });
   }
@@ -482,34 +527,49 @@ export class ProfileComponent implements OnInit, OnDestroy {
     return 'U';
   }
 
-  openDatePicker(input: HTMLInputElement): void {
+  openDatePicker(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const input = this.dateOfBirthInput?.nativeElement;
     if (!input) return;
+
+    this.initDateOfBirthPicker();
 
     input.focus();
 
-    const dateInput = input as HTMLInputElement & {
-      showPicker?: () => void;
-    };
-
     try {
-      dateInput.showPicker?.();
+      this.dateOfBirthPicker?.show?.();
     } catch {
-      input.focus();
+      input.click();
     }
+
+    setTimeout(() => this.styleFlowbiteDatePickers(), 0);
   }
 
   openTravelDatePicker(input: HTMLInputElement): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     if (!this.showTravelDates) {
       this.addTravelDates();
 
       setTimeout(() => {
-        this.openDatePicker(input);
+        this.initTravelDateRangePicker();
+        input?.focus();
+        input?.click();
+        this.styleFlowbiteDatePickers();
       }, 0);
 
       return;
     }
 
-    this.openDatePicker(input);
+    if (!input) return;
+
+    this.initTravelDateRangePicker();
+
+    input.focus();
+    input.click();
+
+    setTimeout(() => this.styleFlowbiteDatePickers(), 0);
   }
 
   preventDateTyping(event: KeyboardEvent): void {
@@ -565,7 +625,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       [controlName]: updatedValue
     });
 
-    this.cdr.markForCheck();
+    this.refreshView();
   }
 
   isSelected(
@@ -603,6 +663,245 @@ export class ProfileComponent implements OnInit, OnDestroy {
     return !!control && control.invalid && (control.dirty || control.touched);
   }
 
+  get travelStartDateInvalid(): boolean {
+    const control = this.profileForm.get('travelStartDate');
+    return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
+  get travelEndDateInvalid(): boolean {
+    const control = this.profileForm.get('travelEndDate');
+    return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
+  private initDatePickersAfterRender(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    setTimeout(() => {
+      this.initDateOfBirthPicker();
+
+      if (this.showTravelDates) {
+        this.initTravelDateRangePicker();
+      }
+
+      this.startDatePickerObserver();
+      this.styleFlowbiteDatePickers();
+    }, 0);
+  }
+
+  private initDateOfBirthPicker(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const input = this.dateOfBirthInput?.nativeElement;
+    if (!input || this.dateOfBirthPicker) return;
+
+    this.dateOfBirthPicker = new Datepicker(input, {
+      format: 'yyyy-mm-dd',
+      autohide: true,
+      clearBtn: true,
+      todayBtn: false,
+      maxDate: new Date()
+    });
+
+    if (!this.dateOfBirthEventsBound) {
+      input.addEventListener('changeDate', this.syncDateOfBirthHandler);
+      input.addEventListener('change', this.syncDateOfBirthHandler);
+      input.addEventListener('show', this.styleDatePickerHandler);
+      input.addEventListener('click', this.styleDatePickerHandler);
+      input.addEventListener('focus', this.styleDatePickerHandler);
+
+      this.dateOfBirthEventsBound = true;
+    }
+  }
+
+  private initTravelDateRangePicker(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const container = this.travelDateRangePicker?.nativeElement;
+    const startInput = this.travelStartDateInput?.nativeElement;
+    const endInput = this.travelEndDateInput?.nativeElement;
+
+    if (!container || !startInput || !endInput || this.travelDateRangePickerInstance) {
+      return;
+    }
+
+    this.travelDateRangePickerInstance = new DateRangePicker(container, {
+      format: 'yyyy-mm-dd',
+      autohide: true,
+      clearBtn: true,
+      todayBtn: false
+    });
+
+    if (!this.travelDateEventsBound) {
+      startInput.addEventListener('changeDate', this.syncTravelDatesHandler);
+      startInput.addEventListener('change', this.syncTravelDatesHandler);
+      startInput.addEventListener('show', this.styleDatePickerHandler);
+      startInput.addEventListener('click', this.styleDatePickerHandler);
+      startInput.addEventListener('focus', this.styleDatePickerHandler);
+
+      endInput.addEventListener('changeDate', this.syncTravelDatesHandler);
+      endInput.addEventListener('change', this.syncTravelDatesHandler);
+      endInput.addEventListener('show', this.styleDatePickerHandler);
+      endInput.addEventListener('click', this.styleDatePickerHandler);
+      endInput.addEventListener('focus', this.styleDatePickerHandler);
+
+      this.travelDateEventsBound = true;
+    }
+  }
+
+  private startDatePickerObserver(): void {
+    if (!isPlatformBrowser(this.platformId) || this.datePickerObserver) return;
+
+    this.datePickerObserver = new MutationObserver(() => {
+      this.styleFlowbiteDatePickers();
+    });
+
+    this.datePickerObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  private styleFlowbiteDatePickers(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const pickers = document.querySelectorAll('.datepicker-picker');
+
+    pickers.forEach((picker) => {
+      const todayButtons = picker.querySelectorAll('.today-btn');
+
+      todayButtons.forEach((button) => {
+        button.classList.add('hidden');
+      });
+
+      const clearButtons = picker.querySelectorAll('.clear-btn');
+
+      clearButtons.forEach((button) => {
+        const clearButton = button as HTMLButtonElement;
+
+        clearButton.classList.add(
+          '!bg-yellow-600',
+          'hover:!bg-yellow-400',
+          '!text-black',
+          '!font-bold',
+          '!rounded-xl',
+          '!border-yellow-500',
+          '!opacity-100',
+          'cursor-pointer',
+          'm-auto'
+        );
+
+        if (!clearButton.dataset['profileClearHandled']) {
+          clearButton.dataset['profileClearHandled'] = 'true';
+
+          clearButton.addEventListener('click', () => {
+            setTimeout(() => {
+              this.syncAllDateValues();
+              this.refreshView();
+            }, 0);
+          });
+        }
+      });
+    });
+  }
+
+  private syncDateOfBirthValue(): void {
+    const input = this.dateOfBirthInput?.nativeElement;
+    if (!input) return;
+
+    const control = this.profileForm.get('dateOfBirth');
+
+    control?.setValue(input.value);
+    control?.markAsTouched();
+    control?.updateValueAndValidity();
+
+    this.refreshView();
+  }
+
+  private syncTravelDateValues(): void {
+    const startInput = this.travelStartDateInput?.nativeElement;
+    const endInput = this.travelEndDateInput?.nativeElement;
+
+    const startControl = this.profileForm.get('travelStartDate');
+    const endControl = this.profileForm.get('travelEndDate');
+
+    if (startInput) {
+      startControl?.setValue(startInput.value);
+      startControl?.markAsTouched();
+      startControl?.updateValueAndValidity();
+    }
+
+    if (endInput) {
+      endControl?.setValue(endInput.value);
+      endControl?.markAsTouched();
+      endControl?.updateValueAndValidity();
+    }
+
+    this.refreshView();
+  }
+
+  private syncAllDateValues(): void {
+    this.syncDateOfBirthValue();
+
+    if (this.showTravelDates) {
+      this.syncTravelDateValues();
+    }
+  }
+
+  private destroyDatePickers(): void {
+    this.destroyDateOfBirthPicker();
+    this.destroyTravelDateRangePicker();
+
+    this.datePickerObserver?.disconnect();
+    this.datePickerObserver = undefined;
+  }
+
+  private destroyDateOfBirthPicker(): void {
+    const input = this.dateOfBirthInput?.nativeElement;
+
+    if (input && this.dateOfBirthEventsBound) {
+      input.removeEventListener('changeDate', this.syncDateOfBirthHandler);
+      input.removeEventListener('change', this.syncDateOfBirthHandler);
+      input.removeEventListener('show', this.styleDatePickerHandler);
+      input.removeEventListener('click', this.styleDatePickerHandler);
+      input.removeEventListener('focus', this.styleDatePickerHandler);
+    }
+
+    this.dateOfBirthPicker?.destroy?.();
+    this.dateOfBirthPicker = null;
+    this.dateOfBirthEventsBound = false;
+  }
+
+  private destroyTravelDateRangePicker(): void {
+    const startInput = this.travelStartDateInput?.nativeElement;
+    const endInput = this.travelEndDateInput?.nativeElement;
+
+    if (this.travelDateEventsBound) {
+      startInput?.removeEventListener('changeDate', this.syncTravelDatesHandler);
+      startInput?.removeEventListener('change', this.syncTravelDatesHandler);
+      startInput?.removeEventListener('show', this.styleDatePickerHandler);
+      startInput?.removeEventListener('click', this.styleDatePickerHandler);
+      startInput?.removeEventListener('focus', this.styleDatePickerHandler);
+
+      endInput?.removeEventListener('changeDate', this.syncTravelDatesHandler);
+      endInput?.removeEventListener('change', this.syncTravelDatesHandler);
+      endInput?.removeEventListener('show', this.styleDatePickerHandler);
+      endInput?.removeEventListener('click', this.styleDatePickerHandler);
+      endInput?.removeEventListener('focus', this.styleDatePickerHandler);
+    }
+
+    this.travelDateRangePickerInstance?.destroy?.();
+    this.travelDateRangePickerInstance = null;
+    this.travelDateEventsBound = false;
+  }
+
+  private refreshView(): void {
+    try {
+      this.cdr.detectChanges();
+    } catch {
+      this.cdr.markForCheck();
+    }
+  }
+
   private goToActivitiesWithProfileFilters(
     preferredCityIds: number[],
     interestCategoryIds: number[]
@@ -630,11 +929,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
       next: (profile) => {
         this.setProfileData(profile);
         this.profileImageUrl = this.addCacheBuster(this.profileImageUrl);
-        this.cdr.markForCheck();
+        this.refreshView();
       },
       error: (error) => {
         console.error('Profile refresh after picture upload error:', error);
-        this.cdr.markForCheck();
+        this.refreshView();
       }
     });
   }

@@ -1,4 +1,4 @@
-<section class="min-h-screen  flex items-center justify-center px-4 py-10 text-white">
+<section class="min-h-screen flex items-center justify-center px-4 py-10 text-white">
   <div class="w-full max-w-6xl border border-yellow-500/10 overflow-hidden rounded-3xl bg-[#27241b] shadow-2xl grid lg:grid-cols-2">
 
     <!-- LEFT -->
@@ -14,6 +14,9 @@
       <p class="text-white/60 mb-8">Begin your journey through Egypt today</p>
 
       <form class="space-y-5" [formGroup]="registerForm" (ngSubmit)="submitData()">
+
+        <!-- Tailwind safelist for dynamic Flowbite Datepicker classes -->
+        <span class="hidden !bg-yellow-500 hover:!bg-yellow-400 !text-black !font-bold !rounded-xl !border-yellow-500 !opacity-100"></span>
 
         <!-- Full Name -->
         <div>
@@ -72,17 +75,19 @@
 
             <select
               formControlName="nationality"
-              class="w-full appearance-none rounded-xl bg-black/40 border border-yellow-500/50 bo py-3 pl-12 pr-10 text-yellow-400 outline-none
+              class="w-full appearance-none rounded-xl bg-black/40 border py-3 pl-12 pr-10 text-yellow-400 outline-none
                      focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20
                      [&>option]:bg-[#27241b] [&>option]:text-yellow-400"
               [class.border-red-500]="f.nationality.touched && f.nationality.invalid"
-              [class.border-white/10]="!(f.nationality.touched && f.nationality.invalid)"
+              [class.border-yellow-500/50]="!(f.nationality.touched && f.nationality.invalid)"
             >
               <option value="" disabled>Select nationality</option>
               @for (n of NATIONALITIES; track n) {
                 <option [value]="n">{{ n }}</option>
               }
             </select>
+
+            <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-yellow-400 text-xs"></i>
           </div>
 
           @if (f.nationality.touched && f.nationality.errors) {
@@ -93,43 +98,44 @@
           }
         </div>
 
-       <!-- Date of Birth -->
-<div>
-  <label class="text-sm font-medium mb-2 block">Date of Birth</label>
+        <!-- Date of Birth - Flowbite Datepicker -->
+        <div>
+          <label class="text-sm font-medium mb-2 block">Date of Birth</label>
 
-  <div class="relative">
-    <i class="fa-regular fa-calendar-days absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+          <div class="relative">
+            <i class="fa-regular fa-calendar-days absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
 
-   <input
-  #dateOfBirthInput
-  formControlName="dateOfBirth"
-  type="date"
-  class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
-         focus:ring-2 focus:ring-yellow-500/20 cursor-pointer
-         [&::-webkit-calendar-picker-indicator]:opacity-0
-         [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-  [class.border-red-500]="f.dateOfBirth.touched && f.dateOfBirth.invalid"
-  [class.border-yellow-500/50]="!(f.dateOfBirth.touched && f.dateOfBirth.invalid)"
-  (click)="openDatePicker(dateOfBirthInput)"
-  (keydown)="blockDateTyping($event)"
-  (paste)="$event.preventDefault()"
-/>
+            <input
+              #dateOfBirthInput
+              id="register-date-of-birth"
+              formControlName="dateOfBirth"
+              type="text"
+              autocomplete="off"
+              placeholder="Select date of birth"
+              class="w-full cursor-pointer rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
+                     focus:ring-2 focus:ring-yellow-500/20"
+              [class.border-red-500]="f.dateOfBirth.touched && f.dateOfBirth.invalid"
+              [class.border-yellow-500/50]="!(f.dateOfBirth.touched && f.dateOfBirth.invalid)"
+              (click)="openDatePicker()"
+              (keydown)="blockDateTyping($event)"
+              (paste)="$event.preventDefault()"
+            />
 
-    <button
-      type="button"
-      (click)="openDatePicker(dateOfBirthInput)"
-      class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-yellow-400 hover:text-yellow-300"
-    >
-      <i class="fa-regular fa-calendar-days"></i>
-    </button>
-  </div>
+            <button
+              type="button"
+              (click)="openDatePicker()"
+              class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-yellow-400 hover:text-yellow-300"
+            >
+              <i class="fa-regular fa-calendar-days"></i>
+            </button>
+          </div>
 
-  @if (f.dateOfBirth.touched && f.dateOfBirth.errors) {
-    <p class="mt-2 text-xs text-red-300">
-      @if (f.dateOfBirth.errors['required']) { <span>Date of birth is required.</span> }
-    </p>
-  }
-</div>
+          @if (f.dateOfBirth.touched && f.dateOfBirth.errors) {
+            <p class="mt-2 text-xs text-red-300">
+              @if (f.dateOfBirth.errors['required']) { <span>Date of birth is required.</span> }
+            </p>
+          }
+        </div>
 
         <!-- Password -->
         <div>
@@ -276,4 +282,4 @@
     </div>
 
   </div>
-</section>
+</section> 
