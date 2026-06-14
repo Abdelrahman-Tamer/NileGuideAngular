@@ -16,8 +16,7 @@ import {
 export class ProfileService {
   private readonly baseUrl = STORED_KEYS.baseUrl.replace(/\/$/, '');
 
-  // GET /api/users/me/profile
-  // PUT /api/users/me/profile
+  
   private readonly profileUrl = `${this.baseUrl}/users/me/profile`;
 
   constructor(private http: HttpClient) {}
@@ -30,12 +29,9 @@ export class ProfileService {
     return this.http.put<UserProfileResponse>(this.profileUrl, payload);
   }
 
-  // POST /api/users/me/profile-picture
-  // form-data key: Image
   uploadProfilePicture(file: File): Observable<ProfilePictureResponse> {
     const formData = new FormData();
 
-    // الـ backend عندك مستني Image مش file
     formData.append('Image', file, file.name);
 
     return this.http.post<ProfilePictureResponse>(
@@ -44,7 +40,6 @@ export class ProfileService {
     );
   }
 
-  // DELETE /api/users/me/profile-picture
   deleteProfilePicture(): Observable<{ message?: string }> {
     return this.http.delete<{ message?: string }>(
       `${this.baseUrl}/users/me/profile-picture`
