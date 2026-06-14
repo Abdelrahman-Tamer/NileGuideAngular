@@ -54,8 +54,19 @@
   <!-- Add New User Modal -->
   @if (isAddUserModalOpen) {
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
-      <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
-
+<div
+  class="max-h-[90vh] w-full max-w-3xl overflow-y-auto overscroll-contain rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]
+         [scrollbar-width:thin]
+         [scrollbar-color:#e0b100_#14110d]
+         [&::-webkit-scrollbar]:w-2
+         [&::-webkit-scrollbar-track]:rounded-full
+         [&::-webkit-scrollbar-track]:bg-[#14110d]
+         [&::-webkit-scrollbar-thumb]:rounded-full
+         [&::-webkit-scrollbar-thumb]:border-2
+         [&::-webkit-scrollbar-thumb]:border-[#14110d]
+         [&::-webkit-scrollbar-thumb]:bg-[#e0b100]
+         [&::-webkit-scrollbar-thumb:hover]:bg-[#f0c400]">
+         
         <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
           <h2 class="text-2xl font-bold text-white">Add New User</h2>
 

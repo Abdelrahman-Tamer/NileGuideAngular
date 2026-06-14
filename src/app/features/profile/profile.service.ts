@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { STORED_KEYS } from '../../core/constants/Stored_keys';
 
 import {
   LookupItem,
@@ -14,7 +14,7 @@ import {
   providedIn: 'root'
 })
 export class ProfileService {
-  private readonly baseUrl = environment.BaseUrl.replace(/\/$/, '');
+  private readonly baseUrl = STORED_KEYS.baseUrl.replace(/\/$/, '');
 
   // GET /api/users/me/profile
   // PUT /api/users/me/profile

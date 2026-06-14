@@ -20,6 +20,7 @@ import { filter, Subscription } from 'rxjs';
 
 import { DashboardService } from './dashboard.service';
 import { DashboardStatsResponse } from './dashboard';
+import { AdminChatbotComponent } from "../components/admin-chatbot/admin-chatbot.component";
 
 type DashboardCard = {
   title: string;
@@ -34,7 +35,7 @@ type DashboardCard = {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet, AdminChatbotComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })

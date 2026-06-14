@@ -1,22 +1,46 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+  inject,
+} from '@angular/core';
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 
-import { ActivitiesService } from '../../../activities/activities.service';
-import {
-  ActivityCategory,
-  ActivityCity,
-  ActivityListItem,
-} from '../../../activities/activities.interfaces';
-
 import { ActivityService as AdminActivityService } from './activity.service';
+import {
+  AdminActivityCategory,
+  AdminActivityCity,
+  AdminActivityHour,
+  AdminActivityImage,
+  AdminActivityItem,
+  AdminBookingLink,
+} from './activity';
 
 type ActivityStatusFilter = 'all' | 'active' | 'inactive';
 type ActivityFormMode = 'add' | 'edit';
 
+type AdminActivityViewItem = AdminActivityItem & {
+  activityID?: number;
+  categoryID?: number;
+  cityID?: number;
+  imageUrl?: string | null;
+  reviewsCount?: number;
+  providers?: AdminBookingLink[];
+};
+
 @Component({
   selector: 'app-activity',
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './activity.component.html',
   styleUrl: './activity.component.css',
 })
@@ -31,6 +55,9 @@ export class ActivityComponent implements OnInit, OnDestroy {
   itemsPerPage = 10;
   totalCount = 0;
 
+  private readonly platformId = inject(PLATFORM_ID);
+  readonly isBrowser = isPlatformBrowser(this.platformId);
+
   readonly pageGroupSize = 3;
   readonly maxActivityImageSize = 5 * 1024 * 1024;
 
@@ -41,55 +68,99 @@ export class ActivityComponent implements OnInit, OnDestroy {
   isSavingActivity = false;
   activityFormMode: ActivityFormMode = 'add';
 
-  selectedActivity: ActivityListItem | null = null;
+  selectedActivity: AdminActivityViewItem | null = null;
   selectedActivityId: number | null = null;
 
   selectedActivityImageFile: File | null = null;
+  selectedActivityImageFiles: File[] = [];
   selectedActivityImagePreview: string | null = null;
+  selectedActivityImagePreviews: string[] = [];
+  existingActivityImages: AdminActivityImage[] = [];
 
   isViewActivityModalOpen = false;
-  selectedViewActivity: ActivityListItem | null = null;
+  selectedViewActivity: AdminActivityViewItem | null = null;
 
   isConfirmModalOpen = false;
   isConfirmLoading = false;
-  confirmModalActivity: ActivityListItem | null = null;
+  confirmModalActivity: AdminActivityViewItem | null = null;
   confirmModalTitle = '';
   confirmModalMessage = '';
   confirmModalButtonText = '';
 
-  activities: ActivityListItem[] = [];
-  filterCategories: ActivityCategory[] = [];
-  filterCities: ActivityCity[] = [];
+  activities: AdminActivityViewItem[] = [];
+  filterCategories: AdminActivityCategory[] = [];
+  filterCities: AdminActivityCity[] = [];
 
   searchTimer: ReturnType<typeof setTimeout> | null = null;
   private requestId = 0;
 
-  activityForm;
+  activityForm: FormGroup;
 
   constructor(
     private fb: FormBuilder,
-    private activitiesService: ActivitiesService,
     private adminActivityService: AdminActivityService,
     private cdr: ChangeDetectorRef,
     private toastr: ToastrService
   ) {
     this.activityForm = this.fb.group({
-      name: ['', Validators.required],
-      description: [''],
-      category: ['', Validators.required],
-      price: [null as number | null],
-      location: ['', Validators.required],
-      duration: [''],
-      rating: [null as number | null],
+      activityName: [
+        '',
+        [Validators.required, Validators.minLength(3), Validators.maxLength(255)],
+      ],
+      name: [''],
+
+      description: ['', [Validators.required, Validators.minLength(10)]],
+
+      categoryId: [null as number | null, Validators.required],
+      category: [''],
+
+      cityId: [null as number | null, Validators.required],
+      location: [''],
+
+      price: [null as number | null, [Validators.required, Validators.min(0.01)]],
+      minPrice: [null as number | null],
+
+      priceCurrency: [
+        'USD',
+        [Validators.required, Validators.minLength(3), Validators.maxLength(10)],
+      ],
+      priceBasis: ['per person'],
+
+      duration: [null as number | null, [Validators.required, Validators.min(1)]],
+
+      groupSize: ['', Validators.required],
       maxGroupSize: [null as number | null],
+
+      cancellation: [''],
+      requiredDocuments: [''],
+
+      provider: [''],
+      externalId: [''],
+      region: [''],
+
+      latitude: [null as number | null],
+      longitude: [null as number | null],
+
+      rating: [0, [Validators.min(0), Validators.max(5)]],
+
+      isActive: [true],
       status: ['Active' as 'Active' | 'Inactive'],
+
       imageUrl: [''],
+
+      bookingLinks: this.fb.array([]),
+      activityHours: this.fb.array([]),
     });
   }
 
   ngOnInit(): void {
-    this.loadFilters();
-    this.loadActivities();
+    if (!this.isBrowser) {
+      return;
+    }
+
+    this.loadAdminActivities();
+    this.loadCategories();
+    this.loadCities();
   }
 
   ngOnDestroy(): void {
@@ -100,20 +171,47 @@ export class ActivityComponent implements OnInit, OnDestroy {
     this.revokeSelectedActivityImagePreview();
   }
 
+  get bookingLinksArray(): FormArray {
+    return this.activityForm.get('bookingLinks') as FormArray;
+  }
+
+  get activityHoursArray(): FormArray {
+    return this.activityForm.get('activityHours') as FormArray;
+  }
+
   loadFilters(): void {
-    this.activitiesService.getCategories().subscribe({
+    if (!this.isBrowser) {
+      return;
+    }
+
+    this.loadCategories();
+    this.loadCities();
+  }
+
+  loadCategories(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    this.adminActivityService.getCategories().subscribe({
       next: (categories) => {
-        this.filterCategories = categories;
+        this.filterCategories = categories ?? [];
         this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Failed to load categories', error);
       },
     });
+  }
 
-    this.activitiesService.getCities().subscribe({
+  loadCities(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    this.adminActivityService.getCities().subscribe({
       next: (cities) => {
-        this.filterCities = cities;
+        this.filterCities = cities ?? [];
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -123,26 +221,31 @@ export class ActivityComponent implements OnInit, OnDestroy {
   }
 
   loadActivities(): void {
+    this.loadAdminActivities();
+  }
+
+  loadAdminActivities(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     const currentRequestId = ++this.requestId;
 
     this.isLoading = true;
     this.errorMessage = '';
     this.cdr.markForCheck();
 
-    this.activitiesService
-      .getActivities({
+    this.adminActivityService
+      .getAdminActivities({
         search: this.activitySearch?.trim() ?? '',
         categoryIds:
           this.selectedCategory === 'all'
             ? []
             : [Number(this.selectedCategory)],
         cityIds:
-          this.selectedCity === 'all'
-            ? []
-            : [Number(this.selectedCity)],
+          this.selectedCity === 'all' ? [] : [Number(this.selectedCity)],
         page: this.currentPage,
         pageSize: this.itemsPerPage,
-        sortBy: 'default',
       })
       .subscribe({
         next: (response) => {
@@ -150,10 +253,13 @@ export class ActivityComponent implements OnInit, OnDestroy {
             return;
           }
 
-          this.activities = response.items ?? [];
-          this.totalCount = response.totalCount;
-          this.currentPage = response.page;
-          this.itemsPerPage = response.pageSize;
+          this.activities = (response.items ?? []).map((activity) =>
+            this.toViewActivity(activity)
+          );
+
+          this.totalCount = response.totalCount ?? 0;
+          this.currentPage = response.page ?? this.currentPage;
+          this.itemsPerPage = response.pageSize ?? this.itemsPerPage;
 
           this.isLoading = false;
           this.cdr.markForCheck();
@@ -163,7 +269,7 @@ export class ActivityComponent implements OnInit, OnDestroy {
             return;
           }
 
-          console.error('Failed to load activities', error);
+          console.error('Failed to load admin activities', error);
 
           this.activities = [];
           this.totalCount = 0;
@@ -179,7 +285,7 @@ export class ActivityComponent implements OnInit, OnDestroy {
     return Math.ceil(this.totalCount / this.itemsPerPage);
   }
 
-  get paginatedActivities(): ActivityListItem[] {
+  get paginatedActivities(): AdminActivityViewItem[] {
     if (this.selectedStatus === 'active') {
       return this.activities.filter((activity) => activity.isActive);
     }
@@ -236,24 +342,36 @@ export class ActivityComponent implements OnInit, OnDestroy {
   }
 
   previousPageGroup(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     if (!this.canGoPreviousPageGroup) {
       return;
     }
 
     this.currentPage = this.pageGroupStart - 1;
-    this.loadActivities();
+    this.loadAdminActivities();
   }
 
   nextPageGroup(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     if (!this.canGoNextPageGroup) {
       return;
     }
 
     this.currentPage = this.pageGroupEnd + 1;
-    this.loadActivities();
+    this.loadAdminActivities();
   }
 
   onSearchChange(value: string): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     this.activitySearch = value;
 
     if (this.searchTimer) {
@@ -262,20 +380,28 @@ export class ActivityComponent implements OnInit, OnDestroy {
 
     this.searchTimer = setTimeout(() => {
       this.currentPage = 1;
-      this.loadActivities();
+      this.loadAdminActivities();
     }, 300);
   }
 
   onCategoryChange(value: string): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     this.selectedCategory = value;
     this.currentPage = 1;
-    this.loadActivities();
+    this.loadAdminActivities();
   }
 
   onCityChange(value: string): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     this.selectedCity = value;
     this.currentPage = 1;
-    this.loadActivities();
+    this.loadAdminActivities();
   }
 
   onStatusChange(value: string): void {
@@ -285,12 +411,16 @@ export class ActivityComponent implements OnInit, OnDestroy {
   }
 
   goToPage(page: number): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     if (page < 1 || page > this.totalPages || page === this.currentPage) {
       return;
     }
 
     this.currentPage = page;
-    this.loadActivities();
+    this.loadAdminActivities();
   }
 
   get startItem(): number {
@@ -309,6 +439,7 @@ export class ActivityComponent implements OnInit, OnDestroy {
     this.activityFormMode = 'add';
     this.selectedActivity = null;
     this.selectedActivityId = null;
+    this.existingActivityImages = [];
 
     this.resetActivityForm();
 
@@ -316,7 +447,7 @@ export class ActivityComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  openEditActivityModal(activity: ActivityListItem): void {
+  openEditActivityModal(activity: AdminActivityViewItem): void {
     const activityId = this.getActivityId(activity);
 
     if (!activityId) {
@@ -327,24 +458,58 @@ export class ActivityComponent implements OnInit, OnDestroy {
     this.activityFormMode = 'edit';
     this.selectedActivity = activity;
     this.selectedActivityId = activityId;
+    this.existingActivityImages = activity.images ?? [];
 
-    this.revokeSelectedActivityImagePreview();
+    this.clearSelectedActivityImages();
 
-    this.selectedActivityImageFile = null;
-    this.selectedActivityImagePreview = activity.imageUrl ?? null;
+    const primaryImage = this.getPrimaryImageUrl(activity);
+
+    this.selectedActivityImagePreview = primaryImage;
+    this.selectedActivityImagePreviews = primaryImage ? [primaryImage] : [];
 
     this.activityForm.patchValue({
+      activityName: activity.activityName ?? '',
       name: activity.activityName ?? '',
+
       description: activity.description ?? '',
+
+      categoryId: activity.categoryId ?? activity.categoryID ?? null,
       category: activity.categoryName ?? '',
-      price: activity.minPrice ?? null,
+
+      cityId: activity.cityId ?? activity.cityID ?? null,
       location: activity.cityName ?? '',
-      duration: '',
-      rating: activity.rating ?? null,
-      maxGroupSize: null,
+
+      price: activity.price ?? null,
+      minPrice: activity.minPrice ?? null,
+
+      priceCurrency: activity.priceCurrency ?? 'USD',
+      priceBasis: activity.priceBasis ?? '',
+
+      duration: activity.duration ?? null,
+
+      groupSize: activity.groupSize ?? '',
+      maxGroupSize: this.extractGroupSizeNumber(activity.groupSize),
+
+      cancellation: activity.cancellation ?? '',
+      requiredDocuments: activity.requiredDocuments ?? '',
+
+      provider: activity.provider ?? '',
+      externalId: activity.externalId ?? '',
+      region: activity.region ?? '',
+
+      latitude: activity.latitude ?? null,
+      longitude: activity.longitude ?? null,
+
+      rating: activity.rating ?? 0,
+
+      isActive: !!activity.isActive,
       status: activity.isActive ? 'Active' : 'Inactive',
-      imageUrl: activity.imageUrl ?? '',
+
+      imageUrl: primaryImage ?? '',
     });
+
+    this.setBookingLinks(activity.bookingLinks ?? []);
+    this.setActivityHours(activity.activityHours ?? []);
 
     this.isAddActivityModalOpen = true;
     this.cdr.markForCheck();
@@ -359,6 +524,7 @@ export class ActivityComponent implements OnInit, OnDestroy {
     this.activityFormMode = 'add';
     this.selectedActivity = null;
     this.selectedActivityId = null;
+    this.existingActivityImages = [];
 
     this.resetActivityForm();
     this.cdr.markForCheck();
@@ -366,64 +532,116 @@ export class ActivityComponent implements OnInit, OnDestroy {
 
   resetActivityForm(): void {
     this.activityForm.reset({
+      activityName: '',
       name: '',
       description: '',
+
+      categoryId: null,
       category: '',
-      price: null,
+
+      cityId: null,
       location: '',
-      duration: '',
-      rating: null,
+
+      price: null,
+      minPrice: null,
+
+      priceCurrency: 'USD',
+      priceBasis: 'per person',
+
+      duration: null,
+
+      groupSize: '',
       maxGroupSize: null,
+
+      cancellation: '',
+      requiredDocuments: '',
+
+      provider: '',
+      externalId: '',
+      region: '',
+
+      latitude: null,
+      longitude: null,
+
+      rating: 0,
+
+      isActive: true,
       status: 'Active',
+
       imageUrl: '',
     });
 
-    this.selectedActivityImageFile = null;
-    this.revokeSelectedActivityImagePreview();
-    this.selectedActivityImagePreview = null;
+    this.clearFormArray(this.bookingLinksArray);
+    this.clearFormArray(this.activityHoursArray);
+
+    this.clearSelectedActivityImages();
   }
 
   onActivityImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-
-    if (!file) {
+    if (!this.isBrowser) {
       return;
     }
 
-    if (!file.type.startsWith('image/')) {
-      this.toastr.error('Please select a valid image file');
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+
+    if (!files.length) {
+      return;
+    }
+
+    const invalidFile = files.find((file) => !file.type.startsWith('image/'));
+
+    if (invalidFile) {
+      this.toastr.error('Please select valid image files only');
       input.value = '';
       return;
     }
 
-    if (file.size > this.maxActivityImageSize) {
-      this.toastr.error('Image size must be less than 5MB');
+    const largeFile = files.find((file) => file.size > this.maxActivityImageSize);
+
+    if (largeFile) {
+      this.toastr.error('Each image size must be less than 5MB');
       input.value = '';
       return;
     }
 
     this.revokeSelectedActivityImagePreview();
 
-    this.selectedActivityImageFile = file;
-    this.selectedActivityImagePreview = URL.createObjectURL(file);
+    this.selectedActivityImageFiles = files;
+    this.selectedActivityImageFile = files[0] ?? null;
+
+    this.selectedActivityImagePreviews = files.map((file) =>
+      URL.createObjectURL(file)
+    );
+
+    this.selectedActivityImagePreview =
+      this.selectedActivityImagePreviews[0] ?? null;
+
+    this.activityForm.patchValue({
+      imageUrl: this.selectedActivityImagePreview ?? '',
+    });
 
     this.cdr.markForCheck();
   }
 
   removeSelectedActivityImage(input: HTMLInputElement): void {
     input.value = '';
-    this.selectedActivityImageFile = null;
 
-    this.revokeSelectedActivityImagePreview();
+    this.clearSelectedActivityImages();
 
-    if (this.activityFormMode === 'edit' && this.selectedActivity?.imageUrl) {
-      this.selectedActivityImagePreview = this.selectedActivity.imageUrl;
+    const oldImage =
+      this.activityFormMode === 'edit' && this.selectedActivity
+        ? this.getPrimaryImageUrl(this.selectedActivity)
+        : null;
+
+    if (oldImage) {
+      this.selectedActivityImagePreview = oldImage;
+      this.selectedActivityImagePreviews = [oldImage];
+
       this.activityForm.patchValue({
-        imageUrl: this.selectedActivity.imageUrl,
+        imageUrl: oldImage,
       });
     } else {
-      this.selectedActivityImagePreview = null;
       this.activityForm.patchValue({
         imageUrl: '',
       });
@@ -432,14 +650,61 @@ export class ActivityComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
+  addBookingLink(link?: Partial<AdminBookingLink>): void {
+    this.bookingLinksArray.push(
+      this.fb.group({
+        provider: [link?.provider ?? '', Validators.maxLength(50)],
+        url: [link?.url ?? ''],
+      })
+    );
+
+    this.cdr.markForCheck();
+  }
+
+  removeBookingLink(index: number): void {
+    this.bookingLinksArray.removeAt(index);
+    this.cdr.markForCheck();
+  }
+
+  addActivityHour(hour?: Partial<AdminActivityHour>): void {
+    this.activityHoursArray.push(
+      this.fb.group({
+        openHour: [
+          hour?.openHour ?? null,
+          [Validators.min(1), Validators.max(12)],
+        ],
+        openAmPm: [hour?.openAmPm ?? 'AM'],
+        closeHour: [
+          hour?.closeHour ?? null,
+          [Validators.min(1), Validators.max(12)],
+        ],
+        closeAmPm: [hour?.closeAmPm ?? 'PM'],
+      })
+    );
+
+    this.cdr.markForCheck();
+  }
+
+  removeActivityHour(index: number): void {
+    this.activityHoursArray.removeAt(index);
+    this.cdr.markForCheck();
+  }
+
   addActivity(): void {
     this.saveActivity();
   }
 
   saveActivity(): void {
+    this.syncAliasControlsBeforeSave();
+
     if (this.activityForm.invalid) {
       this.activityForm.markAllAsTouched();
-      this.toastr.warning('Please fill all required fields');
+      this.toastr.warning('Please fill all required fields correctly');
+      return;
+    }
+
+    if (this.activityFormMode === 'add' && !this.selectedActivityImageFiles.length) {
+      this.toastr.warning('Please upload at least one activity image');
       return;
     }
 
@@ -452,6 +717,10 @@ export class ActivityComponent implements OnInit, OnDestroy {
   }
 
   private createActivity(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     const formData = this.buildActivityFormData();
 
     this.isSavingActivity = true;
@@ -465,7 +734,7 @@ export class ActivityComponent implements OnInit, OnDestroy {
         this.closeAddActivityModal();
 
         this.currentPage = 1;
-        this.loadActivities();
+        this.loadAdminActivities();
       },
       error: (error) => {
         console.error('Create activity error:', error);
@@ -481,13 +750,16 @@ export class ActivityComponent implements OnInit, OnDestroy {
   }
 
   private updateActivity(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     if (!this.selectedActivityId) {
       this.toastr.error('Invalid activity id');
       return;
     }
 
     const formData = this.buildActivityFormData();
-    formData.append('activityId', String(this.selectedActivityId));
 
     this.isSavingActivity = true;
     this.cdr.markForCheck();
@@ -501,7 +773,7 @@ export class ActivityComponent implements OnInit, OnDestroy {
           this.isSavingActivity = false;
           this.closeAddActivityModal();
 
-          this.loadActivities();
+          this.loadAdminActivities();
         },
         error: (error) => {
           console.error('Update activity error:', error);
@@ -516,7 +788,7 @@ export class ActivityComponent implements OnInit, OnDestroy {
       });
   }
 
-  deleteActivity(activity: ActivityListItem): void {
+  deleteActivity(activity: AdminActivityViewItem): void {
     this.confirmModalActivity = activity;
     this.confirmModalTitle = 'Delete Activity';
     this.confirmModalMessage = `Are you sure you want to delete "${activity.activityName}"?`;
@@ -540,6 +812,10 @@ export class ActivityComponent implements OnInit, OnDestroy {
   }
 
   confirmAction(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     if (!this.confirmModalActivity) {
       return;
     }
@@ -564,7 +840,7 @@ export class ActivityComponent implements OnInit, OnDestroy {
 
         this.isConfirmLoading = false;
         this.closeConfirmModal();
-        this.loadActivities();
+        this.loadAdminActivities();
       },
       error: (error) => {
         console.error('Delete activity error:', error);
@@ -579,7 +855,7 @@ export class ActivityComponent implements OnInit, OnDestroy {
     });
   }
 
-  viewActivity(activity: ActivityListItem): void {
+  viewActivity(activity: AdminActivityViewItem): void {
     this.selectedViewActivity = activity;
     this.isViewActivityModalOpen = true;
     this.cdr.markForCheck();
@@ -601,100 +877,292 @@ export class ActivityComponent implements OnInit, OnDestroy {
       .toUpperCase();
   }
 
-  getActivityProvidersCount(activity: ActivityListItem): number {
-    return activity.providers?.length ?? 0;
+  getActivityProvidersCount(activity: AdminActivityViewItem): number {
+    return activity.bookingLinks?.length ?? activity.providers?.length ?? 0;
+  }
+
+  getPrimaryImageUrl(
+    activity: AdminActivityItem | AdminActivityViewItem | null | undefined
+  ): string | null {
+    if (!activity?.images?.length) {
+      return null;
+    }
+
+    const primaryImage =
+      activity.images.find((image) => image.isPrimary) ??
+      [...activity.images].sort((a, b) => a.sortOrder - b.sortOrder)[0];
+
+    return primaryImage?.url ?? null;
+  }
+
+  getCategoryId(category: AdminActivityCategory): number {
+    return Number((category as any).categoryID ?? (category as any).categoryId);
+  }
+
+  getCategoryName(category: AdminActivityCategory): string {
+    return String((category as any).categoryName ?? '');
+  }
+
+  getCityId(city: AdminActivityCity): number {
+    return Number((city as any).cityID ?? (city as any).cityId);
+  }
+
+  getCityName(city: AdminActivityCity): string {
+    return String((city as any).cityName ?? '');
   }
 
   private buildActivityFormData(): FormData {
-    const formValue = this.activityForm.getRawValue();
+    this.syncAliasControlsBeforeSave();
 
-    const categoryId = this.findCategoryIdByName(formValue.category ?? '');
-    const cityId = this.findCityIdByName(formValue.location ?? '');
+    const formValue = this.activityForm.getRawValue() as any;
 
     const formData = new FormData();
 
-    formData.append('activityName', formValue.name ?? '');
-    formData.append('description', formValue.description ?? '');
+    formData.append('ActivityName', this.toText(formValue.activityName));
+    formData.append('Description', this.toText(formValue.description));
+    formData.append('CategoryId', String(formValue.categoryId ?? ''));
+    formData.append('CityId', String(formValue.cityId ?? ''));
+    formData.append('Price', String(formValue.price ?? ''));
+    formData.append('PriceCurrency', this.toText(formValue.priceCurrency));
+    formData.append('Duration', String(formValue.duration ?? ''));
+    formData.append('GroupSize', this.toText(formValue.groupSize));
+    formData.append('Rating', String(formValue.rating ?? 0));
+    formData.append('IsActive', String(!!formValue.isActive));
 
-    formData.append('categoryId', String(categoryId ?? ''));
-    formData.append('cityId', String(cityId ?? ''));
-
-    formData.append('price', String(formValue.price ?? 0));
-    formData.append('minPrice', String(formValue.price ?? 0));
-
-    formData.append('priceCurrency', 'USD');
-    formData.append('priceBasis', 'per person');
-
-    formData.append('duration', String(this.toNumberOrZero(formValue.duration)));
-
-    formData.append(
-      'groupSize',
-      formValue.maxGroupSize ? `Up to ${formValue.maxGroupSize} people` : ''
-    );
-
-    formData.append('cancellation', '');
-    formData.append('requiredDocuments', '');
-
-    formData.append('provider', '');
-    formData.append('externalId', '');
-    formData.append('region', '');
-
-    formData.append('latitude', '');
-    formData.append('longitude', '');
-
-    formData.append('rating', String(formValue.rating ?? 0));
-    formData.append('reviewCount', '0');
-
-    formData.append('isActive', String(formValue.status === 'Active'));
-
-    if (this.selectedActivityImageFile) {
-      formData.append(
-        'images',
-        this.selectedActivityImageFile,
-        this.selectedActivityImageFile.name
-      );
+    if (
+      formValue.minPrice !== null &&
+      formValue.minPrice !== undefined &&
+      formValue.minPrice !== ''
+    ) {
+      formData.append('MinPrice', String(formValue.minPrice));
     }
 
+    formData.append('PriceBasis', this.toText(formValue.priceBasis));
+    formData.append('Cancellation', this.toText(formValue.cancellation));
+    formData.append(
+      'RequiredDocuments',
+      this.toText(formValue.requiredDocuments)
+    );
+    formData.append('Provider', this.toText(formValue.provider));
+    formData.append('ExternalId', this.toText(formValue.externalId));
+    formData.append('Region', this.toText(formValue.region));
+
+    if (
+      formValue.latitude !== null &&
+      formValue.latitude !== undefined &&
+      formValue.latitude !== ''
+    ) {
+      formData.append('Latitude', String(formValue.latitude));
+    }
+
+    if (
+      formValue.longitude !== null &&
+      formValue.longitude !== undefined &&
+      formValue.longitude !== ''
+    ) {
+      formData.append('Longitude', String(formValue.longitude));
+    }
+
+    if (this.activityFormMode === 'edit') {
+      const hasNewImages = this.selectedActivityImageFiles.length > 0;
+
+      formData.append('ReplaceImages', String(hasNewImages));
+
+      if (hasNewImages) {
+        this.selectedActivityImageFiles.forEach((file) => {
+          formData.append('Images', file, file.name);
+        });
+      }
+    } else {
+      this.selectedActivityImageFiles.forEach((file) => {
+        formData.append('Images', file, file.name);
+      });
+    }
+
+    this.appendBookingLinks(formData, formValue.bookingLinks ?? []);
+    this.appendActivityHours(formData, formValue.activityHours ?? []);
+
     return formData;
+  }
+
+  private appendBookingLinks(formData: FormData, links: any[]): void {
+    const validLinks = links.filter(
+      (link) => this.toText(link.provider) || this.toText(link.url)
+    );
+
+    validLinks.forEach((link, index) => {
+      formData.append(
+        `BookingLinks[${index}].Provider`,
+        this.toText(link.provider)
+      );
+      formData.append(`BookingLinks[${index}].Url`, this.toText(link.url));
+    });
+  }
+
+  private appendActivityHours(formData: FormData, hours: any[]): void {
+    const validHours = hours.filter(
+      (hour) => hour.openHour || hour.openAmPm || hour.closeHour || hour.closeAmPm
+    );
+
+    validHours.forEach((hour, index) => {
+      formData.append(
+        `ActivityHours[${index}].OpenHour`,
+        String(hour.openHour ?? '')
+      );
+      formData.append(
+        `ActivityHours[${index}].OpenAmPm`,
+        this.toText(hour.openAmPm)
+      );
+      formData.append(
+        `ActivityHours[${index}].CloseHour`,
+        String(hour.closeHour ?? '')
+      );
+      formData.append(
+        `ActivityHours[${index}].CloseAmPm`,
+        this.toText(hour.closeAmPm)
+      );
+    });
+  }
+
+  private syncAliasControlsBeforeSave(): void {
+    const value = this.activityForm.getRawValue() as any;
+
+    const patch: any = {};
+
+    if (!value.activityName && value.name) {
+      patch.activityName = value.name;
+    }
+
+    if (!value.name && value.activityName) {
+      patch.name = value.activityName;
+    }
+
+    if (!value.categoryId && value.category) {
+      patch.categoryId = this.findCategoryIdByName(value.category);
+    }
+
+    if (!value.cityId && value.location) {
+      patch.cityId = this.findCityIdByName(value.location);
+    }
+
+    if (!value.groupSize && value.maxGroupSize) {
+      patch.groupSize = `Up to ${value.maxGroupSize} people`;
+    }
+
+    if (!value.maxGroupSize && value.groupSize) {
+      patch.maxGroupSize = this.extractGroupSizeNumber(value.groupSize);
+    }
+
+    if (value.status) {
+      patch.isActive = value.status === 'Active';
+    }
+
+    this.activityForm.patchValue(patch, { emitEvent: false });
+  }
+
+  private toViewActivity(activity: AdminActivityItem): AdminActivityViewItem {
+    const imageUrl = this.getPrimaryImageUrl(activity);
+
+    return {
+      ...activity,
+
+      activityID: activity.activityId,
+      categoryID: activity.categoryId,
+      cityID: activity.cityId,
+      imageUrl,
+      reviewsCount: activity.reviewCount,
+      providers: activity.bookingLinks,
+    };
+  }
+
+  private setBookingLinks(links: AdminBookingLink[]): void {
+    this.clearFormArray(this.bookingLinksArray);
+
+    links.forEach((link) => {
+      this.addBookingLink(link);
+    });
+  }
+
+  private setActivityHours(hours: AdminActivityHour[]): void {
+    this.clearFormArray(this.activityHoursArray);
+
+    hours.forEach((hour) => {
+      this.addActivityHour(hour);
+    });
+  }
+
+  private clearFormArray(formArray: FormArray): void {
+    while (formArray.length) {
+      formArray.removeAt(0);
+    }
   }
 
   private findCategoryIdByName(categoryName: string): number | null {
     const category = this.filterCategories.find(
       (item) =>
-        item.categoryName?.toLowerCase() === categoryName.toLowerCase()
+        this.getCategoryName(item).toLowerCase() === categoryName.toLowerCase()
     );
 
-    return category?.categoryID ?? null;
+    return category ? this.getCategoryId(category) : null;
   }
 
   private findCityIdByName(cityName: string): number | null {
     const city = this.filterCities.find(
-      (item) => item.cityName?.toLowerCase() === cityName.toLowerCase()
+      (item) => this.getCityName(item).toLowerCase() === cityName.toLowerCase()
     );
 
-    return city?.cityID ?? null;
+    return city ? this.getCityId(city) : null;
   }
 
   private getActivityId(activity: any): number {
-    return Number(
-      activity?.activityID ?? activity?.activityId ?? activity?.id ?? 0
-    );
+    return Number(activity?.activityId ?? activity?.activityID ?? activity?.id ?? 0);
   }
 
-  private toNumberOrZero(value: unknown): number {
-    if (value === null || value === undefined || value === '') {
-      return 0;
+  private extractGroupSizeNumber(groupSize: string | null | undefined): number | null {
+    if (!groupSize) {
+      return null;
     }
 
-    const numericValue = Number(value);
+    const numbers = groupSize.match(/\d+/g);
 
-    return Number.isNaN(numericValue) ? 0 : numericValue;
+    if (!numbers?.length) {
+      return null;
+    }
+
+    return Number(numbers[numbers.length - 1]);
+  }
+
+  private clearSelectedActivityImages(): void {
+    this.revokeSelectedActivityImagePreview();
+
+    this.selectedActivityImageFile = null;
+    this.selectedActivityImageFiles = [];
+    this.selectedActivityImagePreview = null;
+    this.selectedActivityImagePreviews = [];
   }
 
   private revokeSelectedActivityImagePreview(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    this.selectedActivityImagePreviews.forEach((preview) => {
+      if (preview.startsWith('blob:')) {
+        URL.revokeObjectURL(preview);
+      }
+    });
+
     if (this.selectedActivityImagePreview?.startsWith('blob:')) {
       URL.revokeObjectURL(this.selectedActivityImagePreview);
     }
+  }
+
+  private toText(value: unknown): string {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    return String(value).trim();
   }
 
   private getErrorMessage(error: any): string {

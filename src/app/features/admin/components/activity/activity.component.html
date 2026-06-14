@@ -22,9 +22,9 @@
 
         <option value="all">All Categories</option>
 
-        @for (category of filterCategories; track category.categoryID) {
-          <option [value]="category.categoryID">
-            {{ category.categoryName }}
+        @for (category of filterCategories; track getCategoryId(category)) {
+          <option [value]="getCategoryId(category)">
+            {{ getCategoryName(category) }}
           </option>
         }
       </select>
@@ -41,9 +41,9 @@
 
         <option value="all">All Cities</option>
 
-        @for (city of filterCities; track city.cityID) {
-          <option [value]="city.cityID">
-            {{ city.cityName }}
+        @for (city of filterCities; track getCityId(city)) {
+          <option [value]="getCityId(city)">
+            {{ getCityName(city) }}
           </option>
         }
       </select>
@@ -79,9 +79,20 @@
   <!-- Add / Update Activity Modal -->
   @if (isAddActivityModalOpen) {
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
-      <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
+<div
+  class="max-h-[90vh] w-full max-w-5xl overflow-y-auto overscroll-contain rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]
+         [scrollbar-width:thin]
+         [scrollbar-color:#e0b100_#14110d]
+         [&::-webkit-scrollbar]:w-2
+         [&::-webkit-scrollbar-track]:rounded-full
+         [&::-webkit-scrollbar-track]:bg-[#14110d]
+         [&::-webkit-scrollbar-thumb]:rounded-full
+         [&::-webkit-scrollbar-thumb]:border-2
+         [&::-webkit-scrollbar-thumb]:border-[#14110d]
+         [&::-webkit-scrollbar-thumb]:bg-[#e0b100]
+         [&::-webkit-scrollbar-thumb:hover]:bg-[#f0c400]">
 
-        <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
+        <div class="sticky top-0 z-10 flex items-center justify-between border-b border-[#3a3122] bg-[#1b1712] px-6 py-5">
           <h2 class="text-2xl font-bold text-white">
             {{ activityFormMode === 'edit' ? 'Update Activity' : 'Add New Activity' }}
           </h2>
@@ -90,141 +101,361 @@
             type="button"
             (click)="closeAddActivityModal()"
             [disabled]="isSavingActivity"
-            class="flex h-9 w-9 items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
 
-        <form [formGroup]="activityForm" (ngSubmit)="saveActivity()" class="space-y-6 px-6 py-6">
+        <form [formGroup]="activityForm" (ngSubmit)="saveActivity()" class="space-y-7 px-6 py-6">
 
+          <!-- Main Info -->
           <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Activity Name</label>
-            <input
-              type="text"
-              formControlName="name"
-              placeholder="e.g., Sunrise Hot Air Balloon"
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-          </div>
+            <h3 class="mb-4 text-lg font-bold text-white">Main Information</h3>
 
-          <div>
-            <label class="mb-2 block text-sm font-semibold text-white">Description</label>
-            <textarea
-              rows="4"
-              formControlName="description"
-              placeholder="Brief description of the activity..."
-              class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]"></textarea>
-          </div>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div class="md:col-span-2">
+                <label class="mb-2 block text-sm font-semibold text-white">Activity Name</label>
+                <input
+                  type="text"
+                  formControlName="activityName"
+                  placeholder="e.g., Pyramids of Giza Guided Tour"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
 
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label class="mb-2 block text-sm font-semibold text-white">Category</label>
+              <div class="md:col-span-2">
+                <label class="mb-2 block text-sm font-semibold text-white">Description</label>
+                <textarea
+                  rows="4"
+                  formControlName="description"
+                  placeholder="Brief description of the activity..."
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]"></textarea>
+              </div>
 
-              <div class="relative">
-                <select
-                  formControlName="category"
-                  class="w-full appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
-                  <option value="">Select category</option>
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Category</label>
 
-                  @for (category of filterCategories; track category.categoryID) {
-                    <option [value]="category.categoryName">
-                      {{ category.categoryName }}
-                    </option>
-                  }
-                </select>
+                <div class="relative">
+                  <select
+                    formControlName="categoryId"
+                    class="w-full cursor-pointer appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
+                    <option [ngValue]="null">Select category</option>
 
-                <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+                    @for (category of filterCategories; track getCategoryId(category)) {
+                      <option [ngValue]="getCategoryId(category)">
+                        {{ getCategoryName(category) }}
+                      </option>
+                    }
+                  </select>
+
+                  <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+                </div>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">City</label>
+
+                <div class="relative">
+                  <select
+                    formControlName="cityId"
+                    class="w-full cursor-pointer appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
+                    <option [ngValue]="null">Select city</option>
+
+                    @for (city of filterCities; track getCityId(city)) {
+                      <option [ngValue]="getCityId(city)">
+                        {{ getCityName(city) }}
+                      </option>
+                    }
+                  </select>
+
+                  <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+                </div>
               </div>
             </div>
-
-            <div>
-              <label class="mb-2 block text-sm font-semibold text-white">Price (USD)</label>
-              <input
-                type="number"
-                formControlName="price"
-                placeholder="120"
-                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-            </div>
           </div>
 
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label class="mb-2 block text-sm font-semibold text-white">Location</label>
+          <!-- Price / Duration -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Price & Duration</h3>
 
-              <div class="relative">
-                <select
-                  formControlName="location"
-                  class="w-full appearance-none rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 pr-12 text-white outline-none focus:border-[#e0b100]">
-                  <option value="">Select location</option>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Price</label>
+                <input
+                  type="number"
+                  formControlName="price"
+                  placeholder="45"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
 
-                  @for (city of filterCities; track city.cityID) {
-                    <option [value]="city.cityName">
-                      {{ city.cityName }}
-                    </option>
-                  }
-                </select>
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Min Price</label>
+                <input
+                  type="number"
+                  formControlName="minPrice"
+                  placeholder="35"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
 
-                <i class="fa-solid fa-chevron-down pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#a18f6a]"></i>
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Currency</label>
+                <input
+                  type="text"
+                  formControlName="priceCurrency"
+                  placeholder="USD"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Price Basis</label>
+                <input
+                  type="text"
+                  formControlName="priceBasis"
+                  placeholder="per person"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Duration</label>
+                <input
+                  type="number"
+                  formControlName="duration"
+                  placeholder="180"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Group Size</label>
+                <input
+                  type="text"
+                  formControlName="groupSize"
+                  placeholder="1-12 people"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
               </div>
             </div>
+          </div>
 
-            <div>
-              <label class="mb-2 block text-sm font-semibold text-white">Duration</label>
-              <input
-                type="text"
-                formControlName="duration"
-                placeholder="180"
-                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+          <!-- Extra Info -->
+          <div>
+            <h3 class="mb-4 text-lg font-bold text-white">Extra Information</h3>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Cancellation</label>
+                <input
+                  type="text"
+                  formControlName="cancellation"
+                  placeholder="Free cancellation up to 24 hours"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Required Documents</label>
+                <input
+                  type="text"
+                  formControlName="requiredDocuments"
+                  placeholder="Passport or national ID"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Provider</label>
+                <input
+                  type="text"
+                  formControlName="provider"
+                  placeholder="NileGuide"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">External ID</label>
+                <input
+                  type="text"
+                  formControlName="externalId"
+                  placeholder="NG-PYRAMIDS-001"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Region</label>
+                <input
+                  type="text"
+                  formControlName="region"
+                  placeholder="Greater Cairo"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Rating</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="5"
+                  formControlName="rating"
+                  placeholder="4.8"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Latitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  formControlName="latitude"
+                  placeholder="29.9792"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-semibold text-white">Longitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  formControlName="longitude"
+                  placeholder="31.1342"
+                  class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+              </div>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label class="mb-2 block text-sm font-semibold text-white">Rating (1-5)</label>
-              <input
-                type="number"
-                step="0.1"
-                formControlName="rating"
-                placeholder="4.9"
-                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-            </div>
-
-            <div>
-              <label class="mb-2 block text-sm font-semibold text-white">Max Group Size</label>
-              <input
-                type="number"
-                formControlName="maxGroupSize"
-                placeholder="16"
-                class="w-full rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
-            </div>
-          </div>
-
+          <!-- Status -->
           <div>
             <label class="mb-3 block text-sm font-semibold text-white">Status</label>
 
             <div class="flex items-center gap-6">
-              <label class="flex items-center gap-2 text-white">
+              <label class="flex cursor-pointer items-center gap-2 text-white">
                 <input type="radio" formControlName="status" value="Active" class="accent-[#e0b100]" />
                 <span>Active</span>
               </label>
 
-              <label class="flex items-center gap-2 text-white">
+              <label class="flex cursor-pointer items-center gap-2 text-white">
                 <input type="radio" formControlName="status" value="Inactive" class="accent-[#e0b100]" />
                 <span>Inactive</span>
               </label>
             </div>
           </div>
 
+          <!-- Booking Links -->
+          <div formArrayName="bookingLinks">
+            <div class="mb-4 flex items-center justify-between gap-3">
+              <h3 class="text-lg font-bold text-white">Booking Links</h3>
+
+              <button
+                type="button"
+                (click)="addBookingLink()"
+                class="cursor-pointer rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-2 text-sm font-bold text-[#e0b100] transition hover:border-[#e0b100] hover:bg-[#201a12]">
+                <i class="fa-solid fa-plus mr-1"></i>
+                Add Link
+              </button>
+            </div>
+
+            @if (bookingLinksArray.length === 0) {
+              <p class="rounded-xl border border-dashed border-[#3a3122] bg-[#14110d] px-4 py-4 text-sm text-[#a18f6a]">
+                No booking links added.
+              </p>
+            }
+
+            <div class="space-y-3">
+              @for (link of bookingLinksArray.controls; track $index) {
+                <div [formGroupName]="$index" class="grid grid-cols-1 gap-3 rounded-2xl border border-[#2c2418] bg-[#14110d] p-4 md:grid-cols-[1fr_1fr_auto]">
+                  <input
+                    type="text"
+                    formControlName="provider"
+                    placeholder="Provider e.g. GetYourGuide"
+                    class="w-full rounded-xl border border-[#3a3122] bg-[#1b1712] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+
+                  <input
+                    type="url"
+                    formControlName="url"
+                    placeholder="Booking URL"
+                    class="w-full rounded-xl border border-[#3a3122] bg-[#1b1712] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+
+                  <button
+                    type="button"
+                    (click)="removeBookingLink($index)"
+                    class="flex h-12 cursor-pointer items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10 px-4 text-red-300 transition hover:bg-red-500/20">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Activity Hours -->
+          <div formArrayName="activityHours">
+            <div class="mb-4 flex items-center justify-between gap-3">
+              <h3 class="text-lg font-bold text-white">Activity Hours</h3>
+
+              <button
+                type="button"
+                (click)="addActivityHour()"
+                class="cursor-pointer rounded-xl border border-[#3a3122] bg-[#14110d] px-4 py-2 text-sm font-bold text-[#e0b100] transition hover:border-[#e0b100] hover:bg-[#201a12]">
+                <i class="fa-solid fa-plus mr-1"></i>
+                Add Hours
+              </button>
+            </div>
+
+            @if (activityHoursArray.length === 0) {
+              <p class="rounded-xl border border-dashed border-[#3a3122] bg-[#14110d] px-4 py-4 text-sm text-[#a18f6a]">
+                No activity hours added.
+              </p>
+            }
+
+            <div class="space-y-3">
+              @for (hour of activityHoursArray.controls; track $index) {
+                <div [formGroupName]="$index" class="grid grid-cols-2 gap-3 rounded-2xl border border-[#2c2418] bg-[#14110d] p-4 md:grid-cols-[1fr_1fr_1fr_1fr_auto]">
+                  <input
+                    type="number"
+                    min="1"
+                    max="12"
+                    formControlName="openHour"
+                    placeholder="Open Hour"
+                    class="w-full rounded-xl border border-[#3a3122] bg-[#1b1712] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+
+                  <select
+                    formControlName="openAmPm"
+                    class="w-full cursor-pointer rounded-xl border border-[#3a3122] bg-[#1b1712] px-4 py-3 text-white outline-none focus:border-[#e0b100]">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+
+                  <input
+                    type="number"
+                    min="1"
+                    max="12"
+                    formControlName="closeHour"
+                    placeholder="Close Hour"
+                    class="w-full rounded-xl border border-[#3a3122] bg-[#1b1712] px-4 py-3 text-white outline-none placeholder:text-[#a18f6a] focus:border-[#e0b100]" />
+
+                  <select
+                    formControlName="closeAmPm"
+                    class="w-full cursor-pointer rounded-xl border border-[#3a3122] bg-[#1b1712] px-4 py-3 text-white outline-none focus:border-[#e0b100]">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+
+                  <button
+                    type="button"
+                    (click)="removeActivityHour($index)"
+                    class="col-span-2 flex h-12 cursor-pointer items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10 px-4 text-red-300 transition hover:bg-red-500/20 md:col-span-1">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+
           <!-- Activity Image Upload -->
           <div>
             <label class="mb-3 block text-sm font-semibold text-white">
-              Activity Image
+              Activity Images
             </label>
 
-            <div class="flex items-center gap-5">
+            <div class="flex flex-col gap-5 sm:flex-row sm:items-start">
               <button
                 type="button"
                 (click)="activityImageInput.click()"
-                class="group relative flex h-20 w-20 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-[#3a3122] bg-[#14110d] shadow-[0_0_22px_#e0b10018] transition-all duration-300 hover:scale-[1.03] hover:border-[#e0b100] hover:shadow-[0_0_24px_#e0b10033]">
+                class="group relative flex h-24 w-24 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-3xl border border-[#3a3122] bg-[#14110d] shadow-[0_0_22px_#e0b10018] transition-all duration-300 hover:scale-[1.03] hover:border-[#e0b100] hover:shadow-[0_0_24px_#e0b10033]">
 
                 @if (selectedActivityImagePreview) {
                   <img
@@ -238,7 +469,7 @@
                     </span>
                   </div>
                 } @else {
-                  <div class="flex h-full w-full items-center justify-center rounded-full bg-[#201a12] text-[#e0b100]">
+                  <div class="flex h-full w-full items-center justify-center rounded-3xl bg-[#201a12] text-[#e0b100]">
                     <i class="fa-solid fa-image text-4xl"></i>
                   </div>
                 }
@@ -252,35 +483,52 @@
               <input
                 #activityImageInput
                 type="file"
+                multiple
                 accept="image/png,image/jpeg,image/jpg,image/webp"
                 class="hidden"
                 (change)="onActivityImageSelected($event)" />
 
-              <div class="min-w-0">
+              <div class="min-w-0 flex-1">
                 <p class="text-sm font-bold text-white">
-                  Upload activity photo
+                  Upload activity photos
                 </p>
 
                 <p class="mt-1 text-xs leading-5 text-[#a18f6a]">
-                  Choose an image from your device.
+                  Choose one or more images from your device.
                   <br />
-                  JPG, PNG or WEBP. Max 5MB.
+                  JPG, PNG or WEBP. Max 5MB for each image.
                 </p>
 
-                @if (selectedActivityImagePreview) {
+                @if (selectedActivityImagePreviews.length > 0) {
+                  <div class="mt-4 flex flex-wrap gap-3">
+                    @for (preview of selectedActivityImagePreviews; track preview) {
+                      <img
+                        [src]="preview"
+                        alt="Activity image preview"
+                        class="h-16 w-16 rounded-2xl object-cover ring-1 ring-[#e0b10033]" />
+                    }
+                  </div>
+
                   <button
                     type="button"
                     (click)="removeSelectedActivityImage(activityImageInput)"
-                    class="mt-3 cursor-pointer rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-300 transition hover:border-red-400 hover:bg-red-500/20">
+                    class="mt-4 cursor-pointer rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-300 transition hover:border-red-400 hover:bg-red-500/20">
                     <i class="fa-regular fa-trash-can mr-1"></i>
-                    Remove photo
+                    Remove selected photos
                   </button>
+                }
+
+                @if (activityFormMode === 'edit' && existingActivityImages.length > 0 && selectedActivityImageFiles.length === 0) {
+                  <p class="mt-4 text-xs text-[#a18f6a]">
+                    Existing images will stay unchanged unless you select new images.
+                  </p>
                 }
               </div>
             </div>
           </div>
 
-          <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <!-- Actions -->
+          <div class="sticky bottom-0 -mx-6 flex flex-col-reverse gap-3 border-t border-[#3a3122] bg-[#1b1712] px-6 py-5 sm:flex-row sm:items-center sm:justify-end">
             <button
               type="button"
               (click)="closeAddActivityModal()"
@@ -297,7 +545,7 @@
               @if (isSavingActivity) {
                 Processing...
               } @else {
-                <i class="fa-solid fa-circle-plus mr-2"></i>
+                <i class="fa-solid fa-floppy-disk mr-2"></i>
                 {{ activityFormMode === 'edit' ? 'Update Activity' : 'Add Activity' }}
               }
             </button>
@@ -311,7 +559,7 @@
   <!-- View Activity Modal -->
   @if (isViewActivityModalOpen && selectedViewActivity) {
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
-      <div class="max-h-[82vh] w-full max-w-2xl overflow-hidden rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
+      <div class="max-h-[88vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-[#3a3122] bg-[#1b1712] shadow-[0_0_30px_#00000066]">
 
         <!-- Header -->
         <div class="flex items-center justify-between border-b border-[#3a3122] px-6 py-5">
@@ -326,7 +574,18 @@
         </div>
 
         <!-- Body -->
-        <div class="max-h-[calc(82vh-78px)] overflow-y-auto px-6 py-6">
+<div
+  class="max-h-[calc(88vh-78px)] overflow-y-auto overscroll-contain px-6 py-6
+         [scrollbar-width:thin]
+         [scrollbar-color:#e0b100_#14110d]
+         [&::-webkit-scrollbar]:w-2
+         [&::-webkit-scrollbar-track]:rounded-full
+         [&::-webkit-scrollbar-track]:bg-[#14110d]
+         [&::-webkit-scrollbar-thumb]:rounded-full
+         [&::-webkit-scrollbar-thumb]:border-2
+         [&::-webkit-scrollbar-thumb]:border-[#14110d]
+         [&::-webkit-scrollbar-thumb]:bg-[#e0b100]
+         [&::-webkit-scrollbar-thumb:hover]:bg-[#f0c400]">
 
           <!-- Main Info -->
           <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
@@ -343,41 +602,99 @@
             }
 
             <div class="min-w-0 flex-1 text-center sm:text-left">
-              <h3 class="line-clamp-2 text-2xl font-bold leading-snug text-white">
+              <h3 class="text-2xl font-bold leading-snug text-white">
                 {{ selectedViewActivity.activityName }}
               </h3>
 
               <p class="mt-1 text-sm font-semibold text-[#a18f6a]">
-                ID: {{ selectedViewActivity.activityID }}
+                ID: {{ selectedViewActivity.activityId }}
               </p>
 
-              <p class="mt-3 line-clamp-3 text-sm leading-6 text-[#b8aa8d]">
+              <p class="mt-3 text-sm leading-6 text-[#b8aa8d]">
                 {{ selectedViewActivity.description }}
               </p>
             </div>
           </div>
 
+          <!-- Gallery -->
+          @if (selectedViewActivity.images && selectedViewActivity.images.length > 0) {
+            <div class="mt-6">
+              <h4 class="mb-3 text-lg font-bold text-white">Images</h4>
+
+<div
+  class="flex gap-3 overflow-x-auto overscroll-x-contain pb-3
+         [scrollbar-width:thin]
+         [scrollbar-color:#e0b100_#14110d]
+         [&::-webkit-scrollbar]:h-2
+         [&::-webkit-scrollbar-track]:rounded-full
+         [&::-webkit-scrollbar-track]:bg-[#14110d]
+         [&::-webkit-scrollbar-thumb]:rounded-full
+         [&::-webkit-scrollbar-thumb]:border-2
+         [&::-webkit-scrollbar-thumb]:border-[#14110d]
+         [&::-webkit-scrollbar-thumb]:bg-[#e0b100]
+         [&::-webkit-scrollbar-thumb:hover]:bg-[#f0c400]">
+                         @for (image of selectedViewActivity.images; track image.imageId) {
+                  <div class="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-[#2c2418]">
+                    <img
+                      [src]="image.url"
+                      alt="Activity image"
+                      class="h-full w-full object-cover" />
+
+                    @if (image.isPrimary) {
+                      <span class="absolute bottom-1 left-1 rounded-full bg-[#e0b100] px-2 py-0.5 text-[10px] font-bold text-black">
+                        Primary
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
           <!-- Details Cards -->
           <div class="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-
             <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
               <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Category</p>
-              <p class="truncate font-bold text-white">
-                {{ selectedViewActivity.categoryName }}
-              </p>
+              <p class="truncate font-bold text-white">{{ selectedViewActivity.categoryName }}</p>
             </div>
 
             <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
               <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">City</p>
-              <p class="truncate font-bold text-white">
-                {{ selectedViewActivity.cityName }}
-              </p>
+              <p class="truncate font-bold text-white">{{ selectedViewActivity.cityName }}</p>
             </div>
 
             <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
               <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Price</p>
               <p class="font-bold text-white">
-                {{ selectedViewActivity.minPrice }} {{ selectedViewActivity.priceCurrency }}
+                {{ selectedViewActivity.price }} {{ selectedViewActivity.priceCurrency }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Min Price</p>
+              <p class="font-bold text-white">
+                {{ selectedViewActivity.minPrice || 'N/A' }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Price Basis</p>
+              <p class="truncate font-bold text-white">
+                {{ selectedViewActivity.priceBasis || 'N/A' }}
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Duration</p>
+              <p class="font-bold text-white">
+                {{ selectedViewActivity.duration }} min
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Group Size</p>
+              <p class="truncate font-bold text-white">
+                {{ selectedViewActivity.groupSize }}
               </p>
             </div>
 
@@ -393,23 +710,37 @@
 
             <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
               <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Rating</p>
-              <p class="font-bold text-white">
-                {{ selectedViewActivity.rating || 0 }}
-              </p>
+              <p class="font-bold text-white">{{ selectedViewActivity.rating || 0 }}</p>
             </div>
 
             <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
               <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Reviews</p>
-              <p class="font-bold text-white">
-                {{ selectedViewActivity.reviewsCount || 0 }}
-              </p>
+              <p class="font-bold text-white">{{ selectedViewActivity.reviewCount || 0 }}</p>
             </div>
 
             <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
-              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Providers</p>
-              <p class="font-bold text-white">
-                {{ getActivityProvidersCount(selectedViewActivity) }}
-              </p>
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Provider</p>
+              <p class="truncate font-bold text-white">{{ selectedViewActivity.provider || 'N/A' }}</p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">External ID</p>
+              <p class="truncate font-bold text-white">{{ selectedViewActivity.externalId || 'N/A' }}</p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Region</p>
+              <p class="truncate font-bold text-white">{{ selectedViewActivity.region || 'N/A' }}</p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Latitude</p>
+              <p class="truncate font-bold text-white">{{ selectedViewActivity.latitude || 'N/A' }}</p>
+            </div>
+
+            <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+              <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Longitude</p>
+              <p class="truncate font-bold text-white">{{ selectedViewActivity.longitude || 'N/A' }}</p>
             </div>
 
             <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
@@ -418,13 +749,64 @@
                 {{ selectedViewActivity.requiredDocuments || 'N/A' }}
               </p>
             </div>
+          </div>
 
+          <!-- Cancellation -->
+          <div class="mt-6 rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+            <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Cancellation</p>
+            <p class="text-sm leading-6 text-white">
+              {{ selectedViewActivity.cancellation || 'N/A' }}
+            </p>
+          </div>
+
+          <!-- Booking Links -->
+          <div class="mt-6">
+            <h4 class="mb-3 text-lg font-bold text-white">Booking Links</h4>
+
+            @if (selectedViewActivity.bookingLinks && selectedViewActivity.bookingLinks.length > 0) {
+              <div class="space-y-3">
+                @for (link of selectedViewActivity.bookingLinks; track link.bookingLinkId ?? $index) {
+                  <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+                    <p class="font-bold text-white">{{ link.provider }}</p>
+                    <p class="mt-1 break-all text-sm text-[#a18f6a]">{{ link.url }}</p>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4 text-sm text-[#a18f6a]">
+                No booking links.
+              </p>
+            }
+          </div>
+
+          <!-- Activity Hours -->
+          <div class="mt-6">
+            <h4 class="mb-3 text-lg font-bold text-white">Activity Hours</h4>
+
+            @if (selectedViewActivity.activityHours && selectedViewActivity.activityHours.length > 0) {
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                @for (hour of selectedViewActivity.activityHours; track hour.activityHourId ?? $index) {
+                  <div class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Open / Close</p>
+                    <p class="mt-1 font-bold text-white">
+                      {{ hour.openTime || (hour.openHour + ':00 ' + hour.openAmPm) }}
+                      -
+                      {{ hour.closeTime || (hour.closeHour + ':00 ' + hour.closeAmPm) }}
+                    </p>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="rounded-2xl border border-[#2c2418] bg-[#14110d] p-4 text-sm text-[#a18f6a]">
+                No activity hours.
+              </p>
+            }
           </div>
         </div>
       </div>
     </div>
   }
- 
+
   <!-- Confirm Delete Modal -->
   @if (isConfirmModalOpen && confirmModalActivity) {
     <div class="fixed inset-0 z-[70] flex items-center justify-center bg-black/75 px-4 backdrop-blur-sm">
@@ -439,7 +821,7 @@
             type="button"
             (click)="closeConfirmModal()"
             [disabled]="isConfirmLoading"
-            class="flex h-9 w-9 items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-[#a18f6a] transition hover:bg-[#2b2419] hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
@@ -454,7 +836,7 @@
           </p>
 
           <p class="text-sm text-[#b8aa8d]">
-            This activity will be removed immediately.
+            This activity will be archived as a soft delete.
           </p>
         </div>
 
@@ -515,13 +897,15 @@
         </div>
       }
 
-      @if (!isLoading && !errorMessage && paginatedActivities.length === 0) {
-        <div class="px-6 py-10 text-center text-[#b8aa8d]">
-          No activities found
-        </div>
-      }
+    @if (!isLoading && !errorMessage && paginatedActivities.length === 0) {
+  <tr>
+    <td colspan="6" class="px-6 py-10 text-center text-[#b8aa8d] font-semibold">
+      No activities found
+    </td>
+  </tr>
+}
 
-      @for (activity of paginatedActivities; track activity.activityID) {
+      @for (activity of paginatedActivities; track activity.activityId) {
         <div class="grid grid-cols-12 items-center gap-4 border-b border-[#2c2418] px-5 py-4 text-sm transition duration-300 hover:bg-[#1d1812]">
 
           <!-- Activity -->
@@ -562,7 +946,7 @@
           <!-- Price -->
           <div class="col-span-1 text-center font-semibold text-white">
             <span class="whitespace-nowrap">
-              {{ activity.minPrice }} {{ activity.priceCurrency }}
+              {{ activity.price }} {{ activity.priceCurrency }}
             </span>
           </div>
 
@@ -639,7 +1023,7 @@
         </div>
       }
 
-      @for (activity of paginatedActivities; track activity.activityID) {
+      @for (activity of paginatedActivities; track activity.activityId) {
         <div class="rounded-2xl border border-[#2c2418] bg-[#1b1712] p-4 transition duration-300 hover:border-[#e0b10055] hover:shadow-[0_0_20px_#e0b10014]">
 
           <div class="mb-4 flex items-start justify-between gap-3">
@@ -706,7 +1090,7 @@
             <div>
               <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#e0b100]">Price</p>
               <p class="font-semibold text-white">
-                {{ activity.minPrice }} {{ activity.priceCurrency }}
+                {{ activity.price }} {{ activity.priceCurrency }}
               </p>
             </div>
 
@@ -778,4 +1162,4 @@
       </div>
     </div>
   </div>
-</div>
+</div>  

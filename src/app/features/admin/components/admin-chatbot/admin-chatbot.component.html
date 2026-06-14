@@ -1,0 +1,184 @@
+<div class="fixed bottom-5 right-5 z-50">
+  @if (!isOpen) {
+    <button
+      type="button"
+      (click)="togglePanel()"
+      class="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-yellow-500 text-black shadow-2xl transition duration-300 hover:scale-110 hover:bg-yellow-400"
+      aria-label="Open NileGuide AI files"
+    >
+      <i class="fa-regular fa-message text-2xl"></i>
+    </button>
+  }
+
+  @if (isOpen) {
+    <div
+      class="flex h-[560px] w-[430px] max-w-[calc(100vw-40px)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#1b1915] text-white shadow-2xl"
+    >
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-400"
+          >
+            <i class="fa-solid fa-robot"></i>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-bold text-white">NileGuide AI Files</h3>
+            <p class="text-sm font-medium text-white/60">Attach files for AI data</p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="closePanel()"
+          class="cursor-pointer text-white/70 transition hover:text-yellow-400"
+          aria-label="Close AI files"
+        >
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+<div
+  class="flex-1 overflow-y-auto overscroll-contain px-5 py-5
+         [scrollbar-width:thin]
+         [scrollbar-color:#e0b100_#14110d]
+         [&::-webkit-scrollbar]:w-2
+         [&::-webkit-scrollbar-track]:rounded-full
+         [&::-webkit-scrollbar-track]:bg-[#14110d]
+         [&::-webkit-scrollbar-thumb]:rounded-full
+         [&::-webkit-scrollbar-thumb]:border-2
+         [&::-webkit-scrollbar-thumb]:border-[#14110d]
+         [&::-webkit-scrollbar-thumb]:bg-[#e0b100]
+         [&::-webkit-scrollbar-thumb:hover]:bg-[#facc15]">
+         
+                 <!-- Upload Area -->
+        <div
+          class="rounded-2xl border border-dashed border-yellow-500/40 bg-[#27241b]/70 p-5 text-center transition hover:border-yellow-400 hover:bg-[#302c20]"
+          [class.border-yellow-400]="isDragging"
+          [class.bg-[#302c20]]="isDragging"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+        >
+          <div
+            class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-400"
+          >
+            <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+          </div>
+
+          <h4 class="text-base font-bold text-white">Attach AI data files</h4>
+
+          <p class="mt-2 text-sm leading-6 text-white/60">
+            Drop files here or browse from your device.
+          </p>
+
+          <input
+            #fileInput
+            type="file"
+            class="hidden"
+            multiple
+            (change)="onFilesSelected($event)"
+          />
+
+          <button
+            type="button"
+            (click)="fileInput.click()"
+            class="mt-4 cursor-pointer rounded-xl bg-yellow-500 px-5 py-3 text-sm font-bold text-black transition hover:bg-yellow-400"
+          >
+            <i class="fa-solid fa-folder-open mr-2"></i>
+            Browse Files
+          </button>
+
+          <p class="mt-3 text-xs font-medium text-white/40">
+            You can attach PDF, Word, text, images, Excel, PowerPoint or any file.
+          </p>
+        </div>
+
+        <!-- Files Header -->
+        <div class="mt-6 flex items-center justify-between">
+          <h4 class="text-sm font-bold text-white">Attached Files</h4>
+
+          @if (files.length > 0) {
+            <button
+              type="button"
+              (click)="clearFiles()"
+              class="cursor-pointer text-xs font-semibold text-white/50 transition hover:text-yellow-400"
+            >
+              Clear All
+            </button>
+          }
+        </div>
+
+        <!-- Empty State -->
+        @if (files.length === 0) {
+          <div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center">
+            <div
+              class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white/40"
+            >
+              <i class="fa-regular fa-file-lines text-xl"></i>
+            </div>
+
+            <h5 class="text-sm font-bold text-white/80">No files attached yet</h5>
+            <p class="mt-2 text-xs leading-5 text-white/45">
+              Attach files now. Integration will be added later when the endpoint is ready.
+            </p>
+          </div>
+        }
+
+        <!-- Files List -->
+        @if (files.length > 0) {
+          <div class="mt-4 space-y-3">
+            @for (file of files; track $index) {
+              <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <div class="flex items-start gap-3">
+                  <div
+                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-yellow-500/10 text-yellow-400"
+                  >
+                    <i class="fa-solid text-lg" [ngClass]="getFileIcon(file.name)"></i>
+                  </div>
+
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="min-w-0">
+                        <h5 class="truncate text-sm font-bold text-white">
+                          {{ file.name }}
+                        </h5>
+
+                        <p class="mt-1 text-xs font-medium text-white/45">
+                          {{ getFileExtension(file.name) }} · {{ formatFileSize(file.size) }}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        (click)="removeFile($index)"
+                        class="cursor-pointer text-white/45 transition hover:text-red-400"
+                        aria-label="Remove file"
+                      >
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="border-t border-white/10 p-4">
+        <button
+          type="button"
+          [disabled]="files.length === 0"
+          class="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-yellow-500 text-sm font-bold text-black transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <i class="fa-solid fa-paperclip mr-2"></i>
+          Confirm Files
+        </button>
+      </div>
+    </div>
+  }
+</div>
