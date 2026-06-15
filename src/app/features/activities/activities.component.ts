@@ -17,6 +17,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Datepicker } from 'flowbite-datepicker';
 
 import { ActivitiesService } from './activities.service';
+import { ActivitiesStateService } from './activities-state.service';
 import { WishlistService } from '../wishlist/wishlist.service';
 import { ScheduleService } from '../schedule/schedule.service';
 import { ProfileService } from '../profile/profile.service';
@@ -44,6 +45,7 @@ export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
   planDateInput?: ElementRef<HTMLInputElement>;
 
   private readonly activitiesService = inject(ActivitiesService);
+  private readonly activitiesStateService = inject(ActivitiesStateService);
   private readonly wishlistService = inject(WishlistService);
   private readonly scheduleService = inject(ScheduleService);
   private readonly profileService = inject(ProfileService);
@@ -68,6 +70,8 @@ export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isLoading = false;
   private shouldScrollAfterLoad = false;
+  private restoredFromCache = false;
+  private restoredScrollY = 0;
 
   wishlistedIds = new Set<number>();
   wishlistLoadingIds = new Set<number>();
@@ -90,6 +94,8 @@ export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly syncPlanDateHandler = () => this.syncPlanDateValue();
 
   ngOnInit(): void {
+    this.restoreActivitiesState();
+
     this.getCategories();
     this.getCities();
     this.loadWishlistIds();
@@ -102,13 +108,25 @@ export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.saveActivitiesState();
     this.destroyPlanDatePicker();
   }
 
   private listenToProfileFilters(): void {
     this.route.queryParamMap.subscribe((params) => {
-      this.selectedCityIds = this.parseIds(params.get('cities'));
-      this.selectedCategoryIds = this.parseIds(params.get('categories'));
+      const cityIds = this.parseIds(params.get('cities'));
+      const categoryIds = this.parseIds(params.get('categories'));
+
+      const hasQueryFilters = cityIds.length > 0 || categoryIds.length > 0;
+
+      if (this.restoredFromCache && !hasQueryFilters) {
+        this.restoredFromCache = false;
+        this.restoreScrollPosition();
+        return;
+      }
+
+      this.selectedCityIds = cityIds;
+      this.selectedCategoryIds = categoryIds;
       this.currentPage = 1;
       this.getActivities();
     });
@@ -203,6 +221,8 @@ export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
           this.currentPage = response.page;
           this.pageSize = response.pageSize;
           this.isLoading = false;
+
+          this.saveActivitiesState();
           this.cdr.detectChanges();
 
           if (this.shouldScrollAfterLoad) {
@@ -224,6 +244,7 @@ export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activitiesService.getCategories().subscribe({
       next: (response) => {
         this.categories = response;
+        this.saveActivitiesState();
         this.cdr.detectChanges();
       },
     });
@@ -233,6 +254,7 @@ export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activitiesService.getCities().subscribe({
       next: (response) => {
         this.cities = response;
+        this.saveActivitiesState();
         this.cdr.detectChanges();
       },
     });
@@ -639,6 +661,83 @@ export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
     return rating.toFixed(1);
   }
 
+  private restoreActivitiesState(): void {
+    const hasQueryFilters =
+      this.route.snapshot.queryParamMap.has('cities') ||
+      this.route.snapshot.queryParamMap.has('categories');
+
+    if (hasQueryFilters) {
+      return;
+    }
+
+    const state = this.activitiesStateService.getState();
+
+    if (!state) {
+      return;
+    }
+
+    this.activities = state.activities ?? [];
+    this.categories = state.categories ?? [];
+    this.cities = state.cities ?? [];
+
+    this.selectedCategoryIds = state.selectedCategoryIds ?? [];
+    this.selectedCityIds = state.selectedCityIds ?? [];
+
+    this.searchTerm = state.searchTerm ?? '';
+    this.sortBy = state.sortBy ?? 'default';
+
+    this.totalCount = state.totalCount ?? 0;
+    this.currentPage = state.currentPage ?? 1;
+    this.pageSize = state.pageSize ?? 9;
+
+    this.restoredScrollY = state.scrollY ?? 0;
+    this.restoredFromCache = this.activities.length > 0;
+
+    this.isLoading = false;
+    this.cdr.detectChanges();
+  }
+
+  private saveActivitiesState(): void {
+    const scrollY = isPlatformBrowser(this.platformId) ? window.scrollY : 0;
+
+    this.activitiesStateService.saveState({
+      activities: this.activities,
+      categories: this.categories,
+      cities: this.cities,
+
+      selectedCategoryIds: this.selectedCategoryIds,
+      selectedCityIds: this.selectedCityIds,
+
+      searchTerm: this.searchTerm,
+      sortBy: this.sortBy,
+
+      totalCount: this.totalCount,
+      currentPage: this.currentPage,
+      pageSize: this.pageSize,
+
+      scrollY,
+    });
+  }
+
+  private restoreScrollPosition(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    if (!this.restoredScrollY) {
+      return;
+    }
+
+    setTimeout(() => {
+      window.scrollTo({
+        top: this.restoredScrollY,
+        behavior: 'auto',
+      });
+
+      this.restoredScrollY = 0;
+    }, 0);
+  }
+
   private initPlanDatePickerAfterRender(): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -701,7 +800,7 @@ export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
             btn.style.width = 'fit-content';
             btn.style.minWidth = '170px';
             btn.style.margin = '10px auto 0';
-            btn.style.padding = '12px 34px';         
+            btn.style.padding = '12px 34px';
             btn.style.border = '1px solid rgba(255,255,255,0.75)';
             btn.style.borderRadius = '9999px';
             btn.style.fontWeight = '600';
@@ -712,16 +811,16 @@ export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
               'background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease';
             btn.style.boxShadow = 'none';
 
-                  btn.style.backgroundColor = '#eab308';
-          btn.style.color = '#000';
-
-          btn.onmouseenter = () => {
-            btn.style.backgroundColor = '#ca8a04';
-          };
-
-          btn.onmouseleave = () => {
             btn.style.backgroundColor = '#eab308';
-          };
+            btn.style.color = '#000';
+
+            btn.onmouseenter = () => {
+              btn.style.backgroundColor = '#ca8a04';
+            };
+
+            btn.onmouseleave = () => {
+              btn.style.backgroundColor = '#eab308';
+            };
           }
         });
       });

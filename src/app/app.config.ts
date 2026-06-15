@@ -9,6 +9,7 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { provideToastr } from 'ngx-toastr';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { cacheInterceptor } from './core/interceptors/cache.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -28,7 +29,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
 provideHttpClient(
   withFetch(),
-  withInterceptors([authInterceptor])
+  withInterceptors([authInterceptor, cacheInterceptor])
 ),
     provideTranslateService({ 
       loader: provideTranslateHttpLoader({

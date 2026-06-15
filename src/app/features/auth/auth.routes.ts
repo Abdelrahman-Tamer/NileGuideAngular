@@ -1,26 +1,32 @@
-import { Routes } from "@angular/router";
-import { LoginPageComponent } from "./pages/login-page/login-page.component";
-import { RegisterPageComponent } from "./pages/register-page/register-page.component";
-import { ForgetPassPageComponent } from "./pages/forget-pass-page/forget-pass-page.component";
-import { ResetPasswordComponent } from "./pages/reset-password/reset-password.component";
+import { Routes } from '@angular/router';
 
-export const Auth_ROUTES : Routes = [
-
-    {
-        path: 'login',
-        component:LoginPageComponent
-    },
-    {
-        path: 'register',
-        component:RegisterPageComponent
-    },
-    {
-        path: 'forgot-password',
-        component:ForgetPassPageComponent
-    },
-    {
-        path: 'reset-password',
-        component:ResetPasswordComponent
-    },
-
-]
+export const Auth_ROUTES: Routes = [
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/login-page/login-page.component').then(
+        (m) => m.LoginPageComponent
+      ),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/register-page/register-page.component').then(
+        (m) => m.RegisterPageComponent
+      ),
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./pages/forget-pass-page/forget-pass-page.component').then(
+        (m) => m.ForgetPassPageComponent
+      ),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./pages/reset-password/reset-password.component').then(
+        (m) => m.ResetPasswordComponent
+      ),
+  },
+];
