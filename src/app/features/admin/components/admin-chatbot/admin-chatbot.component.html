@@ -12,7 +12,7 @@
 
   @if (isOpen) {
     <div
-      class="flex h-[560px] w-[430px] max-w-[calc(100vw-40px)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#1b1915] text-white shadow-2xl"
+      class="relative flex h-[560px] w-[430px] max-w-[calc(100vw-40px)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#1b1915] text-white shadow-2xl"
     >
       <!-- Header -->
       <div class="flex items-center justify-between border-b border-white/10 px-5 py-4">
@@ -40,20 +40,33 @@
       </div>
 
       <!-- Body -->
-<div
-  class="flex-1 overflow-y-auto overscroll-contain px-5 py-5
-         [scrollbar-width:thin]
-         [scrollbar-color:#e0b100_#14110d]
-         [&::-webkit-scrollbar]:w-2
-         [&::-webkit-scrollbar-track]:rounded-full
-         [&::-webkit-scrollbar-track]:bg-[#14110d]
-         [&::-webkit-scrollbar-thumb]:rounded-full
-         [&::-webkit-scrollbar-thumb]:border-2
-         [&::-webkit-scrollbar-thumb]:border-[#14110d]
-         [&::-webkit-scrollbar-thumb]:bg-[#e0b100]
-         [&::-webkit-scrollbar-thumb:hover]:bg-[#facc15]">
-         
-                 <!-- Upload Area -->
+      <div
+        class="flex-1 overflow-y-auto overscroll-contain px-5 py-5
+               [scrollbar-width:thin]
+               [scrollbar-color:#e0b100_#14110d]
+               [&::-webkit-scrollbar]:w-2
+               [&::-webkit-scrollbar-track]:rounded-full
+               [&::-webkit-scrollbar-track]:bg-[#14110d]
+               [&::-webkit-scrollbar-thumb]:rounded-full
+               [&::-webkit-scrollbar-thumb]:border-2
+               [&::-webkit-scrollbar-thumb]:border-[#14110d]
+               [&::-webkit-scrollbar-thumb]:bg-[#e0b100]
+               [&::-webkit-scrollbar-thumb:hover]:bg-[#facc15]"
+      >
+        <!-- Alerts -->
+        @if (errorMessage) {
+          <div class="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-300">
+            {{ errorMessage }}
+          </div>
+        }
+
+        @if (successMessage) {
+          <div class="mb-4 rounded-xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm font-semibold text-green-300">
+            {{ successMessage }}
+          </div>
+        }
+
+        <!-- Upload Area -->
         <div
           class="rounded-2xl border border-dashed border-yellow-500/40 bg-[#27241b]/70 p-5 text-center transition hover:border-yellow-400 hover:bg-[#302c20]"
           [class.border-yellow-400]="isDragging"
@@ -85,7 +98,8 @@
           <button
             type="button"
             (click)="fileInput.click()"
-            class="mt-4 cursor-pointer rounded-xl bg-yellow-500 px-5 py-3 text-sm font-bold text-black transition hover:bg-yellow-400"
+            [disabled]="isUploading"
+            class="mt-4 cursor-pointer rounded-xl bg-yellow-500 px-5 py-3 text-sm font-bold text-black transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <i class="fa-solid fa-folder-open mr-2"></i>
             Browse Files
@@ -96,38 +110,39 @@
           </p>
         </div>
 
-        <!-- Files Header -->
+        <!-- Selected Files Header -->
         <div class="mt-6 flex items-center justify-between">
-          <h4 class="text-sm font-bold text-white">Attached Files</h4>
+          <h4 class="text-sm font-bold text-white">Selected Files</h4>
 
           @if (files.length > 0) {
             <button
               type="button"
               (click)="clearFiles()"
-              class="cursor-pointer text-xs font-semibold text-white/50 transition hover:text-yellow-400"
+              [disabled]="isUploading"
+              class="cursor-pointer text-xs font-semibold text-white/50 transition hover:text-yellow-400 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Clear All
             </button>
           }
         </div>
 
-        <!-- Empty State -->
+        <!-- Selected Empty State -->
         @if (files.length === 0) {
-          <div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center">
+          <div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-6 text-center">
             <div
-              class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white/40"
+              class="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-white/40"
             >
-              <i class="fa-regular fa-file-lines text-xl"></i>
+              <i class="fa-regular fa-file-lines text-lg"></i>
             </div>
 
-            <h5 class="text-sm font-bold text-white/80">No files attached yet</h5>
+            <h5 class="text-sm font-bold text-white/80">No files selected yet</h5>
             <p class="mt-2 text-xs leading-5 text-white/45">
-              Attach files now. Integration will be added later when the endpoint is ready.
+              Choose files first, then press Confirm Files to upload them.
             </p>
           </div>
         }
 
-        <!-- Files List -->
+        <!-- Selected Files List -->
         @if (files.length > 0) {
           <div class="mt-4 space-y-3">
             @for (file of files; track $index) {
@@ -154,11 +169,129 @@
                       <button
                         type="button"
                         (click)="removeFile($index)"
-                        class="cursor-pointer text-white/45 transition hover:text-red-400"
+                        [disabled]="isUploading"
+                        class="cursor-pointer text-white/45 transition hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
                         aria-label="Remove file"
                       >
                         <i class="fa-solid fa-trash"></i>
                       </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Uploaded Files Header -->
+        <div class="mt-7 flex items-center justify-between">
+          <h4 class="text-sm font-bold text-white">Attached Files</h4>
+
+          <button
+            type="button"
+            (click)="loadFiles()"
+            [disabled]="isLoadingFiles"
+            class="cursor-pointer text-xs font-semibold text-white/50 transition hover:text-yellow-400 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <i
+              class="fa-solid fa-rotate-right mr-1"
+              [class.animate-spin]="isLoadingFiles"
+            ></i>
+            Refresh
+          </button>
+        </div>
+
+        <!-- Loading Uploaded Files -->
+        @if (isLoadingFiles) {
+          <div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center">
+            <div
+              class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-400"
+            >
+              <i class="fa-solid fa-spinner animate-spin text-xl"></i>
+            </div>
+
+            <h5 class="text-sm font-bold text-white/80">Loading files...</h5>
+          </div>
+        }
+
+        <!-- Uploaded Empty State -->
+        @if (!isLoadingFiles && uploadedFiles.length === 0) {
+          <div class="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-8 text-center">
+            <div
+              class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white/40"
+            >
+              <i class="fa-regular fa-folder-open text-xl"></i>
+            </div>
+
+            <h5 class="text-sm font-bold text-white/80">No uploaded files yet</h5>
+            <p class="mt-2 text-xs leading-5 text-white/45">
+              Uploaded AI files will appear here.
+            </p>
+          </div>
+        }
+
+        <!-- Uploaded Files List -->
+        @if (!isLoadingFiles && uploadedFiles.length > 0) {
+          <div class="mt-4 space-y-3">
+            @for (asset of uploadedFiles; track asset.file_id) {
+              <div class="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <div class="flex items-start gap-3">
+                  <div
+                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-yellow-500/10 text-yellow-400"
+                  >
+                    <i class="fa-solid text-lg" [ngClass]="getFileIcon(asset.asset_name)"></i>
+                  </div>
+
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="min-w-0">
+                        <h5 class="truncate text-sm font-bold text-white">
+                          {{ asset.asset_name }}
+                        </h5>
+
+                        <p class="mt-1 text-xs font-medium text-white/45">
+                          {{ getFileExtension(asset.asset_name) }}
+                          ·
+                          {{ formatFileSize(asset.file_size) }}
+                        </p>
+
+                        <p class="mt-1 text-xs font-medium text-white/35">
+                          {{ formatUploadedAt(asset.uploaded_at) }}
+                        </p>
+                      </div>
+
+                      <div class="flex shrink-0 items-center gap-2">
+                        <input
+                          #updateFileInput
+                          type="file"
+                          class="hidden"
+                          (change)="onUpdateFileSelected($event, asset)"
+                        />
+
+                        <button
+                          type="button"
+                          (click)="updateFileInput.click()"
+                          [disabled]="updatingFileId === asset.file_id || deletingFileId === asset.file_id"
+                          class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-yellow-500/10 text-yellow-400 transition hover:bg-yellow-500 hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
+                          aria-label="Update file"
+                        >
+                          @if (updatingFileId === asset.file_id) {
+                            <i class="fa-solid fa-spinner animate-spin"></i>
+                          } @else {
+                            <i class="fa-solid fa-pen"></i>
+                          }
+                        </button>
+
+                        <button
+                          type="button"
+                          (click)="openDeleteModal(asset)"
+                          [disabled]="updatingFileId === asset.file_id || deletingFileId === asset.file_id"
+                          class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-red-500/10 text-red-400 transition hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                          aria-label="Delete file"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -172,13 +305,65 @@
       <div class="border-t border-white/10 p-4">
         <button
           type="button"
-          [disabled]="files.length === 0"
+          (click)="confirmFiles()"
+          [disabled]="files.length === 0 || isUploading"
           class="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-yellow-500 text-sm font-bold text-black transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <i class="fa-solid fa-paperclip mr-2"></i>
-          Confirm Files
+          @if (isUploading) {
+            <i class="fa-solid fa-spinner mr-2 animate-spin"></i>
+            Uploading...
+          } @else {
+            <i class="fa-solid fa-paperclip mr-2"></i>
+            Confirm Files
+          }
         </button>
       </div>
+
+      <!-- Delete Modal -->
+      @if (fileToDelete) {
+        <div class="absolute inset-0 z-20 flex items-center justify-center bg-black/70 px-5">
+          <div class="w-full rounded-2xl border border-white/10 bg-[#1b1915] p-5 text-center shadow-2xl">
+            <div
+              class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10 text-red-400"
+            >
+              <i class="fa-solid fa-trash text-xl"></i>
+            </div>
+
+            <h4 class="text-lg font-bold text-white">Delete File?</h4>
+
+            <p class="mt-2 text-sm leading-6 text-white/55">
+              Are you sure you want to delete
+              <span class="font-bold text-white">{{ fileToDelete.asset_name }}</span>
+              from AI files?
+            </p>
+
+            <div class="mt-5 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                (click)="closeDeleteModal()"
+                [disabled]="!!deletingFileId"
+                class="h-11 cursor-pointer rounded-xl border border-white/10 bg-white/5 text-sm font-bold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                No
+              </button>
+
+              <button
+                type="button"
+                (click)="confirmDeleteFile()"
+                [disabled]="!!deletingFileId"
+                class="h-11 cursor-pointer rounded-xl bg-red-500 text-sm font-bold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                @if (deletingFileId) {
+                  <i class="fa-solid fa-spinner mr-2 animate-spin"></i>
+                  Deleting...
+                } @else {
+                  Yes, Delete
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   }
 </div>

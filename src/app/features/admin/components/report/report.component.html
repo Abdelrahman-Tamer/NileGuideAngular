@@ -1,8 +1,8 @@
-<div class="print-area mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-12">
-  <div class="mt-6 overflow-hidden rounded-3xl border border-[#2c2418] bg-[#16120d]">
-    
+<div class="print-area mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-12 print:m-0 print:max-w-none print:p-0">
+  <div class="mt-6 overflow-hidden rounded-3xl border border-[#2c2418] bg-[#16120d] print:mt-0 print:overflow-visible print:rounded-none print:border-0 print:bg-transparent">
+
     <!-- Head -->
-    <div class="flex flex-col gap-3 border-b border-[#2c2418] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-3 border-b border-[#2c2418] px-6 py-5 sm:flex-row sm:items-center sm:justify-between print:hidden">
       <div class="flex flex-col items-start text-center">
         <div class="mx-8 flex items-center justify-center gap-3 sm:gap-4 md:mx-0">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1d4ed833] text-[#60a5fa]">
@@ -22,7 +22,7 @@
       <button
         type="button"
         (click)="printReport()"
-        class="cursor-pointer w-full rounded-xl bg-[#e0b100] px-5 py-4 text-base font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055] lg:w-auto"
+        class="w-full cursor-pointer rounded-xl bg-[#e0b100] px-5 py-4 text-base font-semibold text-black transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_18px_#e0b10055] lg:w-auto print:hidden"
       >
         <i class="fa-solid fa-print"></i>
         Print Report
@@ -44,285 +44,316 @@
 
     @if (!loading && !errorMessage) {
 
-      <!-- Line Chart -->
-      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-12">
-        <div class="overflow-x-auto">
-          <div class="min-w-[980px] overflow-hidden rounded-[32px] border border-[#2c2418] bg-[#1b1712] p-7 lg:p-8">
-            
-            <div class="mb-8 flex items-center gap-3">
-              <i class="fa-solid fa-arrow-trend-up text-xl text-[#e0b100]"></i>
-              <h2 class="text-[20px] font-black text-white lg:text-[22px]">
-                Activity Views (Last 7 Days)
-              </h2>
-            </div>
+      <!-- Page 1: Activity Views -->
+      <section class="print:[break-after:page] print:[break-inside:avoid] print:[page-break-after:always] print:[page-break-inside:avoid]">
 
-            <div class="rounded-[24px] border border-[#2c2418] bg-[linear-gradient(90deg,#211c12,#1c1811,#211c12)] px-6 pb-8 pt-6">
-              <div class="relative h-[380px] w-full">
+        <!-- Print Header داخل أول صفحة فقط -->
+        <div class="hidden print:mb-6 print:flex print:items-center print:gap-4 print:border-b print:border-[#2c2418] print:bg-[#16120d] print:px-8 print:py-6">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1d4ed833] text-[#60a5fa]">
+            <i class="fa-solid fa-chart-column text-xl"></i>
+          </div>
 
-                <!-- Y labels -->
-                <div class="absolute left-0 top-6 h-[270px] w-12 text-[13px] font-semibold text-[#c9bb9d]">
-                  @for (tick of activityAxisTicks; track $index) {
-                    <span
-                      class="absolute -translate-y-1/2"
-                      [style.top.%]="tick.position"
-                    >
-                      {{ tick.label }}
-                    </span>
-                  }
-                </div>
+          <div>
+            <h1 class="text-2xl font-black leading-tight text-white">
+              Admin Report
+            </h1>
+            <p class="mt-2 text-sm font-semibold text-[#b8aa8d]">
+              Analytics and insights about your platform
+            </p>
+          </div>
+        </div>
 
-                <!-- Chart body -->
-                <div class="absolute left-16 right-0 top-0 h-[330px] overflow-hidden">
+        <!-- Line Chart -->
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-12 print:max-w-none print:px-8 print:py-6">
+          <div class="overflow-x-auto print:overflow-visible">
+            <div class="min-w-[980px] overflow-hidden rounded-[32px] border border-[#2c2418] bg-[#1b1712] p-7 lg:p-8 print:min-w-0 print:overflow-visible print:p-8">
 
-                  <!-- Legend -->
-                  <div class="absolute left-1/2 top-1 flex -translate-x-1/2 items-center gap-2 text-[14px] font-medium text-[#bcae90]">
-                    <span class="h-[12px] w-[40px] rounded-[4px] border-[3px] border-[#e0b100]"></span>
-                    <span>Views</span>
-                  </div>
+              <div class="mb-8 flex items-center gap-3">
+                <i class="fa-solid fa-arrow-trend-up text-xl text-[#e0b100]"></i>
+                <h2 class="text-[20px] font-black text-white lg:text-[22px]">
+                  Activity Views (Last 7 Days)
+                </h2>
+              </div>
 
-                  <!-- Horizontal grid -->
-                  <div class="absolute inset-x-0 top-6 z-0 h-[270px]">
+              <div class="rounded-[24px] border border-[#2c2418] bg-[#221d16] px-6 pb-8 pt-6">
+                <div class="relative h-[380px] w-full">
+
+                  <!-- Y labels -->
+                  <div class="absolute left-0 top-6 h-[270px] w-12 text-[13px] font-semibold text-[#c9bb9d]">
                     @for (tick of activityAxisTicks; track $index) {
                       <span
-                        class="absolute left-0 right-0 border-b border-[#b8aa8d1a]"
+                        class="absolute -translate-y-1/2"
                         [style.top.%]="tick.position"
-                      ></span>
-                    }
-                  </div>
-
-                  <!-- Vertical grid -->
-                  <div class="absolute inset-y-6 left-0 right-0 z-0">
-                    @for (item of activityViews; track item.day) {
-                      <span
-                        class="absolute h-full border-l border-[#b8aa8d14]"
-                        [style.left.%]="activityViews.length === 1 ? 50 : ($index / (activityViews.length - 1)) * 100"
-                      ></span>
-                    }
-                  </div>
-
-                  <!-- Chart -->
-                  <svg
-                    viewBox="0 0 100 100"
-                    preserveAspectRatio="none"
-                    class="absolute inset-x-0 top-6 z-10 h-[270px] w-full overflow-visible"
-                  >
-                    @if (activityAreaPath) {
-                      <path
-                        [attr.d]="activityAreaPath"
-                        fill="rgba(224,177,0,0.12)"
-                      ></path>
-                    }
-
-                    @if (activityLinePath) {
-                      <path
-                        [attr.d]="activityLinePath"
-                        fill="none"
-                        stroke="#e0b100"
-                        stroke-width="0.65"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      ></path>
-                    }
-
-                    @for (point of activityPoints; track point.label) {
-                      <circle
-                        [attr.cx]="point.x"
-                        [attr.cy]="point.y"
-                        r="0.78"
-                        fill="#1b1712"
-                        stroke="#e0b100"
-                        stroke-width="0.4"
-                      ></circle>
-                    }
-                  </svg>
-
-                  <!-- X labels -->
-                  <div class="absolute bottom-0 left-0 right-0 h-6 text-[13px] font-medium text-[#bcae90]">
-                    @for (item of activityViews; track item.day) {
-                      <span
-                        class="absolute -translate-x-1/2"
-                        [style.left.%]="activityViews.length === 1 ? 50 : ($index / (activityViews.length - 1)) * 100"
                       >
-                        {{ item.day }}
+                        {{ tick.label }}
                       </span>
                     }
                   </div>
 
+                  <!-- Chart body -->
+                  <div class="absolute left-16 right-0 top-0 h-[330px] overflow-hidden print:overflow-visible">
+
+                    <!-- Legend -->
+                    <div class="absolute left-1/2 top-1 flex -translate-x-1/2 items-center gap-2 text-[14px] font-medium text-[#bcae90]">
+                      <span class="h-[12px] w-[40px] rounded-[4px] border-[3px] border-[#e0b100]"></span>
+                      <span>Views</span>
+                    </div>
+
+                    <!-- Horizontal grid -->
+                    <div class="absolute inset-x-0 top-6 z-0 h-[270px]">
+                      @for (tick of activityAxisTicks; track $index) {
+                        <span
+                          class="absolute left-0 right-0 border-b border-[#b8aa8d1a]"
+                          [style.top.%]="tick.position"
+                        ></span>
+                      }
+                    </div>
+
+                    <!-- Vertical grid -->
+                    <div class="absolute inset-y-6 left-0 right-0 z-0">
+                      @for (item of activityViews; track item.day) {
+                        <span
+                          class="absolute h-full border-l border-[#b8aa8d14]"
+                          [style.left.%]="activityViews.length === 1 ? 50 : ($index / (activityViews.length - 1)) * 100"
+                        ></span>
+                      }
+                    </div>
+
+                    <!-- Chart -->
+                    <svg
+                      viewBox="0 0 100 100"
+                      preserveAspectRatio="none"
+                      class="absolute inset-x-0 top-6 z-10 h-[270px] w-full overflow-visible print:[break-inside:avoid] print:[page-break-inside:avoid]"
+                    >
+                      @if (activityAreaPath) {
+                        <path
+                          [attr.d]="activityAreaPath"
+                          fill="rgba(224,177,0,0.12)"
+                        ></path>
+                      }
+
+                      @if (activityLinePath) {
+                        <path
+                          [attr.d]="activityLinePath"
+                          fill="none"
+                          stroke="#e0b100"
+                          stroke-width="0.65"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                      }
+
+                      @for (point of activityPoints; track point.label) {
+                        <circle
+                          [attr.cx]="point.x"
+                          [attr.cy]="point.y"
+                          r="0.78"
+                          fill="#1b1712"
+                          stroke="#e0b100"
+                          stroke-width="0.4"
+                        ></circle>
+                      }
+                    </svg>
+
+                    <!-- X labels -->
+                    <div class="absolute bottom-0 left-0 right-0 h-6 text-[13px] font-medium text-[#bcae90]">
+                      @for (item of activityViews; track item.day) {
+                        <span
+                          class="absolute -translate-x-1/2"
+                          [style.left.%]="activityViews.length === 1 ? 50 : ($index / (activityViews.length - 1)) * 100"
+                        >
+                          {{ item.day }}
+                        </span>
+                      }
+                    </div>
+
+                  </div>
                 </div>
               </div>
-            </div>
 
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- User Growth and Activities by Category -->
-      <div class="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-2 lg:px-12">
-        
-        <!-- User Growth -->
-        <div class="rounded-2xl border border-[#3a3122] bg-[#221d16] p-4 sm:p-5 lg:h-[360px] lg:p-6">
-          <h3 class="mb-4 flex items-center gap-2 text-[18px] font-bold text-white sm:mb-6 sm:gap-3 sm:text-[20px]">
-            <i class="fa-solid fa-user-plus text-[#e0b100]"></i>
-            User Growth
-          </h3>
+      <!-- Page 2: User Growth -->
+      <section class="print:[break-after:page] print:[break-inside:avoid] print:[page-break-after:always] print:[page-break-inside:avoid]">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-12 print:max-w-none print:px-8 print:py-8">
 
-          <div class="flex h-[210px] gap-2 sm:h-[230px] sm:gap-3">
-            
-            <!-- Y axis -->
-            <div class="relative h-[170px] w-7 text-[10px] text-[#b8b1a4] sm:h-[190px] sm:w-9 sm:text-xs">
-              @for (tick of userGrowthAxisTicks; track $index) {
-                <span
-                  class="absolute left-0 -translate-y-1/2"
-                  [style.top.%]="tick.position"
-                >
-                  {{ tick.label }}
-                </span>
-              }
-            </div>
+          <!-- User Growth -->
+          <div class="rounded-2xl border border-[#3a3122] bg-[#221d16] p-4 sm:p-5 lg:h-[360px] lg:p-6 print:h-auto print:min-h-[520px] print:p-8">
+            <h3 class="mb-4 flex items-center gap-2 text-[18px] font-bold text-white sm:mb-6 sm:gap-3 sm:text-[20px] print:text-[22px]">
+              <i class="fa-solid fa-user-plus text-[#e0b100]"></i>
+              User Growth
+            </h3>
 
-            <!-- Chart -->
-            <div class="relative h-[170px] flex-1 border-l border-b border-white/10 sm:h-[190px]">
-              
-              <!-- Horizontal lines -->
-              <div class="pointer-events-none absolute inset-0">
+            <div class="flex h-[210px] gap-2 sm:h-[230px] sm:gap-3 print:h-[380px]">
+
+              <!-- Y axis -->
+              <div class="relative h-[170px] w-7 text-[10px] text-[#b8b1a4] sm:h-[190px] sm:w-9 sm:text-xs print:h-[330px] print:text-sm">
                 @for (tick of userGrowthAxisTicks; track $index) {
-                  <div
-                    class="absolute left-0 right-0 border-t border-white/10"
+                  <span
+                    class="absolute left-0 -translate-y-1/2"
                     [style.top.%]="tick.position"
-                  ></div>
+                  >
+                    {{ tick.label }}
+                  </span>
                 }
               </div>
 
-              <!-- Vertical lines -->
-              <div
-                class="pointer-events-none absolute inset-0 grid"
-                [style.grid-template-columns]="'repeat(' + userGrowth.length + ', minmax(0, 1fr))'"
-              >
-                @for (item of userGrowth; track item.month) {
-                  <div class="h-full border-r border-white/10"></div>
-                }
-              </div>
+              <!-- Chart -->
+              <div class="relative h-[170px] flex-1 border-l border-b border-white/10 sm:h-[190px] print:h-[330px]">
 
-              <!-- Bars -->
-              <div
-                class="absolute inset-0 grid px-2 sm:px-4"
-                [style.grid-template-columns]="'repeat(' + userGrowth.length + ', minmax(0, 1fr))'"
-              >
-                @for (item of userGrowth; track item.month) {
-                  <div class="flex h-full items-end justify-center">
+                <!-- Horizontal lines -->
+                <div class="pointer-events-none absolute inset-0">
+                  @for (tick of userGrowthAxisTicks; track $index) {
                     <div
-                      class="w-[60%] rounded-t-[2px] bg-[#e0b100] transition-all duration-300 sm:w-[70%]"
-                      [style.height.%]="getUserGrowthBarHeight(item.count)"
-                      [title]="item.month + ': ' + item.count"
+                      class="absolute left-0 right-0 border-t border-white/10"
+                      [style.top.%]="tick.position"
                     ></div>
+                  }
+                </div>
+
+                <!-- Vertical lines -->
+                <div
+                  class="pointer-events-none absolute inset-0 grid"
+                  [style.grid-template-columns]="'repeat(' + userGrowth.length + ', minmax(0, 1fr))'"
+                >
+                  @for (item of userGrowth; track item.month) {
+                    <div class="h-full border-r border-white/10"></div>
+                  }
+                </div>
+
+                <!-- Bars -->
+                <div
+                  class="absolute inset-0 grid px-2 sm:px-4"
+                  [style.grid-template-columns]="'repeat(' + userGrowth.length + ', minmax(0, 1fr))'"
+                >
+                  @for (item of userGrowth; track item.month) {
+                    <div class="flex h-full items-end justify-center">
+                      <div
+                        class="w-[60%] rounded-t-[2px] bg-[#e0b100] transition-all duration-300 sm:w-[70%]"
+                        [style.height.%]="getUserGrowthBarHeight(item.count)"
+                        [title]="item.month + ': ' + item.count"
+                      ></div>
+                    </div>
+                  }
+                </div>
+
+                <!-- X labels -->
+                <div
+                  class="absolute left-0 right-0 -bottom-6 grid text-center text-[10px] text-[#b8b1a4] sm:-bottom-7 sm:text-sm print:-bottom-9 print:text-base"
+                  [style.grid-template-columns]="'repeat(' + userGrowth.length + ', minmax(0, 1fr))'"
+                >
+                  @for (item of userGrowth; track item.month) {
+                    <span>{{ item.month }}</span>
+                  }
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Page 3: Activities by Category -->
+      <section class="print:[break-after:page] print:[break-inside:avoid] print:[page-break-after:always] print:[page-break-inside:avoid]">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-12 print:max-w-none print:px-8 print:py-8">
+
+          <!-- Activities by Category -->
+          <div class="rounded-2xl border border-[#3a3122] bg-[#221d16] p-5 lg:min-h-[330px] lg:p-6 print:min-h-[520px] print:p-8">
+            <h3 class="mb-6 flex items-center gap-3 text-[20px] font-bold text-white print:text-[22px]">
+              <i class="fa-regular fa-circle-dot text-[#e0b100]"></i>
+              Activities by Category
+            </h3>
+
+            <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-center print:mt-12 print:gap-12">
+
+              <div
+                class="category-chart relative h-36 w-36 shrink-0 rounded-full border-[3px] border-white sm:h-40 sm:w-40 print:h-56 print:w-56"
+                [style.background]="categoryChartBackground"
+              >
+              </div>
+
+              <div class="grid w-full max-w-[320px] grid-cols-1 gap-2 text-sm text-[#b8b1a4] print:max-w-[420px] print:gap-3 print:text-base">
+                @for (item of categoryLegend; track item.name) {
+                  <div class="flex items-center justify-between gap-3 rounded-lg bg-black/10 px-3 py-2 print:px-4 print:py-3">
+                    <div class="flex min-w-0 items-center gap-2">
+                      <span
+                        class="h-3 w-7 shrink-0 rounded-sm border border-white/60"
+                        [style.background]="item.color"
+                      ></span>
+
+                      <span class="truncate font-semibold">
+                        {{ item.name }}
+                      </span>
+                    </div>
+
+                    <span class="shrink-0 font-bold text-[#e0b100]">
+                      {{ item.count }}
+                    </span>
                   </div>
                 }
               </div>
 
-              <!-- X labels -->
-              <div
-                class="absolute left-0 right-0 -bottom-6 grid text-center text-[10px] text-[#b8b1a4] sm:-bottom-7 sm:text-sm"
-                [style.grid-template-columns]="'repeat(' + userGrowth.length + ', minmax(0, 1fr))'"
-              >
-                @for (item of userGrowth; track item.month) {
-                  <span>{{ item.month }}</span>
-                }
-              </div>
-
             </div>
           </div>
+
+        </div>
+      </section>
+
+      <!-- Page 4: Top 5 Most Popular Activities -->
+      <section class="print:[break-inside:avoid] print:[page-break-inside:avoid]">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-12 print:max-w-none print:px-8 print:py-8">
+
+          <div class="rounded-2xl border border-[#3a3122] bg-[#221d16] p-4 sm:p-5 lg:p-7 print:p-8">
+
+            <div class="mb-5 flex items-start gap-2 sm:mb-6 sm:items-center sm:gap-3">
+              <i class="fa-solid fa-chart-column mt-1 text-[18px] text-[#e0b100] sm:mt-0 sm:text-[20px]"></i>
+              <h3 class="text-[18px] font-bold leading-snug text-white sm:text-[20px] lg:text-[22px]">
+                Top 5 Most Popular Activities
+              </h3>
+            </div>
+
+           <div class="space-y-4 sm:space-y-5 print:space-y-7">
+  @if (reportsReady && topActivities.length > 0) {
+    @for (item of topActivities; track item.activityId) {
+      <div class="flex items-start gap-3 sm:gap-4 print:[break-inside:avoid] print:[page-break-inside:avoid]">
+        <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#5a4716] text-xs font-bold text-[#e0b100] sm:h-8 sm:w-8 sm:text-sm">
+          {{ $index + 1 }}
         </div>
 
-        <!-- Activities by Category -->
-<div class="rounded-2xl border border-[#3a3122] bg-[#221d16] p-5 lg:min-h-[330px] lg:p-6">
-  <h3 class="mb-6 flex items-center gap-3 text-[20px] font-bold text-white">
-    <i class="fa-regular fa-circle-dot text-[#e0b100]"></i>
-    Activities by Category
-  </h3>
+        <div class="min-w-0 flex-1">
+          <div class="mb-2 flex items-start justify-between gap-3">
+            <h4 class="max-w-[58%] text-[15px] font-bold leading-snug text-white sm:max-w-none sm:text-[18px]">
+              {{ item.activityName }}
+            </h4>
 
-  <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-center">
-    
-    <div
-      class="category-chart relative h-36 w-36 shrink-0 rounded-full border-[3px] border-white sm:h-40 sm:w-40"
-      [style.background]="categoryChartBackground"
-    >
-      <div class="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#221d16] sm:h-16 sm:w-16"></div>
-    </div>
-
-    <div class="grid w-full max-w-[320px] grid-cols-1 gap-2 text-sm text-[#b8b1a4]">
-      @for (item of categoryLegend; track item.name) {
-        <div class="flex items-center justify-between gap-3 rounded-lg bg-black/10 px-3 py-2">
-          <div class="flex min-w-0 items-center gap-2">
-            <span
-              class="h-3 w-7 shrink-0 rounded-sm border border-white/60"
-              [style.background]="item.color"
-            ></span>
-
-            <span class="truncate font-semibold">
-              {{ item.name }}
+            <span class="shrink-0 text-right text-[14px] font-bold leading-snug text-[#e0b100] sm:text-[16px]">
+              {{ formatNumber(item.value) }} views
             </span>
           </div>
 
-          <span class="shrink-0 font-bold text-[#e0b100]">
-            {{ item.count }}
-          </span>
+          <div class="h-2 w-full overflow-hidden rounded-full bg-black/40">
+            <div
+              class="h-full rounded-full bg-[#e0b100] transition-all duration-300"
+              [style.width.%]="getTopActivityWidth(item.value)"
+            ></div>
+          </div>
         </div>
-      }
+      </div>
+    }
+  } @else if (reportsReady && topActivities.length === 0) {
+    <div class="rounded-xl border border-[#3a3122] bg-black/20 px-4 py-6 text-center text-[#b8aa8d]">
+      No top activities data available.
     </div>
-
-  </div>
+  }
 </div>
 
-      </div>
-
-      <!-- Top 5 Most Popular Activities -->
-      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-12">
-        <div class="rounded-2xl border border-[#3a3122] bg-[#221d16] p-4 sm:p-5 lg:p-7">
-          
-          <div class="mb-5 flex items-start gap-2 sm:mb-6 sm:items-center sm:gap-3">
-            <i class="fa-solid fa-chart-column mt-1 text-[18px] text-[#e0b100] sm:mt-0 sm:text-[20px]"></i>
-            <h3 class="text-[18px] font-bold leading-snug text-white sm:text-[20px] lg:text-[22px]">
-              Top 5 Most Popular Activities
-            </h3>
           </div>
-
-          <div class="space-y-4 sm:space-y-5">
-            @for (item of topActivities; track item.activityId) {
-              <div class="flex items-start gap-3 sm:gap-4">
-                <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#5a4716] text-xs font-bold text-[#e0b100] sm:h-8 sm:w-8 sm:text-sm">
-                  {{ $index + 1 }}
-                </div>
-
-                <div class="min-w-0 flex-1">
-                  <div class="mb-2 flex items-start justify-between gap-3">
-                    <h4 class="max-w-[58%] text-[15px] font-bold leading-snug text-white sm:max-w-none sm:text-[18px]">
-                      {{ item.activityName }}
-                    </h4>
-
-                    <span class="shrink-0 text-right text-[14px] font-bold leading-snug text-[#e0b100] sm:text-[16px]">
-                      {{ formatNumber(item.value) }} views
-                    </span>
-                  </div>
-
-                  <div class="h-2 w-full overflow-hidden rounded-full bg-black/40">
-                    <div
-                      class="h-full rounded-full bg-[#e0b100] transition-all duration-300"
-                      [style.width.%]="getTopActivityWidth(item.value)"
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            }
-
-            @if (!topActivities.length) {
-              <div class="rounded-xl border border-[#3a3122] bg-black/20 px-4 py-6 text-center text-[#b8aa8d]">
-                No top activities data available.
-              </div>
-            }
-          </div>
-
         </div>
-      </div>
+      </section>
     }
   </div>
 </div>

@@ -46,9 +46,10 @@ export class ReportComponent implements OnInit {
   private readonly reportsService = inject(ReportsService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly platformId = inject(PLATFORM_ID);
-private readonly isBrowser = isPlatformBrowser(this.platformId);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   loading = false;
+  reportsReady = false;
   errorMessage = '';
 
   activityViews: ActivityViewsReportItem[] = [];
@@ -94,25 +95,27 @@ private readonly isBrowser = isPlatformBrowser(this.platformId);
   ];
 
   ngOnInit(): void {
-  if (!this.isBrowser) {
-    return;
+    if (!this.isBrowser) {
+      return;
+    }
+
+    this.loadReports();
   }
 
-  this.loadReports();
-}
+  loadReports(): void {
+    if (!this.isBrowser) {
+      return;
+    }
 
-loadReports(): void {
-  if (!this.isBrowser) {
-    return;
-  }
+    const currentRequestId = ++this.requestId;
 
-  const currentRequestId = ++this.requestId;
+    this.loading = true;
+    this.reportsReady = false;
+    this.errorMessage = '';
 
-  this.loading = true;
-  this.errorMessage = '';
-  this.cdr.markForCheck();
+    this.resetReportData();
 
-  
+    this.cdr.detectChanges();
 
     this.reportsService.getAllReports().subscribe({
       next: (res) => {
@@ -120,15 +123,16 @@ loadReports(): void {
           return;
         }
 
-        this.activityViews = res.activityViews ?? [];
-        this.userGrowth = res.userGrowth ?? [];
-        this.activitiesByCategory = res.activitiesByCategory ?? [];
-        this.topActivities = res.topActivities ?? [];
+        this.activityViews = [...(res.activityViews ?? [])];
+        this.userGrowth = [...(res.userGrowth ?? [])];
+        this.activitiesByCategory = [...(res.activitiesByCategory ?? [])];
+        this.topActivities = [...(res.topActivities ?? [])];
 
         this.prepareReportData();
 
         this.loading = false;
         this.errorMessage = '';
+        this.reportsReady = true;
 
         this.cdr.detectChanges();
       },
@@ -137,40 +141,19 @@ loadReports(): void {
           return;
         }
 
-console.error('Error loading reports:', {
-  status: err?.status,
-  statusText: err?.statusText,
-  url: err?.url,
-  message: err?.message,
-  error: err?.error,
-});
+        console.error('Error loading reports:', {
+          status: err?.status,
+          statusText: err?.statusText,
+          url: err?.url,
+          message: err?.message,
+          error: err?.error,
+        });
 
-        this.activityViews = [];
-        this.userGrowth = [];
-        this.activitiesByCategory = [];
-        this.topActivities = [];
-
-        this.activityViewsLabels = [];
-        this.activityViewsValues = [];
-
-        this.userGrowthLabels = [];
-        this.userGrowthValues = [];
-
-        this.categoryLabels = [];
-        this.categoryValues = [];
-
-        this.activityPoints = [];
-        this.activityLinePath = '';
-        this.activityAreaPath = '';
-        this.activityAxisTicks = [];
-
-        this.userGrowthAxisTicks = [];
-        this.categoryLegend = [];
-        this.categoryChartBackground = 'conic-gradient(#e0b100 0deg 360deg)';
-        this.topActivitiesMaxValue = 0;
+        this.resetReportData();
 
         this.errorMessage = 'Failed to load reports data';
         this.loading = false;
+        this.reportsReady = true;
 
         this.cdr.detectChanges();
       },
@@ -178,7 +161,40 @@ console.error('Error loading reports:', {
   }
 
   printReport(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
     window.print();
+  }
+
+  private resetReportData(): void {
+    this.activityViews = [];
+    this.userGrowth = [];
+    this.activitiesByCategory = [];
+    this.topActivities = [];
+
+    this.activityViewsLabels = [];
+    this.activityViewsValues = [];
+
+    this.userGrowthLabels = [];
+    this.userGrowthValues = [];
+
+    this.categoryLabels = [];
+    this.categoryValues = [];
+
+    this.activityPoints = [];
+    this.activityLinePath = '';
+    this.activityAreaPath = '';
+    this.activityAxisTicks = [];
+
+    this.userGrowthAxisTicks = [];
+    this.userGrowthMaxValue = 5;
+
+    this.categoryLegend = [];
+    this.categoryChartBackground = 'conic-gradient(#e0b100 0deg 360deg)';
+
+    this.topActivitiesMaxValue = 0;
   }
 
   private prepareReportData(): void {
