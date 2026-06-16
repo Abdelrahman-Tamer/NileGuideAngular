@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { interval, take } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
@@ -17,6 +17,7 @@ export class LoginPageComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly cdr = inject(ChangeDetectorRef);
 
   isLoading = false;
@@ -59,32 +60,53 @@ export class LoginPageComponent {
 
     this.auth.login(payload).subscribe({
       next: (res) => {
-        this.auth.saveAuth(res.token, res.userId);
+        this.auth.saveAuth(res.token, res.userId, res.role);
 
         this.successMessage = 'Logged in successfully!';
         this.isLoading = false;
         this.cdr.markForCheck();
 
-        interval(1000).pipe(take(3)).subscribe(() => {
-          --this.redirectCounter;
-          this.cdr.markForCheck();
-          if (this.redirectCounter === 0) {
-            this.router.navigateByUrl('/home');
-          }
-        });
+        interval(1000)
+          .pipe(take(3))
+          .subscribe(() => {
+            --this.redirectCounter;
+            this.cdr.markForCheck();
+
+            if (this.redirectCounter === 0) {
+              this.redirectAfterLogin();
+            }
+          });
       },
-   error: (e: HttpErrorResponse) => {
-  if (e.status === 401) {
-    this.errorMessage = 'Invalid Email or Password'; } 
-   else {
-    this.errorMessage =
-      (e.error as any)?.message ||
-      (e.error as any)?.title ||
-      e.message ||
-      'Something went wrong'; }
-  this.isLoading = false;
-  this.cdr.markForCheck(); 
-},
+      error: (e: HttpErrorResponse) => {
+        if (e.status === 401) {
+          this.errorMessage = 'Invalid Email or Password';
+        } else {
+          this.errorMessage =
+            (e.error as any)?.message ||
+            (e.error as any)?.title ||
+            e.message ||
+            'Something went wrong';
+        }
+
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      },
     });
+  }
+
+  private redirectAfterLogin(): void {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+
+    if (this.auth.isAdmin()) {
+      this.router.navigateByUrl('/dashboard');
+      return;
+    }
+
+    if (this.auth.isTourist() && returnUrl && !returnUrl.startsWith('/dashboard')) {
+      this.router.navigateByUrl(returnUrl);
+      return;
+    }
+
+    this.router.navigateByUrl('/home');
   }
 }

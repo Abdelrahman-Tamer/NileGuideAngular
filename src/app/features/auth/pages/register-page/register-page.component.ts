@@ -21,7 +21,6 @@ import { interval, take } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../services/auth.service';
 import { NATIONALITIES } from '../../../../core/constants/nationalities';
-import { STORED_KEYS } from '../../../../core/constants/Stored_keys';
 
 import { Datepicker } from 'flowbite-datepicker';
 
@@ -285,11 +284,7 @@ export class RegisterPageComponent implements AfterViewInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          localStorage.setItem(STORED_KEYS.USER_TOKEN, res.token);
-
-          if (res.userId !== undefined && res.userId !== null) {
-            localStorage.setItem(STORED_KEYS.USER_ID, String(res.userId));
-          }
+          this.auth.saveAuth(res.token, res.userId, res.role);
 
           this.successMessage = 'Account created successfully!';
           this.isLoading = false;
@@ -302,7 +297,7 @@ export class RegisterPageComponent implements AfterViewInit {
               this.refreshView();
 
               if (this.redirectCounter === 0) {
-                this.router.navigateByUrl('/home');
+                this.redirectAfterRegister();
               }
             });
         },
@@ -316,5 +311,14 @@ export class RegisterPageComponent implements AfterViewInit {
           this.refreshView();
         },
       });
+  }
+
+  private redirectAfterRegister(): void {
+    if (this.auth.isAdmin()) {
+      this.router.navigateByUrl('/dashboard');
+      return;
+    }
+
+    this.router.navigateByUrl('/home');
   }
 }

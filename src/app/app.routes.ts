@@ -1,10 +1,16 @@
 import { Routes } from '@angular/router';
+
 import { DASHBOARD_ROUTES } from './features/admin/dashboard.routes';
 import { Auth_ROUTES } from './features/auth/auth.routes';
 import { Home_ROUTES } from './features/home/home.routes';
 
 import { GustLayoutComponent } from './core/layouts/gust-layout/gust-layout.component';
 import { UserLayoutComponent } from './core/layouts/user-layout/user-layout.component';
+
+import {
+  adminGuard,
+  touristGuard,
+} from './core/guards/auth.guards';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -19,6 +25,7 @@ export const routes: Routes = [
       },
       {
         path: 'activities',
+        canActivate: [touristGuard],
         loadComponent: () =>
           import('./features/activities/activities.component').then(
             (m) => m.ActivitiesComponent
@@ -26,6 +33,7 @@ export const routes: Routes = [
       },
       {
         path: 'activities/:id',
+        canActivate: [touristGuard],
         loadComponent: () =>
           import('./features/details/details.component').then(
             (m) => m.DetailsComponent
@@ -33,6 +41,7 @@ export const routes: Routes = [
       },
       {
         path: 'schedule',
+        canActivate: [touristGuard],
         loadComponent: () =>
           import('./features/schedule/schedule.component').then(
             (m) => m.ScheduleComponent
@@ -40,6 +49,7 @@ export const routes: Routes = [
       },
       {
         path: 'map',
+        canActivate: [touristGuard],
         loadComponent: () =>
           import('./features/map/map.component').then(
             (m) => m.MapComponent
@@ -47,6 +57,7 @@ export const routes: Routes = [
       },
       {
         path: 'wishlist',
+        canActivate: [touristGuard],
         loadComponent: () =>
           import('./features/wishlist/wishlist.component').then(
             (m) => m.WishlistComponent
@@ -54,6 +65,7 @@ export const routes: Routes = [
       },
       {
         path: 'profile',
+        canActivate: [touristGuard],
         loadComponent: () =>
           import('./features/profile/profile.component').then(
             (m) => m.ProfileComponent
@@ -89,6 +101,7 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./features/admin/dashboard/dashboard.component').then(
             (m) => m.DashboardComponent

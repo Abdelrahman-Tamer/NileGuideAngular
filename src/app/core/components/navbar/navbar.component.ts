@@ -5,11 +5,18 @@ import {
   HostListener,
   Inject,
   OnInit,
-  PLATFORM_ID
+  PLATFORM_ID,
 } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 import { filter } from 'rxjs/operators';
+
 import { ProfileService } from '../../../features/profile/profile.service';
+import { AuthService } from '../../../features/auth/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -21,121 +28,147 @@ import { ProfileService } from '../../../features/profile/profile.service';
 export class NavbarComponent implements OnInit {
   isMobileMenuOpen = false;
   isProfileMenuOpen = false;
-  isLogin = true;
+
+  isAuthenticated = false;
+  isTourist = false;
+  isAdmin = false;
 
   userFullName = '';
   userAvatarUrl: string | null = null;
-userInitials = '';
-isNavbarProfileReady = false;
+  userInitials = '';
+  isNavbarProfileReady = false;
+
   private readonly isBrowser: boolean;
   private profileLoaded = false;
 
- constructor(
-  private router: Router,
-  private profileService: ProfileService,
-  private cdr: ChangeDetectorRef,
-  @Inject(PLATFORM_ID) private platformId: Object
-) {
-  this.isBrowser = isPlatformBrowser(this.platformId);
+  constructor(
+    private router: Router,
+    private profileService: ProfileService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
 
-  this.updateIsLogin(this.router.url);
-
-  this.router.events
-    .pipe(filter((event) => event instanceof NavigationEnd))
-    .subscribe((event: NavigationEnd) => {
-      this.updateIsLogin(event.urlAfterRedirects);
-      this.loadNavbarProfileIfNeeded(event.urlAfterRedirects);
-    });
-}
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.updateAuthState();
+        this.loadNavbarProfileIfNeeded();
+        this.closeMobileMenu();
+        this.closeProfileMenu();
+        this.refreshView();
+      });
+  }
 
   ngOnInit(): void {
-    this.loadNavbarProfileIfNeeded(this.router.url);
+    this.updateAuthState();
+    this.loadNavbarProfileIfNeeded();
+    this.refreshView();
   }
 
-  private updateIsLogin(url: string): void {
-    if (url.includes('/home') || url === '/') {
-      this.isLogin = false;
-    } else {
-      this.isLogin = true;
-    }
-  }
+  private updateAuthState(): void {
+    this.isAuthenticated = this.authService.isAuthenticated();
+    this.isTourist = this.authService.isTourist();
+    this.isAdmin = this.authService.isAdmin();
 
-  private loadNavbarProfileIfNeeded(url: string): void {
-    if (!this.isBrowser || !this.isLogin || this.profileLoaded) {
+    if (!this.isAuthenticated) {
+      this.resetNavbarProfile();
       return;
     }
 
-    if (url.includes('/auth/login') || url.includes('/auth/register')) {
+    if (this.isAdmin) {
+      this.profileLoaded = true;
+      this.userFullName = 'Admin';
+      this.userInitials = 'AD';
+      this.userAvatarUrl = null;
+      this.isNavbarProfileReady = true;
       return;
     }
+
+    if (this.isTourist && !this.profileLoaded) {
+      this.isNavbarProfileReady = false;
+    }
+  }
+
+  private loadNavbarProfileIfNeeded(): void {
+    if (!this.isBrowser) return;
+    if (!this.isAuthenticated) return;
+    if (!this.isTourist) return;
+    if (this.profileLoaded) return;
 
     this.profileLoaded = true;
 
     this.profileService.getProfile().subscribe({
-  next: (res) => {
-  this.userFullName = res.fullName || '';
-  this.userInitials = this.getInitials(this.userFullName);
+      next: (res) => {
+        this.userFullName = res.fullName || '';
+        this.userInitials = this.getInitials(this.userFullName);
 
-  const picture =
-    res.profile_picture_url ||
-    res.profilePictureUrl ||
-    null;
+        const picture = res.profile_picture_url || res.profilePictureUrl || null;
+        const resolvedPicture = this.profileService.resolveFileUrl(picture);
 
-  const resolvedPicture = this.profileService.resolveFileUrl(picture);
-  this.userAvatarUrl = resolvedPicture || null;
+        this.userAvatarUrl = resolvedPicture || null;
+        this.isNavbarProfileReady = true;
+        this.refreshView();
+      },
+      error: (err) => {
+        console.error('Navbar profile error:', err);
 
-  this.isNavbarProfileReady = true;
-  this.cdr.detectChanges();
-},
-  error: (err) => {
-  console.error('Navbar profile error:', err);
+        this.userAvatarUrl = null;
+        this.userInitials = '';
+        this.isNavbarProfileReady = true;
+        this.profileLoaded = false;
 
-  this.userAvatarUrl = null;
-  this.userInitials = '';
-  this.isNavbarProfileReady = true;
-  this.profileLoaded = false;
-
-  this.cdr.detectChanges();
-},
-});
+        this.refreshView();
+      },
+    });
   }
 
- private getInitials(fullName: string): string {
-  const name = fullName.trim();
-
-  if (!name) {
-    return '';
+  private resetNavbarProfile(): void {
+    this.userFullName = '';
+    this.userAvatarUrl = null;
+    this.userInitials = '';
+    this.isNavbarProfileReady = false;
+    this.profileLoaded = false;
   }
 
-  const parts = name.split(/\s+/);
+  private getInitials(fullName: string): string {
+    const name = fullName.trim();
 
-  if (parts.length >= 2) {
-    return (
-      this.getFirstChar(parts[0]) +
-      this.getFirstChar(parts[parts.length - 1])
-    ).toUpperCase();
+    if (!name) {
+      return '';
+    }
+
+    const parts = name.split(/\s+/);
+
+    if (parts.length >= 2) {
+      return (
+        this.getFirstChar(parts[0]) +
+        this.getFirstChar(parts[parts.length - 1])
+      ).toUpperCase();
+    }
+
+    const chars = Array.from(parts[0]);
+
+    if (chars.length === 1) {
+      return chars[0].toUpperCase();
+    }
+
+    return (chars[0] + chars[chars.length - 1]).toUpperCase();
   }
-
-  const chars = Array.from(parts[0]);
-
-  if (chars.length === 1) {
-    return chars[0].toUpperCase();
-  }
-
-  return (chars[0] + chars[chars.length - 1]).toUpperCase();
-}
 
   private getFirstChar(value: string): string {
     return Array.from(value.trim())[0] || '';
   }
 
   onAvatarError(): void {
-  this.userAvatarUrl = null;
-  this.cdr.detectChanges();
-}
-  
+    this.userAvatarUrl = null;
+    this.refreshView();
+  }
+
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    this.refreshView();
   }
 
   closeMobileMenu(): void {
@@ -144,6 +177,7 @@ isNavbarProfileReady = false;
 
   toggleProfileMenu(): void {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
+    this.refreshView();
   }
 
   closeProfileMenu(): void {
@@ -151,8 +185,22 @@ isNavbarProfileReady = false;
   }
 
   logout(): void {
+    this.authService.clearAuth();
+    this.resetNavbarProfile();
+
+    this.isAuthenticated = false;
+    this.isTourist = false;
+    this.isAdmin = false;
+
     this.closeProfileMenu();
-    console.log('logout');
+    this.closeMobileMenu();
+
+    this.router.navigateByUrl('/home');
+    this.refreshView();
+  }
+
+  private refreshView(): void {
+    this.cdr.markForCheck();
   }
 
   @HostListener('document:click', ['$event'])
@@ -162,6 +210,7 @@ isNavbarProfileReady = false;
 
     if (!clickedInsideProfileMenu) {
       this.isProfileMenuOpen = false;
+      this.refreshView();
     }
   }
 }
