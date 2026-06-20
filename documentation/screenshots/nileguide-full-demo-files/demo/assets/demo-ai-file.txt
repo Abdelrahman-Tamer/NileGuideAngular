@@ -1,1 +1,0 @@
-NileGuide automated demo AI knowledge file. This file is uploaded by Playwright during the admin demo.

@@ -17,6 +17,7 @@ import { ActivitiesService } from '../activities/activities.service';
 import { ActivityDetails } from '../activities/activities.interfaces';
 import { ScheduleService } from '../schedule/schedule.service';
 import { ScheduleItemResponse } from '../schedule/schedule.interfaces';
+import { environment } from '../../../environments/environment';
 
 export interface MapScheduleItem {
   activityId: number;
@@ -55,6 +56,7 @@ export class MapComponent implements OnInit, OnDestroy {
   selectedIndex: number | null = null;
   selectedCity = 'all';
   isLoading = true;
+  mapConfigError = '';
 
   scheduleItems: MapScheduleItem[] = [];
 
@@ -204,9 +206,15 @@ export class MapComponent implements OnInit, OnDestroy {
     };
 
     if (!document.querySelector('#google-maps-script')) {
+      if (!environment.googleMapsApiKey) {
+        this.mapConfigError = 'Google Maps API key is not configured.';
+        this.cdr.detectChanges();
+        return;
+      }
+
       const script = document.createElement('script');
       script.id = 'google-maps-script';
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD4h36e_ljWxi6V2S4Lf-VsSpgCxP3e7SM&callback=${callbackName}`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${environment.googleMapsApiKey}&callback=${callbackName}`;
       script.async = true;
       script.defer = true;
       document.head.appendChild(script);

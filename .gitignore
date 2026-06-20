@@ -12,6 +12,11 @@ npm-debug.log
 yarn-error.log
 *.log
 
+# Local environment files
+.env
+.env.*
+!.env.example
+
 # IDEs and editors
 .idea/
 .project
@@ -41,7 +46,11 @@ testem.log
 __screenshots__/
 playwright-report/
 test-results/
-demo/.env.demo
+
+# Local demo and generated documentation artifacts
+demo/
+documentation/
+*.rar
 
 # System files
 .DS_Store
