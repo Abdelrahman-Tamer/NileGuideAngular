@@ -1,83 +1,130 @@
 <div align="center">
 
-# NileGuide
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&height=220&color=0:0C0C0C,35:5B3A0E,70:C6A664,100:F4EAD5&text=NileGuide&fontAlign=50&fontAlignY=38&fontColor=F4EAD5&fontSize=58&desc=Your%20digital%20compass%20through%20Egypt&descAlign=50&descAlignY=58&animation=fadeIn" alt="NileGuide animated pharaoh banner" />
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=24&pause=1200&color=D4AF37&center=true&vCenter=true&width=720&lines=AI-powered+Egypt+travel+guide;Plan+activities%2C+maps%2C+wishlists%2C+and+admin+dashboards;Built+with+Angular+SSR" alt="NileGuide animated intro" />
+<img src="https://readme-typing-svg.demolab.com?font=Cinzel&weight=700&size=26&pause=1200&color=D4AF37&center=true&vCenter=true&width=900&lines=Explore+Egypt+like+a+modern+pharaoh;Plan+your+journey+from+Cairo+to+Luxor;Discover+activities%2C+save+favorites%2C+build+your+schedule;AI+travel+assistant+and+admin+dashboard+included" alt="Animated NileGuide intro" />
 
 <br />
 
 ![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![SSR](https://img.shields.io/badge/Angular_SSR-Enabled-111827?style=for-the-badge&logo=angular&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Production_ready-22C55E?style=for-the-badge)
+![Angular SSR](https://img.shields.io/badge/SSR-Enabled-C6A664?style=for-the-badge&logo=angular&logoColor=111111)
+![Status](https://img.shields.io/badge/Status-Production_Ready-22C55E?style=for-the-badge)
 
-**NileGuide** is a modern Angular travel platform for exploring Egypt, planning tourist activities, managing schedules, using an AI chatbot, and operating admin workflows from one clean interface.
+<br />
+
+<img src="https://skillicons.dev/icons?i=angular,ts,tailwind,nodejs,npm,html,css,github" alt="Tech icons" />
+
+<br />
+<br />
+
+**NileGuide** is a polished Angular travel platform for discovering Egyptian activities, building trip plans, managing wishlists, viewing scheduled stops on a map, chatting with an AI assistant, and running admin workflows from one dashboard.
+
+<br />
+
+| 🏛️ Tourist Experience | 🗺️ Smart Planning | 🤖 AI Assistance | 👑 Admin Control |
+| --- | --- | --- | --- |
+| Browse and review activities | Schedule trips and map locations | Tourist chatbot experience | Manage users, activities, reports |
 
 </div>
 
 ---
 
-## Table of Contents
+## ✨ Pharaoh Mode
 
-- [Overview](#overview)
-- [Core Features](#core-features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Environment Configuration](#environment-configuration)
-- [Getting Started](#getting-started)
-- [Available Scripts](#available-scripts)
-- [Application Routes](#application-routes)
-- [Security Notes](#security-notes)
-- [Build and Deployment](#build-and-deployment)
-- [Code Quality](#code-quality)
-- [Team Handoff](#team-handoff)
+> From pyramids to river cruises, NileGuide turns an Egypt trip into a guided digital journey.
+
+<div align="center">
+
+```text
+𓂀  Discover  ->  Save  ->  Schedule  ->  Navigate  ->  Experience  𓂀
+```
+
+</div>
 
 ---
 
-## Overview
+## 📜 Table of Contents
 
-NileGuide helps tourists discover Egyptian experiences, save favorite activities, build a schedule, view planned activities on an interactive map, and contact the platform team. It also includes an admin dashboard for managing activities, users, reports, and AI chatbot files.
-
-The project is implemented as an Angular standalone-component application with server-side rendering support.
+- [Project Story](#-project-story)
+- [Experience Flow](#-experience-flow)
+- [Core Features](#-core-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Environment Configuration](#-environment-configuration)
+- [Getting Started](#-getting-started)
+- [Available Scripts](#-available-scripts)
+- [Application Routes](#-application-routes)
+- [Security Notes](#-security-notes)
+- [Build and Deployment](#-build-and-deployment)
+- [Code Quality](#-code-quality)
+- [Team Handoff](#-team-handoff)
 
 ---
 
-## Core Features
+## 🐪 Project Story
 
-| Area | Details |
+NileGuide helps tourists explore Egypt through a modern travel interface. Users can register, discover curated activities, inspect details and reviews, save favorites, build a schedule, and view planned stops on an interactive map.
+
+Admins get a separate dashboard to manage activities, users, reports, and chatbot files. The platform is built with Angular standalone components and Angular SSR for a cleaner production-ready architecture.
+
+---
+
+## 🧭 Experience Flow
+
+```mermaid
+flowchart LR
+    A["🏺 Visitor opens NileGuide"] --> B["🔐 Register or Login"]
+    B --> C["🏛️ Browse Egyptian Activities"]
+    C --> D["⭐ Add to Wishlist"]
+    C --> E["📅 Add to Schedule"]
+    E --> F["🗺️ View Schedule on Map"]
+    C --> G["🤖 Ask the AI Chatbot"]
+    B --> H["👑 Admin Dashboard"]
+    H --> I["Users"]
+    H --> J["Activities"]
+    H --> K["Reports"]
+    H --> L["AI Files"]
+```
+
+---
+
+## 🏺 Core Features
+
+| Feature | What it does |
 | --- | --- |
-| Tourist Authentication | Register, login, logout, role detection, forgot password, reset password |
-| Activities | Search, filter by city/category, sort, pagination, details page, reviews |
-| Wishlist | Save and remove favorite activities for authenticated tourists |
-| Schedule | Add activities to a personal trip plan, remove plan items, export-related UI support |
-| Interactive Map | Displays scheduled activities by coordinates using Google Maps when configured |
-| AI Chatbot | Tourist chatbot interface and admin chatbot file-management workflow |
-| Contact | Contact form integration through EmailJS when configured |
-| Static Pages | Privacy, terms, help center, contact, and home sections |
-| Admin Dashboard | Users, activities, reports, and chatbot management routes |
-| SSR | Angular SSR server entry and server route configuration |
+| 🔐 Tourist Authentication | Register, login, logout, role detection, forgot password, reset password |
+| 🏛️ Activities Explorer | Search, filter by city/category, sort, paginate, view details, read and create reviews |
+| ⭐ Wishlist | Save and remove favorite activities for authenticated tourists |
+| 📅 Trip Schedule | Add activities to a personal trip plan and remove scheduled items |
+| 🗺️ Interactive Map | Display scheduled activities by coordinates with Google Maps when configured |
+| 🤖 AI Chatbot | Tourist chatbot interface plus admin file-management workflow |
+| ✉️ Contact Form | EmailJS-powered contact flow when configured |
+| 📄 Static Pages | Privacy, terms, help center, contact, and home pages |
+| 👑 Admin Dashboard | Manage users, activities, reports, and chatbot resources |
+| ⚡ SSR | Angular SSR server entry with server route configuration |
 
 ---
 
-## Tech Stack
+## 🧱 Tech Stack
 
 | Layer | Tools |
 | --- | --- |
-| Framework | Angular 21, Angular Router, Angular SSR |
-| Language | TypeScript 5.9 |
-| UI | Tailwind CSS 4, Flowbite, Font Awesome, ng-icons |
-| Forms | Angular Reactive Forms |
-| HTTP | Angular HttpClient with auth interceptor |
-| Charts | ApexCharts |
-| PDF | jsPDF, jsPDF AutoTable |
-| Notifications | ngx-toastr, ngx-spinner |
-| Runtime | Node.js, Express SSR server |
-| Testing | Angular test runner with Vitest configuration |
+| ⚙️ Framework | Angular 21, Angular Router, Angular SSR |
+| 🧠 Language | TypeScript 5.9 |
+| 🎨 UI | Tailwind CSS 4, Flowbite, Font Awesome, ng-icons |
+| 🧾 Forms | Angular Reactive Forms |
+| 🌐 HTTP | Angular HttpClient with auth and cache interceptors |
+| 📊 Charts | ApexCharts |
+| 🧳 Documents | jsPDF, jsPDF AutoTable |
+| 🔔 Feedback | ngx-toastr, ngx-spinner |
+| 🚀 Runtime | Node.js, Express SSR server |
+| 🧪 Testing | Angular test runner with Vitest configuration |
 
 ---
 
-## Project Structure
+## 🏗️ Project Structure
 
 ```text
 src/
@@ -112,16 +159,16 @@ public/
 
 ---
 
-## Environment Configuration
+## 🔑 Environment Configuration
 
-Frontend environment values live in:
+Frontend public configuration lives in:
 
 ```text
 src/environments/environment.ts
 src/environments/environment.development.ts
 ```
 
-Current public placeholders:
+Current placeholders:
 
 ```ts
 export const environment = {
@@ -135,24 +182,24 @@ export const environment = {
 };
 ```
 
-Important:
+Important notes:
 
-- Do not commit private passwords, admin credentials, personal demo accounts, `.env` files, generated reports, or videos.
-- Google Maps and EmailJS browser keys are client-visible by design. Restrict them from the provider dashboards by domain and allowed API usage.
+- Do not commit passwords, admin credentials, personal demo accounts, `.env` files, generated reports, videos, or local screenshots.
+- Google Maps and EmailJS browser keys are client-visible by design. Restrict them from provider dashboards by domain and allowed API usage.
 - Backend API base URL is currently defined in `src/app/core/constants/Stored_keys.ts`.
-- Real production secrets should stay on the backend, not inside Angular source files.
+- Real production secrets belong on the backend, not in Angular source files.
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
 - Node.js compatible with Angular 21
 - npm 10+
 - A running NileGuide backend API
-- Optional: Google Maps API key for the map page
-- Optional: EmailJS service/template/public key for the contact page
+- Optional Google Maps API key for the map page
+- Optional EmailJS service/template/public key for the contact page
 
 ### Install
 
@@ -199,7 +246,7 @@ http://localhost:4000
 
 ---
 
-## Available Scripts
+## 🧪 Available Scripts
 
 | Command | Purpose |
 | --- | --- |
@@ -211,11 +258,11 @@ http://localhost:4000
 
 ---
 
-## Application Routes
+## 🧿 Application Routes
 
 | Route | Access | Description |
 | --- | --- | --- |
-| `/home` | Public | Landing/home experience |
+| `/home` | Public | Landing and home experience |
 | `/auth/login` | Guest | Tourist/admin login |
 | `/auth/register` | Guest | Tourist registration |
 | `/auth/forget-password` | Guest | Password reset request |
@@ -236,9 +283,9 @@ http://localhost:4000
 
 ---
 
-## Security Notes
+## 🛡️ Security Notes
 
-This repository has been cleaned to avoid committing non-code artifacts and sensitive local material.
+The repository is cleaned to avoid committing non-code artifacts and sensitive local material.
 
 Removed from source control:
 
@@ -252,14 +299,13 @@ Removed from source control:
 Recommended rules:
 
 - Keep `.env` and local credential files out of Git.
-- Use provider-side restrictions for browser-exposed public keys.
+- Restrict browser-exposed public keys from provider dashboards.
 - Rotate any key that was previously committed to a public repository.
-- Do not store JWTs outside the browser storage flow already handled by the app.
 - Keep admin credentials only in the backend identity system or a secure password manager.
 
 ---
 
-## Build and Deployment
+## 🏗️ Build and Deployment
 
 The app supports a standard Angular production build and an SSR server bundle.
 
@@ -274,7 +320,7 @@ Deployment checklist:
 
 ---
 
-## Code Quality
+## ✅ Code Quality
 
 The codebase follows these conventions:
 
@@ -295,9 +341,7 @@ npm test
 
 ---
 
-## Team Handoff
-
-Key files to review first:
+## 👑 Team Handoff
 
 | File | Why it matters |
 | --- | --- |
@@ -315,6 +359,10 @@ Key files to review first:
 
 <div align="center">
 
-**NileGuide** - Built for a richer, cleaner, and more practical Egypt travel experience.
+<img src="https://readme-typing-svg.demolab.com?font=Cinzel&weight=700&size=22&pause=1400&color=C6A664&center=true&vCenter=true&width=760&lines=Built+for+travelers+who+want+Egypt+with+clarity;Designed+for+teams+who+need+control+and+speed;NileGuide+%7C+Explore.+Plan.+Experience." alt="Animated footer" />
+
+<br />
+
+**𓂀 NileGuide 𓂀**
 
 </div>
