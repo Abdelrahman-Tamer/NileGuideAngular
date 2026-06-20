@@ -7,7 +7,12 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:G.Project": "node dist/G.Project/server/server.mjs"
+    "serve:ssr:G.Project": "node dist/G.Project/server/server.mjs",
+    "demo:install": "npx playwright install chromium",
+    "demo:full": "playwright test demo/cinematic-full-demo.spec.ts --project=chromium",
+    "demo:full:headed": "playwright test demo/cinematic-full-demo.spec.ts --project=chromium --headed",
+    "demo:report": "playwright show-report playwright-report",
+    "demo:clean": "node -e \"require('fs').rmSync('test-results',{recursive:true,force:true});require('fs').rmSync('playwright-report',{recursive:true,force:true})\""
   },
   "prettier": {
     "printWidth": 100,
@@ -55,6 +60,7 @@
     "@angular/build": "^21.1.4",
     "@angular/cli": "^21.1.4",
     "@angular/compiler-cli": "^21.1.0",
+    "@playwright/test": "^1.61.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",

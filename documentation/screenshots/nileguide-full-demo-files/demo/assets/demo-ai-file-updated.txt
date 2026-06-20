@@ -1,0 +1,1 @@
+Updated NileGuide automated demo AI knowledge file. This validates the update file action.

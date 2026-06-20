@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { STORED_KEYS } from '../../../core/constants/Stored_keys';
 
 export interface RegisterPayload {
@@ -34,6 +35,9 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = STORED_KEYS.baseUrl + '/auth';
 
+  private readonly authStateSubject = new BehaviorSubject<void>(undefined);
+  readonly authState$ = this.authStateSubject.asObservable();
+
   register(payload: RegisterPayload) {
     return this.http.post<RegisterResponse>(`${this.baseUrl}/register`, payload);
   }
@@ -43,6 +47,8 @@ export class AuthService {
   }
 
   saveAuth(token: string, userId?: number, role?: string): void {
+    if (typeof localStorage === 'undefined') return;
+
     const cleanToken = token.replace(/^"|"$/g, '');
     const resolvedRole = role || this.getRoleFromToken(cleanToken);
 
@@ -55,12 +61,18 @@ export class AuthService {
     if (resolvedRole) {
       localStorage.setItem(STORED_KEYS.USER_ROLE, resolvedRole);
     }
+
+    this.notifyAuthChanged();
   }
 
   clearAuth(): void {
+    if (typeof localStorage === 'undefined') return;
+
     localStorage.removeItem(STORED_KEYS.USER_TOKEN);
     localStorage.removeItem(STORED_KEYS.USER_ID);
     localStorage.removeItem(STORED_KEYS.USER_ROLE);
+
+    this.notifyAuthChanged();
   }
 
   getToken(): string | null {
@@ -113,11 +125,15 @@ export class AuthService {
     return this.http.post<void>(`${this.baseUrl}/reset-password`, payload);
   }
 
+  private notifyAuthChanged(): void {
+    this.authStateSubject.next();
+  }
+
   private getRoleFromToken(token: string): string | null {
     try {
       const payload = token.split('.')[1];
 
-      if (!payload) return null;
+      if (!payload || typeof atob === 'undefined') return null;
 
       const decoded = JSON.parse(atob(payload));
 

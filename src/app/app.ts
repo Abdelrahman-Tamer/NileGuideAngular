@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FlowbiteService } from './core/services/flowbite/flowbite.services';
 import { AuthService } from './features/auth/services/auth.service';
@@ -25,6 +26,8 @@ import { ChatbotComponent } from './core/components/chatbot/chatbot.component';
 export class App {
   private readonly flowbiteService = inject(FlowbiteService);
   private readonly authService = inject(AuthService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   showNavbar = true;
   showFooter = true;
@@ -34,10 +37,19 @@ export class App {
     this.updateLayoutState(this.router.url);
 
     this.router.events
-      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe((e) => {
         const url = e.urlAfterRedirects ?? e.url;
         this.updateLayoutState(url);
+      });
+
+    this.authService.authState$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateLayoutState(this.router.url);
       });
   }
 
@@ -66,5 +78,7 @@ export class App {
       this.authService.isTourist() &&
       !isDashboardPage &&
       !isAuthPage;
+
+    this.cdr.markForCheck();
   }
 }
