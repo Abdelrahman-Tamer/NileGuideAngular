@@ -1,24 +1,25 @@
-
-<section class="min-h-screen  flex items-center justify-center px-4 py-10 text-white">
+<section class="min-h-screen flex items-center justify-center px-4 py-10 text-white">
   <div class="w-full max-w-6xl border border-yellow-500/10 overflow-hidden rounded-3xl bg-[#27241b] shadow-2xl grid lg:grid-cols-2">
 
     <!-- LEFT -->
-    <div class="p-10 lg:p-14 flex flex-col justify-center">
+    <div class="p-5 sm:p-6 lg:p-8 flex flex-col justify-center">
 
       <!-- Logo -->
-      <div class="flex items-center gap-3 text-yellow-500 mb-8">
-        <i class="fa-solid fa-star text-xl"></i>
+      <div class="flex items-center gap-1 text-yellow-500 mb-8">
+        <img src="./ico/main ico.png" class="w-8" alt="" />
         <span class="text-lg font-semibold tracking-widest">NileGuide</span>
       </div>
 
-      <h1 class="text-4xl font-bold mb-2">Create Account</h1>
+      <h1 class="text-4xl font-bold mb-2 text-white/90">Create Account</h1>
       <p class="text-white/60 mb-8">Begin your journey through Egypt today</p>
 
       <form class="space-y-5" [formGroup]="registerForm" (ngSubmit)="submitData()">
 
+        <span class="hidden bg-yellow-500! hover:bg-yellow-400! text-black! font-bold! rounded-xl! border-yellow-500! opacity-100!"></span>
+
         <!-- Full Name -->
         <div>
-          <label class="text-sm font-medium mb-2 block">Full Name</label>
+          <label class="text-sm font-medium mb-2 text-white/80 block">Full Name</label>
           <div class="relative">
             <i class="fa-regular fa-user absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
             <input
@@ -43,7 +44,7 @@
 
         <!-- Email -->
         <div>
-          <label class="text-sm font-medium mb-2 block">Email Address</label>
+          <label class="text-sm font-medium mb-2 block text-white/80">Email Address</label>
           <div class="relative">
             <i class="fa-regular fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
             <input
@@ -65,149 +66,224 @@
           }
         </div>
 
-        <!-- Nationality -->
-        <div>
-          <label class="text-sm font-medium mb-2 block">Nationality</label>
-          <div class="relative">
-            <i class="fa-solid fa-earth-africa absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <!-- Nationality -->
+          <div>
+            <label class="text-sm font-medium mb-2 block text-white/80">Nationality</label>
+            <div class="relative">
+              <i class="fa-solid fa-earth-africa absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
 
-            <select
-              formControlName="nationality"
-              class="w-full appearance-none rounded-xl bg-black/40 border border-yellow-500/50 bo py-3 pl-12 pr-10 text-yellow-400 outline-none
-                     focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20
-                     [&>option]:bg-[#27241b] [&>option]:text-yellow-400"
-              [class.border-red-500]="f.nationality.touched && f.nationality.invalid"
-              [class.border-white/10]="!(f.nationality.touched && f.nationality.invalid)"
-            >
-              <option value="" disabled>Select nationality</option>
-              @for (n of NATIONALITIES; track n) {
-                <option [value]="n">{{ n }}</option>
-              }
-            </select>
+              <select
+                formControlName="nationality"
+                class="w-full appearance-none rounded-xl bg-black/40 border py-3 pl-12 pr-10 text-yellow-400 outline-none
+                       focus:border-yellow-500/50 focus:ring-2 focus:ring-yellow-500/20
+                       [&>option]:bg-[#27241b] [&>option]:text-yellow-400"
+                [class.border-red-500]="f.nationality.touched && f.nationality.invalid"
+                [class.border-yellow-500/50]="!(f.nationality.touched && f.nationality.invalid)"
+              >
+                <option value="" disabled>Select nationality</option>
+                @for (n of NATIONALITIES; track n) {
+                  <option [value]="n">{{ n }}</option>
+                }
+              </select>
+
+            </div>
+
+            @if (f.nationality.touched && f.nationality.errors) {
+              <p class="mt-2 text-xs text-red-300">
+                @if (f.nationality.errors['required']) { <span>Nationality is required.</span> }
+                @if (f.nationality.errors['maxlength']) { <span>Maximum 100 characters.</span> }
+              </p>
+            }
           </div>
 
-          @if (f.nationality.touched && f.nationality.errors) {
-            <p class="mt-2 text-xs text-red-300">
-              @if (f.nationality.errors['required']) { <span>Nationality is required.</span> }
-              @if (f.nationality.errors['maxlength']) { <span>Maximum 100 characters.</span> }
-            </p>
-          }
+          <!-- Date of Birth - Flowbite Datepicker -->
+          <div>
+            <label class="text-sm font-medium mb-2 block text-white/80">Date of Birth</label>
+
+            <div class="relative">
+              <i class="fa-regular fa-calendar-days absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+
+              <input
+                #dateOfBirthInput
+                id="register-date-of-birth"
+                formControlName="dateOfBirth"
+                type="text"
+                autocomplete="off"
+                placeholder="Select date of birth"
+                class="w-full cursor-pointer rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
+                       focus:ring-2 focus:ring-yellow-500/20"
+                [class.border-red-500]="f.dateOfBirth.touched && f.dateOfBirth.invalid"
+                [class.border-yellow-500/50]="!(f.dateOfBirth.touched && f.dateOfBirth.invalid)"
+                (click)="openDatePicker()"
+                (keydown)="blockDateTyping($event)"
+                (paste)="$event.preventDefault()"
+              />
+
+              <button
+                type="button"
+                (click)="openDatePicker()"
+                class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-yellow-400 hover:text-yellow-300"
+              >
+                <i class="fa-regular fa-calendar-days"></i>
+              </button>
+            </div>
+
+            @if (f.dateOfBirth.touched && f.dateOfBirth.errors) {
+              <p class="mt-2 text-xs text-red-300">
+                @if (f.dateOfBirth.errors['required']) { <span>Date of birth is required.</span> }
+              </p>
+            }
+          </div>
         </div>
 
-       <!-- Password -->
-<div>
-  <label class="text-sm font-medium mb-2 block">Password</label>
-  <div class="relative">
-    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <!-- Password -->
+          <div>
+            <label class="text-sm font-medium mb-2 block text-white/80">Password</label>
+            <div class="relative">
+              <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
 
+              <input
+                formControlName="password"
+                [type]="showPassword ? 'text' : 'password'"
+                placeholder="Enter password"
+                class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
+                       focus:ring-2 focus:ring-yellow-500/20"
+                [class.border-red-500]="f.password.touched && f.password.invalid"
+                [class.border-yellow-500/50]="!(f.password.touched && f.password.invalid)"
+              />
+
+              <button
+                type="button"
+                (click)="togglePassword()"
+                class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-white/40 hover:text-white/70"
+              >
+                <i
+                  class="fa-regular cursor-pointer"
+                  [class.fa-eye]="!showPassword"
+                  [class.fa-eye-slash]="showPassword"
+                ></i>
+              </button>
+            </div>
+
+            <p class="mt-2 text-xs text-white/45">At least 8 chars, must include letters and numbers</p>
+
+            @if (f.password.touched && f.password.errors) {
+              <p class="mt-2 text-xs text-red-300">
+                @if (f.password.errors['required']) { <span>Password is required.</span> }
+                @if (f.password.errors['maxlength']) { <span>Maximum 100 characters.</span> }
+                @if (f.password.errors['pattern']) { <span>Must include letters and numbers.</span> }
+              </p>
+            }
+          </div>
+
+          <!-- Confirm Password -->
+          <div>
+            <label class="text-sm font-medium mb-2 block text-white/80">Confirm Password</label>
+            <div class="relative">
+              <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
+
+              <input
+                formControlName="confirmPassword"
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                placeholder="Confirm password"
+                class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
+                       focus:ring-2 focus:ring-yellow-500/20"
+                [class.border-red-500]="f.confirmPassword.touched && (f.confirmPassword.invalid || registerForm.hasError('passwordMatch'))"
+                [class.border-yellow-500/50]="!(f.confirmPassword.touched && (f.confirmPassword.invalid || registerForm.hasError('passwordMatch')))"
+              />
+
+              <button
+                type="button"
+                (click)="toggleConfirmPassword()"
+                class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-white/40 hover:text-white/70"
+              >
+                <i
+                  class="fa-regular cursor-pointer"
+                  [class.fa-eye]="!showConfirmPassword"
+                  [class.fa-eye-slash]="showConfirmPassword"
+                ></i>
+              </button>
+            </div>
+
+            @if (f.confirmPassword.touched && (f.confirmPassword.errors || registerForm.hasError('passwordMatch'))) {
+              <p class="mt-2 text-xs text-red-300">
+                @if (f.confirmPassword.errors?.['required']) { <span>Confirm password is required.</span> }
+                @if (registerForm.hasError('passwordMatch')) { <span>Passwords do not match.</span> }
+              </p>
+            }
+          </div>
+        </div>
+
+        
+     <div
+  class="rounded-xl border bg-black/25 p-4 transition"
+  [class.border-red-500/50]="f.agree.touched && f.agree.invalid"
+  [class.border-white/10]="!(f.agree.touched && f.agree.invalid)"
+>
+  <label class="flex cursor-pointer items-start gap-3 text-sm text-white/70">
     <input
-      formControlName="password"
-      [type]="showPassword ? 'text' : 'password'"
-      placeholder="Enter your password"
-      class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
-             focus:ring-2 focus:ring-yellow-500/20"
-      [class.border-red-500]="f.password.touched && f.password.invalid"
-      [class.border-yellow-500/50]="!(f.password.touched && f.password.invalid)"
+      id="agree"
+      formControlName="agree"
+      type="checkbox"
+      class="peer sr-only"
     />
 
-    <button
-      type="button"
-      (click)="togglePassword()"
-      class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-white/40 hover:text-white/70"
+    <span
+      class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-yellow-500/50 bg-black/40 text-transparent transition
+             peer-checked:border-yellow-500 peer-checked:bg-yellow-500 peer-checked:text-black"
     >
-      <i
-        class="fa-regular cursor-pointer"
-        [class.fa-eye]="!showPassword"
-        [class.fa-eye-slash]="showPassword"
-      ></i>
-    </button>
-  </div>
+      <i class="fa-solid fa-check text-xs"></i>
+    </span>
 
-  <p class="mt-2 text-xs text-white/45">At least 8 chars, must include letters and numbers</p>
-
-  @if (f.password.touched && f.password.errors) {
-    <p class="mt-2 text-xs text-red-300">
-      @if (f.password.errors['required']) { <span>Password is required.</span> }
-      @if (f.password.errors['maxlength']) { <span>Maximum 100 characters.</span> }
-      @if (f.password.errors['pattern']) { <span>Must include letters and numbers.</span> }
-    </p>
-  }
+    <span class="leading-6">
+      I agree to the
+      <a
+        routerLink="/terms"
+        class="font-semibold text-yellow-500 transition hover:text-yellow-400"
+      >
+        Terms of Service
+      </a>
+      and
+      <a
+        routerLink="/privacy"
+        class="font-semibold text-yellow-500 transition hover:text-yellow-400"
+      >
+        Privacy Policy
+      </a>
+    </span>
+  </label>
 </div>
-
-       <!-- Confirm Password -->
-<div>
-  <label class="text-sm font-medium mb-2 block">Confirm Password</label>
-  <div class="relative">
-    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-white/35"></i>
-
-    <input
-      formControlName="confirmPassword"
-      [type]="showConfirmPassword ? 'text' : 'password'"
-      placeholder="Confirm your password"
-      class="w-full rounded-xl bg-black/40 border py-3 pl-12 pr-12 text-white placeholder:text-white/35 outline-none
-             focus:ring-2 focus:ring-yellow-500/20"
-      [class.border-red-500]="f.confirmPassword.touched && (f.confirmPassword.invalid || registerForm.hasError('passwordMatch'))"
-      [class.border-yellow-500/50]="!(f.confirmPassword.touched && (f.confirmPassword.invalid || registerForm.hasError('passwordMatch')))"
-    />
-
-    <button
-      type="button"
-      (click)="toggleConfirmPassword()"
-      class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-white/40 hover:text-white/70"
-    >
-      <i
-        class="fa-regular cursor-pointer"
-        [class.fa-eye]="!showConfirmPassword"
-        [class.fa-eye-slash]="showConfirmPassword"
-      ></i>
-    </button>
-  </div>
-
-  @if (f.confirmPassword.touched && (f.confirmPassword.errors || registerForm.hasError('passwordMatch'))) {
-    <p class="mt-2 text-xs text-red-300">
-      @if (f.confirmPassword.errors?.['required']) { <span>Confirm password is required.</span> }
-      @if (registerForm.hasError('passwordMatch')) { <span>Passwords do not match.</span> }
-    </p>
-  }
-</div>
-
-        <!-- Agree -->
-        <label class="flex items-center gap-3 text-sm text-white/70">
-          <input formControlName="agree" type="checkbox" class="h-4 w-4 accent-yellow-500" />
-          <span>
-            I agree to the
-            <a href="#" class="text-yellow-500 hover:text-yellow-400">Terms of Service</a>
-            and
-            <a href="#" class="text-yellow-500 hover:text-yellow-400">Privacy Policy</a>
-          </span>
-        </label>
 
         @if (f.agree.touched && f.agree.errors) {
           <p class="text-xs text-red-300">You must accept the terms.</p>
         }
 
-        <!-- Button -->
-        <button
-          type="submit"
-          class="w-full cursor-pointer rounded-xl bg-yellow-500 py-3 text-black font-semibold hover:bg-yellow-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-          [disabled]="isLoading"
-        >
-          CREATE ACCOUNT
-          @if (isLoading) { <i class="fas fa-spinner fa-spin ml-2"></i> }
-        </button>
 
-        @if (successMessage) {
-          <div class="mt-2 bg-green-400 border-l-8 border-green-600 text-green-900 font-bold p-4 rounded-xl">
+            @if (successMessage) {
+           <div class="rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-green-400 text-sm">
             <p>{{ successMessage }}</p>
             <p>You will be redirected in {{ redirectCounter }} seconds...</p>
           </div>
         }
 
         @if (errorMessage) {
-          <div class="mt-2 bg-red-800 border-l-8 border-red-700 text-red-950 p-4 rounded-xl">
+          <div class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-red-200 text-sm">
             <p class="font-bold">{{ errorMessage }}</p>
           </div>
         }
+        <!-- Button -->
+        <button
+          type="submit"
+          class="w-full cursor-pointer rounded-xl mt-1 bg-yellow-500 py-3 text-black font-semibold hover:bg-yellow-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          [disabled]="isLoading"
+        >
+          CREATE ACCOUNT
+          @if (isLoading) { <i class="fas fa-spinner fa-spin ml-2"></i> }
+        </button>
+
+    
 
         <!-- Sign in -->
         <p class="text-center text-white/60 mt-4">

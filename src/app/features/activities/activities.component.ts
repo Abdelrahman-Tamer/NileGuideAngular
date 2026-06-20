@@ -1,12 +1,27 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
+import { Datepicker } from 'flowbite-datepicker';
+
 import { ActivitiesService } from './activities.service';
+import { ActivitiesStateService } from './activities-state.service';
 import { WishlistService } from '../wishlist/wishlist.service';
 import { ScheduleService } from '../schedule/schedule.service';
+import { ProfileService } from '../profile/profile.service';
+import { UserProfileResponse } from '../profile/profile';
 
 import {
   ActivityCategory,
@@ -25,12 +40,19 @@ import {
   templateUrl: './activities.component.html',
   styleUrl: './activities.component.css',
 })
-export class ActivitiesComponent implements OnInit {
+export class ActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('planDateInput')
+  planDateInput?: ElementRef<HTMLInputElement>;
+
   private readonly activitiesService = inject(ActivitiesService);
+  private readonly activitiesStateService = inject(ActivitiesStateService);
   private readonly wishlistService = inject(WishlistService);
   private readonly scheduleService = inject(ScheduleService);
+  private readonly profileService = inject(ProfileService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly toastr = inject(ToastrService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly platformId = inject(PLATFORM_ID);
 
   activities: ActivityListItem[] = [];
   categories: ActivityCategory[] = [];
@@ -48,6 +70,8 @@ export class ActivitiesComponent implements OnInit {
 
   isLoading = false;
   private shouldScrollAfterLoad = false;
+  private restoredFromCache = false;
+  private restoredScrollY = 0;
 
   wishlistedIds = new Set<number>();
   wishlistLoadingIds = new Set<number>();
@@ -62,11 +86,75 @@ export class ActivitiesComponent implements OnInit {
   isSubmittingPlan = false;
   planValidationError = '';
 
+  private userProfile: UserProfileResponse | null = null;
+
+  private planDatePicker: any;
+  private planDateEventsBound = false;
+
+  private readonly syncPlanDateHandler = () => this.syncPlanDateValue();
+
   ngOnInit(): void {
+    this.restoreActivitiesState();
+
     this.getCategories();
     this.getCities();
     this.loadWishlistIds();
-    this.getActivities();
+    this.loadUserProfile();
+    this.listenToProfileFilters();
+  }
+
+  ngAfterViewInit(): void {
+    this.initPlanDatePickerAfterRender();
+  }
+
+  ngOnDestroy(): void {
+    this.saveActivitiesState();
+    this.destroyPlanDatePicker();
+  }
+
+  private listenToProfileFilters(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      const cityIds = this.parseIds(params.get('cities'));
+      const categoryIds = this.parseIds(params.get('categories'));
+
+      const hasQueryFilters = cityIds.length > 0 || categoryIds.length > 0;
+
+      if (this.restoredFromCache && !hasQueryFilters) {
+        this.restoredFromCache = false;
+        this.restoreScrollPosition();
+        return;
+      }
+
+      this.selectedCityIds = cityIds;
+      this.selectedCategoryIds = categoryIds;
+      this.currentPage = 1;
+      this.getActivities();
+    });
+  }
+
+  private loadUserProfile(): void {
+    this.profileService.getProfile().subscribe({
+      next: (profile) => {
+        this.userProfile = profile;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Failed to load user profile for travel dates validation', error);
+        this.userProfile = null;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private parseIds(value: string | null): number[] {
+    if (!value) {
+      return [];
+    }
+
+    return value
+      .split(',')
+      .map((id) => Number(id))
+      .filter((id) => !Number.isNaN(id));
   }
 
   get totalPages(): number {
@@ -133,6 +221,8 @@ export class ActivitiesComponent implements OnInit {
           this.currentPage = response.page;
           this.pageSize = response.pageSize;
           this.isLoading = false;
+
+          this.saveActivitiesState();
           this.cdr.detectChanges();
 
           if (this.shouldScrollAfterLoad) {
@@ -154,6 +244,7 @@ export class ActivitiesComponent implements OnInit {
     this.activitiesService.getCategories().subscribe({
       next: (response) => {
         this.categories = response;
+        this.saveActivitiesState();
         this.cdr.detectChanges();
       },
     });
@@ -163,6 +254,7 @@ export class ActivitiesComponent implements OnInit {
     this.activitiesService.getCities().subscribe({
       next: (response) => {
         this.cities = response;
+        this.saveActivitiesState();
         this.cdr.detectChanges();
       },
     });
@@ -240,6 +332,7 @@ export class ActivitiesComponent implements OnInit {
         this.selectedActivityDetails = response;
         this.isPlanModalLoading = false;
         this.cdr.detectChanges();
+        this.initPlanDatePickerAfterRender();
       },
       error: () => {
         this.isPlanModalLoading = false;
@@ -251,6 +344,8 @@ export class ActivitiesComponent implements OnInit {
   }
 
   closePlanModal(): void {
+    this.destroyPlanDatePicker();
+
     this.isPlanModalOpen = false;
     this.isPlanModalLoading = false;
     this.selectedActivityDetails = null;
@@ -262,11 +357,39 @@ export class ActivitiesComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  openPlanDatePicker(): void {
+    this.initPlanDatePickerAfterRender();
+
+    setTimeout(() => {
+      this.planDateInput?.nativeElement.focus();
+      this.planDatePicker?.show?.();
+      this.stylePlanDatePicker();
+    }, 0);
+  }
+
+  blockPlanDateTyping(event: KeyboardEvent): void {
+    const allowedKeys = [
+      'Tab',
+      'Shift',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Escape',
+    ];
+
+    if (!allowedKeys.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   onPlanDateChange(): void {
     this.planValidationError = '';
 
     if (this.planDate && !this.isValidDateFormat(this.planDate)) {
       this.planValidationError = 'Date must be in YYYY-MM-DD format.';
+    } else if (this.planDate && this.isPlanDateOutsideTravelDates()) {
+      this.planValidationError = this.getTravelDatesValidationMessage();
     }
 
     this.cdr.detectChanges();
@@ -338,6 +461,12 @@ export class ActivitiesComponent implements OnInit {
 
     if (!this.isValidDateFormat(this.planDate)) {
       this.planValidationError = 'Date must be in YYYY-MM-DD format.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (this.isPlanDateOutsideTravelDates()) {
+      this.planValidationError = this.getTravelDatesValidationMessage();
       this.cdr.detectChanges();
       return;
     }
@@ -532,8 +661,235 @@ export class ActivitiesComponent implements OnInit {
     return rating.toFixed(1);
   }
 
+  private restoreActivitiesState(): void {
+    const hasQueryFilters =
+      this.route.snapshot.queryParamMap.has('cities') ||
+      this.route.snapshot.queryParamMap.has('categories');
+
+    if (hasQueryFilters) {
+      return;
+    }
+
+    const state = this.activitiesStateService.getState();
+
+    if (!state) {
+      return;
+    }
+
+    this.activities = state.activities ?? [];
+    this.categories = state.categories ?? [];
+    this.cities = state.cities ?? [];
+
+    this.selectedCategoryIds = state.selectedCategoryIds ?? [];
+    this.selectedCityIds = state.selectedCityIds ?? [];
+
+    this.searchTerm = state.searchTerm ?? '';
+    this.sortBy = state.sortBy ?? 'default';
+
+    this.totalCount = state.totalCount ?? 0;
+    this.currentPage = state.currentPage ?? 1;
+    this.pageSize = state.pageSize ?? 9;
+
+    this.restoredScrollY = state.scrollY ?? 0;
+    this.restoredFromCache = this.activities.length > 0;
+
+    this.isLoading = false;
+    this.cdr.detectChanges();
+  }
+
+  private saveActivitiesState(): void {
+    const scrollY = isPlatformBrowser(this.platformId) ? window.scrollY : 0;
+
+    this.activitiesStateService.saveState({
+      activities: this.activities,
+      categories: this.categories,
+      cities: this.cities,
+
+      selectedCategoryIds: this.selectedCategoryIds,
+      selectedCityIds: this.selectedCityIds,
+
+      searchTerm: this.searchTerm,
+      sortBy: this.sortBy,
+
+      totalCount: this.totalCount,
+      currentPage: this.currentPage,
+      pageSize: this.pageSize,
+
+      scrollY,
+    });
+  }
+
+  private restoreScrollPosition(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    if (!this.restoredScrollY) {
+      return;
+    }
+
+    setTimeout(() => {
+      window.scrollTo({
+        top: this.restoredScrollY,
+        behavior: 'auto',
+      });
+
+      this.restoredScrollY = 0;
+    }, 0);
+  }
+
+  private initPlanDatePickerAfterRender(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    setTimeout(() => {
+      const input = this.planDateInput?.nativeElement;
+
+      if (!input) {
+        return;
+      }
+
+      if (!this.planDatePicker) {
+        this.planDatePicker = new Datepicker(input, {
+          format: 'yyyy-mm-dd',
+          autohide: true,
+          todayBtn: false,
+          clearBtn: true,
+        });
+      }
+
+      if (!this.planDateEventsBound) {
+        input.addEventListener('changeDate', this.syncPlanDateHandler);
+        input.addEventListener('change', this.syncPlanDateHandler);
+        this.planDateEventsBound = true;
+      }
+
+      this.stylePlanDatePicker();
+    }, 0);
+  }
+
+  private syncPlanDateValue(): void {
+    const value = this.planDateInput?.nativeElement.value ?? '';
+
+    this.planDate = value;
+    this.onPlanDateChange();
+    this.cdr.detectChanges();
+  }
+
+  private stylePlanDatePicker(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    setTimeout(() => {
+      const datepickers = document.querySelectorAll(
+        '.datepicker, .datepicker-dropdown'
+      );
+
+      datepickers.forEach((datepicker) => {
+        const buttons = datepicker.querySelectorAll('button');
+
+        buttons.forEach((button) => {
+          const btn = button as HTMLButtonElement;
+
+          if (btn.textContent?.trim().toLowerCase() === 'clear') {
+            btn.className = '';
+
+            btn.style.display = 'block';
+            btn.style.width = 'fit-content';
+            btn.style.minWidth = '170px';
+            btn.style.margin = '10px auto 0';
+            btn.style.padding = '12px 34px';
+            btn.style.border = '1px solid rgba(255,255,255,0.75)';
+            btn.style.borderRadius = '9999px';
+            btn.style.fontWeight = '600';
+            btn.style.fontSize = '14px';
+            btn.style.lineHeight = '1';
+            btn.style.cursor = 'pointer';
+            btn.style.transition =
+              'background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease';
+            btn.style.boxShadow = 'none';
+
+            btn.style.backgroundColor = '#eab308';
+            btn.style.color = '#000';
+
+            btn.onmouseenter = () => {
+              btn.style.backgroundColor = '#ca8a04';
+            };
+
+            btn.onmouseleave = () => {
+              btn.style.backgroundColor = '#eab308';
+            };
+          }
+        });
+      });
+    }, 50);
+  }
+
+  private destroyPlanDatePicker(): void {
+    const input = this.planDateInput?.nativeElement;
+
+    if (input && this.planDateEventsBound) {
+      input.removeEventListener('changeDate', this.syncPlanDateHandler);
+      input.removeEventListener('change', this.syncPlanDateHandler);
+    }
+
+    this.planDateEventsBound = false;
+
+    try {
+      this.planDatePicker?.destroy?.();
+    } catch {
+      // ignore
+    }
+
+    this.planDatePicker = null;
+  }
+
   private isValidDateFormat(value: string): boolean {
     return /^\d{4}-\d{2}-\d{2}$/.test(value);
+  }
+
+  private isPlanDateOutsideTravelDates(): boolean {
+    if (!this.userProfile?.hasTravelDates) return false;
+
+    const travelStartDate = this.toDateOnly(this.userProfile.travelStartDate);
+    const travelEndDate = this.toDateOnly(this.userProfile.travelEndDate);
+
+    if (!travelStartDate || !travelEndDate) return false;
+
+    return this.planDate < travelStartDate || this.planDate > travelEndDate;
+  }
+
+  private getTravelDatesValidationMessage(): string {
+    const travelStartDate = this.toDateOnly(this.userProfile?.travelStartDate);
+    const travelEndDate = this.toDateOnly(this.userProfile?.travelEndDate);
+
+    if (!travelStartDate || !travelEndDate) {
+      return 'This activity is outside your selected trip dates.';
+    }
+
+    return `This activity is outside your selected trip dates. Your trip is from ${this.formatDateLabel(travelStartDate)} to ${this.formatDateLabel(travelEndDate)}.`;
+  }
+
+  private toDateOnly(value: string | null | undefined): string {
+    if (!value) return '';
+
+    return String(value).split('T')[0];
+  }
+
+  private formatDateLabel(value: string): string {
+    const [year, month, day] = value.split('-').map(Number);
+
+    if (!year || !month || !day) {
+      return value;
+    }
+
+    return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
   }
 
   private isValidTwelveHourTimeFormat(value: string): boolean {

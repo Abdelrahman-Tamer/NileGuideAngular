@@ -28,6 +28,7 @@ export interface ActivityListItem {
   isActive: boolean;
   rating: number;
   reviewsCount: number;
+  duration?: number;
   providers: ActivityProvider[];
   openingHours: ActivityOpeningHour[];
 }

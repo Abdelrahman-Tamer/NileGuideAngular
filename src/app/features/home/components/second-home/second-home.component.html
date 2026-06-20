@@ -79,7 +79,7 @@
 
 
 <!-- POPULAR ACTIVITIES SECTION -->
-<section class=" text-white py-16">
+<section class="text-white py-16">
   <div class="mx-auto max-w-7xl px-4">
 
     <!-- Header -->
@@ -92,94 +92,78 @@
       >
         View All
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
-          <path d="M10 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path
+            d="M10 6l6 6-6 6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
       </a>
     </div>
 
-    <!-- Cards -->
-     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    @if (isLoading) {
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        @for (item of [1, 2, 3, 4]; track item) {
+          <article class="card-activity">
+            <div class="h-60 animate-pulse rounded-t-2xl bg-neutral-800"></div>
 
-      <!-- Card 1 -->
-      <article class="card-activity">
-        <div class="card-activity__image-wrap">
-          <img src="/Photo/Hot Air Balloon.png" alt="Hot Air Balloon" class="card-activity__image" />
-          <div class="card-activity__rating">
-            <span style="color: var(--accent-gold);">★</span>
-            <span class="font-semibold" style="color: var(--accent-gold);">4.9</span>
-          </div>
-          <div class="card-activity__duration">
-            <span class="inline-block h-2 w-2 rounded-full" style="background-color: rgba(255,255,255,0.7);"></span>
-            <span>3 hours</span>
-          </div>
-        </div>
-        <div class="card-activity__body">
-          <h3 class="card-activity__title">Hot Air Balloon</h3>
-          <p class="card-activity__location">Luxor</p>
-          <p class="card-activity__price">From $120 USD</p>
-        </div>
-      </article>
+            <div class="card-activity__body">
+              <div class="h-7 w-40 animate-pulse rounded bg-neutral-800"></div>
+              <div class="mt-3 h-5 w-24 animate-pulse rounded bg-neutral-800"></div>
+              <div class="mt-6 h-7 w-36 animate-pulse rounded bg-neutral-800"></div>
+            </div>
+          </article>
+        }
+      </div>
+    } @else if (errorMessage) {
+      <div class="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-sm text-red-300">
+        {{ errorMessage }}
+      </div>
+    } @else if (popularActivities.length > 0) {
+      <!-- Cards -->
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        @for (activity of popularActivities; track activity.activityID) {
+          <article
+            class="card-activity cursor-pointer"
+            [routerLink]="['/activities', activity.activityID]"
+          >
+            <div class="card-activity__image-wrap">
+              <img
+                [src]="getActivityImage(activity)"
+                [alt]="activity.activityName"
+                class="card-activity__image"
+              />
 
-      <!-- Card 2 -->
-      <article class="card-activity">
-        <div class="card-activity__image-wrap">
-          <img src="/Photo/Pyramids Tour.png" alt="Pyramids Tour" class="card-activity__image" />
-          <div class="card-activity__rating">
-            <span style="color: var(--accent-gold);">★</span>
-            <span class="font-semibold" style="color: var(--accent-gold);">4.8</span>
-          </div>
-          <div class="card-activity__duration">
-            <span class="inline-block h-2 w-2 rounded-full" style="background-color: rgba(255,255,255,0.7);"></span>
-            <span>4 hours</span>
-          </div>
-        </div>
-        <div class="card-activity__body">
-          <h3 class="card-activity__title">Pyramids Tour</h3>
-          <p class="card-activity__location">Cairo</p>
-          <p class="card-activity__price">From $80 USD</p>
-        </div>
-      </article>
+              <div class="card-activity__rating">
+                <span style="color: var(--accent-gold);">★</span>
+                <span class="font-semibold" style="color: var(--accent-gold);">
+                  {{ formatRating(activity.rating) }}
+                </span>
+              </div>
 
-      <!-- Card 3 -->
-      <article class="card-activity">
-        <div class="card-activity__image-wrap">
-          <img src="/Photo/Nile Cruise.png" alt="Nile Cruise" class="card-activity__image" />
-          <div class="card-activity__rating">
-            <span style="color: var(--accent-gold);">★</span>
-            <span class="font-semibold" style="color: var(--accent-gold);">5.0</span>
-          </div>
-          <div class="card-activity__duration">
-            <span class="inline-block h-2 w-2 rounded-full" style="background-color: rgba(255,255,255,0.7);"></span>
-            <span>5 days</span>
-          </div>
-        </div>
-        <div class="card-activity__body">
-          <h3 class="card-activity__title">Nile Cruise</h3>
-          <p class="card-activity__location">Luxor to Aswan</p>
-          <p class="card-activity__price">From $450 USD</p>
-        </div>
-      </article>
+              <div class="card-activity__duration">
+                <span
+                  class="inline-block h-2 w-2 rounded-full"
+                  style="background-color: rgba(255,255,255,0.7);"
+                ></span>
+                <span>{{ formatDuration(activity.duration) }}</span>
+              </div>
+            </div>
 
-      <!-- Card 4 -->
-      <article class="card-activity">
-        <div class="card-activity__image-wrap">
-          <img src="/Photo/a9.jpg" alt="Red Sea Diving" class="card-activity__image" />
-          <div class="card-activity__rating">
-            <span style="color: var(--accent-gold);">★</span>
-            <span class="font-semibold" style="color: var(--accent-gold);">4.7</span>
-          </div>
-          <div class="card-activity__duration">
-            <span class="inline-block h-2 w-2 rounded-full" style="background-color: rgba(255,255,255,0.7);"></span>
-            <span>2 hours</span>
-          </div>
-        </div>
-        <div class="card-activity__body">
-          <h3 class="card-activity__title">Red Sea Diving</h3>
-          <p class="card-activity__location">Sharm El Sheikh</p>
-          <p class="card-activity__price">From $110 USD</p>
-        </div>
-      </article>
-
-    </div>
+            <div class="card-activity__body">
+              <h3 class="card-activity__title">{{ activity.activityName }}</h3>
+              <p class="card-activity__location">{{ activity.cityName }}</p>
+              <p class="card-activity__price">{{ formatPrice(activity) }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/60">
+        No popular activities available right now.
+      </div>
+    }
   </div>
 </section>

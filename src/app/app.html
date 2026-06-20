@@ -1,13 +1,20 @@
-@if (showNavbarFooter) {
+@if (showNavbar) {
   <app-navbar></app-navbar>
 }
-<div class="min-h-screen  bg-[#1b1915] text-warning-medium font-bold">
-    <router-outlet/>
-     <div class="h-px w-full bg-white/10"></div>
+
+<div class="min-h-screen bg-[#1b1915] text-warning-medium font-bold">
+  <router-outlet />
+  <div class="h-px w-full bg-white/10"></div>
 </div>
-@if (showNavbarFooter) {
+
+@if (showChatbot) {
+  <app-chatbot></app-chatbot>
+}
+
+@if (showFooter) {
   <app-footer></app-footer>
 }
+
 <!-- 
 <ngx-spinner type="ball-scale-multiple"></ngx-spinner> 
 -->

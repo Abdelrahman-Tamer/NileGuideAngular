@@ -10,6 +10,7 @@
 /node_modules
 npm-debug.log
 yarn-error.log
+*.log
 
 # IDEs and editors
 .idea/
@@ -38,6 +39,9 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
+playwright-report/
+test-results/
+demo/.env.demo
 
 # System files
 .DS_Store

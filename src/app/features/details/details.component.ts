@@ -134,26 +134,32 @@ export class DetailsComponent implements OnInit {
     });
   }
 
-  loadReviews(activityId: number): void {
-    this.isReviewsLoading = true;
-    this.cdr.detectChanges();
+loadReviews(activityId: number): void {
+  this.isReviewsLoading = true;
+  this.cdr.detectChanges();
 
-    this.activitiesService.getActivityReviews(activityId).subscribe({
-      next: (response) => {
-        this.reviews = [...response].sort(
+  this.activitiesService.getActivityReviews(activityId).subscribe({
+    next: (response) => {
+      this.reviews = [...response]
+        .map((review: any) => ({
+          ...review,
+          createdAtUtc: review.createdAt || review.createdAtUtc || review.createdDate || '',
+        }))
+        .sort(
           (a, b) =>
             new Date(b.createdAtUtc).getTime() - new Date(a.createdAtUtc).getTime()
         );
-        this.isReviewsLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.reviews = [];
-        this.isReviewsLoading = false;
-        this.cdr.detectChanges();
-      },
-    });
-  }
+
+      this.isReviewsLoading = false;
+      this.cdr.detectChanges();
+    },
+    error: () => {
+      this.reviews = [];
+      this.isReviewsLoading = false;
+      this.cdr.detectChanges();
+    },
+  });
+}
 
   loadWishlistStatus(activityId: number): void {
     this.wishlistService.getWishlistStatus(activityId).subscribe({
@@ -337,14 +343,21 @@ export class DetailsComponent implements OnInit {
     return Array.from({ length: 5 - safeRating }, (_, i) => i);
   }
 
-  formatReviewDate(date: string): string {
-    const parsed = new Date(date);
+formatReviewDate(date?: string | null): string {
+  if (!date) return 'Just now';
 
-    return parsed.toLocaleDateString('en-US', {
-      month: 'long',
-      year: 'numeric',
-    });
+  const parsed = new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return 'Just now';
   }
+
+  return parsed.toLocaleString('en-US', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
 
   getProviderIcon(provider: ActivityProvider): string {
     const name = provider.providerName.toLowerCase();

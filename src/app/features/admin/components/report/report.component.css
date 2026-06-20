@@ -1,14 +1,73 @@
 .category-chart {
-  background: conic-gradient(
-    #e0b100 0deg 124deg,
-    #ffffff 125deg 126deg,
-    #d4af37 126deg 214deg,
-    #ffffff 215deg 216deg,
-    #b97832 216deg 286deg,
-    #ffffff 287deg 288deg,
-    #8f6c17 288deg 329deg,
-    #ffffff 330deg 331deg,
-    #6d570f 331deg 358deg,
-    #ffffff 359deg 360deg
-  );
+  background: conic-gradient(#e0b100 0deg 360deg);
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #16120d !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .print-area,
+  .print-area * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-area {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    background: #16120d !important;
+    color: #ffffff !important;
+  }
+
+  .print-area button {
+    display: none !important;
+  }
+
+  .print-area .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  .print-area [class*="min-w-"] {
+    min-width: 0 !important;
+  }
+
+  .print-area .grid {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .print-area div {
+    box-shadow: none !important;
+  }
+
+  .print-area h1,
+  .print-area h2,
+  .print-area h3,
+  .print-area h4,
+  .print-area p,
+  .print-area span {
+    color: inherit;
+  }
 }

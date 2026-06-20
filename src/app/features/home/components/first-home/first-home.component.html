@@ -69,17 +69,6 @@
             >
               Get Started
             </a>
-
-            <button
-              type="button"
-              class="inline-flex cursor-pointer w-full items-center justify-center rounded-xl border border-white/30 bg-white/10 px-8 py-3 text-base font-semibold text-white
-                     hover:bg-white/15 transition-colors sm:w-auto"
-                    
-            >
-             <svg class="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="none"><polygon points="5,3 19,12 5,21" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
-
-              Watch Video
-            </button>
           </div>
 
         </div>
@@ -89,110 +78,77 @@
 </section>
 
 
-<section class="  pt-20 text-white">
+<section class="pt-20 text-white">
 
   <!-- Content -->
-  <div class="mx-auto max-w-7xl px-4 pb-16 ">
+  <div class="mx-auto max-w-7xl px-4 pb-16">
     <!-- Header row -->
     <div class="mb-6 flex items-center justify-between">
       <h2 class="text-2xl font-semibold">Explore Ancient Cities</h2>
 
       <a
-    routerLink="/activities"
-    
-        class="inline-flex  items-center gap-2 cursor-pointer text-yellow-500 hover:text-yellow-400 transition-colors"
+        routerLink="/activities"
+        class="inline-flex items-center gap-2 cursor-pointer text-yellow-500 hover:text-yellow-400 transition-colors"
       >
         View All
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
-          <path d="M10 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path
+            d="M10 6l6 6-6 6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
       </a>
     </div>
 
-    <!-- Cards -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      <!-- Cairo -->
-      <article class="group">
-        <div class="relative h-80 overflow-hidden rounded-2xl bg-neutral-800 shadow-lg">
-          <img
-            src="/Photo/Cairo.png"
-            alt="Cairo"
-            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 text-sm font-semibold">
-            45 Activities
-          </div>
-        </div>
+    @if (isLoading) {
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        @for (item of [1, 2, 3, 4]; track item) {
+          <article>
+            <div class="h-80 animate-pulse rounded-2xl bg-neutral-800"></div>
+            <div class="mt-4 h-6 w-24 animate-pulse rounded bg-neutral-800"></div>
+            <div class="mt-2 h-4 w-44 animate-pulse rounded bg-neutral-800"></div>
+          </article>
+        }
+      </div>
+    } @else if (errorMessage) {
+      <div class="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-sm text-red-300">
+        {{ errorMessage }}
+      </div>
+    } @else if (cityCards.length > 0) {
+      <!-- Cards -->
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        @for (city of cityCards; track city.cityID) {
+          <article class="group">
+            <div class="relative h-80 overflow-hidden rounded-2xl bg-neutral-800 shadow-lg">
+              <img
+                [src]="city.imageUrl"
+                [alt]="city.cityName"
+                class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
 
-        <div class="mt-4">
-          <h3 class="text-xl font-semibold">Cairo</h3>
-          <p class="mt-1 text-sm text-white/70">The City of a Thousand Minarets</p>
-        </div>
-      </article>
+              <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
 
-      <!-- Luxor -->
-      <article class="group">
-        <div class="relative h-80 overflow-hidden rounded-2xl bg-neutral-800 shadow-lg">
-          <img
-            src="/Photo/Luxor.png"
-            alt="Luxor"
-            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 text-sm font-semibold">
-            38 Activities
-          </div>
-        </div>
+              <div class="absolute bottom-4 left-4 text-sm font-semibold">
+                {{ city.activitiesCount }}
+                {{ city.activitiesCount === 1 ? 'Activity' : 'Activities' }}
+              </div>
+            </div>
 
-        <div class="mt-4">
-          <h3 class="text-xl font-semibold">Luxor</h3>
-          <p class="mt-1 text-sm text-white/70">World's Greatest Open Air Museum</p>
-        </div>
-      </article>
-
-      <!-- Aswan -->
-      <article class="group">
-        <div class="relative h-80 overflow-hidden rounded-2xl bg-neutral-800 shadow-lg">
-          <img
-            src="/Photo/Aswan.png"
-            alt="Aswan"
-            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 text-sm font-semibold">
-            26 Activities
-          </div>
-        </div>
-
-        <div class="mt-4">
-          <h3 class="text-xl font-semibold">Aswan</h3>
-          <p class="mt-1 text-sm text-white/70">Nubian Culture &amp; The Nile</p>
-        </div>
-      </article>
-
-      <!-- Alexandria -->
-      <article class="group">
-        <div class="relative h-80 overflow-hidden rounded-2xl bg-neutral-800 shadow-lg">
-          <img
-            src="/Photo/Alexandria.png"
-            alt="Alexandria"
-            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
-          <div class="absolute bottom-4 left-4 text-sm font-semibold">
-            32 Activities
-          </div>
-        </div>
-
-        <div class="mt-4">
-          <h3 class="text-xl font-semibold">Alexandria</h3>
-          <p class="mt-1 text-sm text-white/70">Pearl of the Mediterranean</p>
-        </div>
-      </article>
-    </div>
-
-
+            <div class="mt-4">
+              <h3 class="text-xl font-semibold">{{ city.cityName }}</h3>
+              <p class="mt-1 text-sm text-white/70">{{ city.subtitle }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/60">
+        No cities available right now.
+      </div>
+    }
   </div>
 </section>
 

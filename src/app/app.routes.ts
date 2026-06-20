@@ -1,20 +1,16 @@
-import { DASHBOARD_ROUTES } from './features/admin/dashboard.routes';
 import { Routes } from '@angular/router';
-import { GustLayoutComponent } from './core/layouts/gust-layout/gust-layout.component';
-import { UserLayoutComponent } from './core/layouts/user-layout/user-layout.component';
+
+import { DASHBOARD_ROUTES } from './features/admin/dashboard.routes';
 import { Auth_ROUTES } from './features/auth/auth.routes';
 import { Home_ROUTES } from './features/home/home.routes';
-import { ActivitiesComponent } from './features/activities/activities.component';
-import { ScheduleComponent } from './features/schedule/schedule.component';
-import { MapComponent } from './features/map/map.component';
-import { DetailsComponent } from './features/details/details.component';
-import { WishlistComponent } from './features/wishlist/wishlist.component';
-import { ProfileComponent } from './features/profile/profile.component';
-import { TermsOfServiceComponent } from './features/terms-of-service/terms-of-service.component';
-import { HelpCenterComponent } from './features/help-center/help-center.component';
-import { ContactComponent } from './features/contact/contact.component';
-import { PrivacyComponent } from './features/privacy/privacy.component';
-import { DashboardComponent } from './features/admin/dashboard/dashboard.component';
+
+import { GustLayoutComponent } from './core/layouts/gust-layout/gust-layout.component';
+import { UserLayoutComponent } from './core/layouts/user-layout/user-layout.component';
+
+import {
+  adminGuard,
+  touristGuard,
+} from './core/guards/auth.guards';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -23,20 +19,93 @@ export const routes: Routes = [
     path: '',
     component: UserLayoutComponent,
     children: [
-      { path: 'home', children: Home_ROUTES },
-      { path: 'activities', component: ActivitiesComponent },
-      { path: 'activities/:id', component: DetailsComponent },
-      { path: 'schedule', component: ScheduleComponent },
-      { path: 'map', component: MapComponent },
-      { path: 'wishlist', component: WishlistComponent },
-      { path: 'profile', component: ProfileComponent },
-      { path: 'terms', component: TermsOfServiceComponent },
-      { path: 'help', component: HelpCenterComponent },
-      { path: 'contact', component: ContactComponent },
-      { path: 'privacy', component: PrivacyComponent },
+      {
+        path: 'home',
+        children: Home_ROUTES,
+      },
+      {
+        path: 'activities',
+        canActivate: [touristGuard],
+        loadComponent: () =>
+          import('./features/activities/activities.component').then(
+            (m) => m.ActivitiesComponent
+          ),
+      },
+      {
+        path: 'activities/:id',
+        canActivate: [touristGuard],
+        loadComponent: () =>
+          import('./features/details/details.component').then(
+            (m) => m.DetailsComponent
+          ),
+      },
+      {
+        path: 'schedule',
+        canActivate: [touristGuard],
+        loadComponent: () =>
+          import('./features/schedule/schedule.component').then(
+            (m) => m.ScheduleComponent
+          ),
+      },
+      {
+        path: 'map',
+        canActivate: [touristGuard],
+        loadComponent: () =>
+          import('./features/map/map.component').then(
+            (m) => m.MapComponent
+          ),
+      },
+      {
+        path: 'wishlist',
+        canActivate: [touristGuard],
+        loadComponent: () =>
+          import('./features/wishlist/wishlist.component').then(
+            (m) => m.WishlistComponent
+          ),
+      },
+      {
+        path: 'profile',
+        canActivate: [touristGuard],
+        loadComponent: () =>
+          import('./features/profile/profile.component').then(
+            (m) => m.ProfileComponent
+          ),
+      },
+      {
+        path: 'terms',
+        loadComponent: () =>
+          import('./features/terms-of-service/terms-of-service.component').then(
+            (m) => m.TermsOfServiceComponent
+          ),
+      },
+      {
+        path: 'help',
+        loadComponent: () =>
+          import('./features/help-center/help-center.component').then(
+            (m) => m.HelpCenterComponent
+          ),
+      },
+      {
+        path: 'contact',
+        loadComponent: () =>
+          import('./features/contact/contact.component').then(
+            (m) => m.ContactComponent
+          ),
+      },
+      {
+        path: 'privacy',
+        loadComponent: () =>
+          import('./features/privacy/privacy.component').then(
+            (m) => m.PrivacyComponent
+          ),
+      },
       {
         path: 'dashboard',
-        component: DashboardComponent,
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/admin/dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent
+          ),
         children: DASHBOARD_ROUTES,
       },
     ],
