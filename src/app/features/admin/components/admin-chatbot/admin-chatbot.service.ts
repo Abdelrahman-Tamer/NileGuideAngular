@@ -19,7 +19,7 @@ export interface AiFilesListResponse {
 export class AdminChatbotService {
   private readonly http = inject(HttpClient);
 
-  private readonly baseUrl = 'https://32.195.230.191:5000/api/v1/data';
+  private readonly baseUrl = 'https://ai.nileguide.online/api/v1/data';
 
   getFiles(): Observable<AiFilesListResponse> {
     return this.http.get<AiFilesListResponse>(`${this.baseUrl}/files`);
