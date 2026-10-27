@@ -73,7 +73,7 @@ export interface AiConversationsListResponse {
 export class ChatbotService {
   private readonly http = inject(HttpClient);
 
-  private readonly aiBaseUrl = 'https://ai.nileguide.online/api/v1/nlp';
+  private readonly aiBaseUrl = 'https://mini-rag-alpha.vercel.app/api/v1/nlp';
   private readonly backendChatUrl = `${STORED_KEYS.baseUrl}/chat/conversations`;
 
   createAiConversation(): Observable<CreateAiConversationResponse> {
