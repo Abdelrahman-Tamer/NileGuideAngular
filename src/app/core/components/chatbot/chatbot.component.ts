@@ -1,9 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectorRef, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { forkJoin, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 
+import { STORED_KEYS } from '../../constants/Stored_keys';
+import { ScheduleService } from '../../../features/schedule/schedule.service';
 import {
   AiConversationMetadata,
   ChatbotService,
@@ -11,9 +15,20 @@ import {
   SavedConversationItem,
 } from './chatbot.service';
 
+export interface ActivityItem {
+  id: number;
+  title: string;
+  city?: string;
+  category?: string;
+  price?: string;
+  imageUrl?: string;
+  link?: string;
+}
+
 interface ChatMessage {
   sender: 'bot' | 'user';
   text: string;
+  activities?: ActivityItem[];
 }
 
 interface ConversationItem {
@@ -26,12 +41,20 @@ interface ConversationItem {
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './chatbot.component.html',
 })
 export class ChatbotComponent implements OnInit {
   private readonly chatbotService = inject(ChatbotService);
+  private readonly scheduleService = inject(ScheduleService);
+  private readonly toastr = inject(ToastrService);
   private readonly cdr = inject(ChangeDetectorRef);
+
+  // Schedule modal state
+  selectedActivityForPlan: ActivityItem | null = null;
+  planDate = '';
+  planTime = '10:00';
+  isAddingToSchedule = false;
 
   isOpen = false;
   isSending = false;
@@ -213,10 +236,32 @@ export class ChatbotComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
+          const activities: ActivityItem[] = [];
+          const seenIds = new Set<number>();
+
+          if (response.sources && Array.isArray(response.sources)) {
+            for (const src of response.sources) {
+              const id = Number(src.activity_id);
+              if (id && !seenIds.has(id)) {
+                seenIds.add(id);
+                activities.push({
+                  id,
+                  title: src.title || `نشاط ${id}`,
+                  city: src.city || undefined,
+                  category: src.category || undefined,
+                  price: src.price || undefined,
+                  imageUrl: src.image_url || '/Photo/Aswan.png',
+                  link: src.link || `/activities/${id}`,
+                });
+              }
+            }
+          }
+
           if (response.answer?.trim()) {
             this.messages.push({
               sender: 'bot',
               text: response.answer.trim(),
+              activities: activities.slice(0, 3),
             });
           }
 
@@ -230,6 +275,72 @@ export class ChatbotComponent implements OnInit {
           this.cdr.detectChanges();
         },
       });
+  }
+
+
+  openScheduleModal(act: ActivityItem): void {
+    this.selectedActivityForPlan = act;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    this.planDate = tomorrow.toISOString().split('T')[0];
+    this.planTime = '10:00';
+    this.cdr.detectChanges();
+  }
+
+  closeScheduleModal(): void {
+    this.selectedActivityForPlan = null;
+    this.cdr.detectChanges();
+  }
+
+  confirmAddToSchedule(): void {
+    const token = localStorage.getItem(STORED_KEYS.USER_TOKEN);
+    if (!token) {
+      this.toastr.warning('يرجى تسجيل الدخول أولاً لإضافة الأنشطة إلى جدولك');
+      return;
+    }
+
+    if (!this.selectedActivityForPlan || !this.planDate || !this.planTime) {
+      this.toastr.error('يرجى تحديد التاريخ والوقت');
+      return;
+    }
+
+    this.isAddingToSchedule = true;
+    this.cdr.detectChanges();
+
+    const activity = this.selectedActivityForPlan;
+    const scheduledDate = this.planDate;
+    const startTime = `${this.planTime}:00`;
+
+    this.scheduleService
+      .addToSchedule({
+        activityId: activity.id,
+        scheduledDate,
+        startTime,
+      })
+      .subscribe({
+        next: () => {
+          this.isAddingToSchedule = false;
+          this.toastr.success(`تمت إضافة "${activity.title}" إلى جدول رحلتك بنجاح!`);
+          this.closeScheduleModal();
+          this.messages.push({
+            sender: 'bot',
+            text: `✅ تمت إضافة "${activity.title}" إلى جدولك في تاريخ ${scheduledDate} الساعة ${this.planTime}!
+يمكنك تصفح وتعديل جدولك من صفحة الجدول.`,
+          });
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.isAddingToSchedule = false;
+          const msg = err.error?.message || 'تعذر إضافة النشاط إلى الجدول';
+          this.toastr.error(msg);
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  askBotToPlan(act: ActivityItem): void {
+    this.messageText = `اعملي جدول لرحلة يتضمن نشاط "${act.title}"`;
+    this.sendMessage();
   }
 
   private loadSavedConversations(): void {

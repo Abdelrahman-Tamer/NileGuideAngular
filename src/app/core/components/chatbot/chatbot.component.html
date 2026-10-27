@@ -195,12 +195,12 @@
             <div class="space-y-4">
               @for (message of messages; track $index) {
                 <div
-                  class="flex"
-                  [class.justify-end]="message.sender === 'user'"
-                  [class.justify-start]="message.sender === 'bot'"
+                  class="flex flex-col"
+                  [class.items-end]="message.sender === 'user'"
+                  [class.items-start]="message.sender === 'bot'"
                 >
                   <div
-                    class="max-w-[82%] whitespace-pre-line rounded-xl border px-4 py-3 text-sm leading-6"
+                    class="max-w-[88%] whitespace-pre-line rounded-xl border px-4 py-3 text-sm leading-6"
                     [class.border-white/10]="message.sender === 'bot'"
                     [class.bg-[#27241b]]="message.sender === 'bot'"
                     [class.text-white/90]="message.sender === 'bot'"
@@ -210,6 +210,58 @@
                   >
                     {{ message.text }}
                   </div>
+
+                  @if (message.sender === 'bot' && message.activities && message.activities.length > 0) {
+                    <div class="mt-2.5 flex w-full max-w-[88%] flex-col gap-2">
+                      @for (act of message.activities; track act.id) {
+                        <div
+                          class="flex items-center gap-3 rounded-xl border border-white/10 bg-[#1f1d16] p-2.5 transition hover:border-yellow-500/40 hover:bg-[#252219]"
+                        >
+                          <img
+                            [src]="act.imageUrl"
+                            [alt]="act.title"
+                            class="h-16 w-16 shrink-0 rounded-lg object-cover border border-white/10 bg-black/40"
+                            (error)="$any($event.target).src = '/Photo/Aswan.png'"
+                          />
+
+                          <div class="min-w-0 flex-1">
+                            <h5 class="truncate text-xs font-bold text-white" [title]="act.title">
+                              {{ act.title }}
+                            </h5>
+
+                            <div class="mt-1 flex items-center gap-2 text-[11px] text-white/60">
+                              @if (act.city) {
+                                <span><i class="fa-solid fa-location-dot text-yellow-400 mr-1"></i>{{ act.city }}</span>
+                              }
+                              @if (act.price) {
+                                <span class="font-semibold text-yellow-400">{{ act.price }}</span>
+                              }
+                            </div>
+
+                            <div class="mt-2 flex items-center gap-2">
+                              <a
+                                [routerLink]="['/activities', act.id]"
+                                (click)="closeChat()"
+                                class="inline-flex items-center gap-1 rounded-md bg-white/10 px-2 py-1 text-[11px] font-medium text-white transition hover:bg-white/20"
+                              >
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                التفاصيل
+                              </a>
+
+                              <button
+                                type="button"
+                                (click)="openScheduleModal(act)"
+                                class="inline-flex items-center gap-1 rounded-md bg-yellow-500/20 px-2 py-1 text-[11px] font-semibold text-yellow-400 transition hover:bg-yellow-500 hover:text-black cursor-pointer"
+                              >
+                                <i class="fa-solid fa-calendar-plus text-[10px]"></i>
+                                إضافة للجدول
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
                 </div>
               }
 
@@ -257,6 +309,73 @@
           </form>
         </div>
       </section>
+      <!-- Quick Schedule Modal Overlay inside chat -->
+      @if (selectedActivityForPlan) {
+        <div class="absolute inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
+          <div class="w-full max-w-sm rounded-2xl border border-yellow-500/40 bg-[#1b1915] p-5 shadow-2xl">
+            <div class="flex items-start justify-between border-b border-white/10 pb-3">
+              <div class="min-w-0 pr-2">
+                <h4 class="text-sm font-bold text-white">إضافة إلى جدول رحلتك</h4>
+                <p class="truncate text-xs text-yellow-400" [title]="selectedActivityForPlan.title">
+                  {{ selectedActivityForPlan.title }}
+                </p>
+              </div>
+              <button
+                type="button"
+                (click)="closeScheduleModal()"
+                class="shrink-0 text-white/60 hover:text-white cursor-pointer"
+                aria-label="إغلاق"
+              >
+                <i class="fa-solid fa-xmark text-lg"></i>
+              </button>
+            </div>
+
+            <div class="mt-4 space-y-3">
+              <div>
+                <label class="block text-xs font-medium text-white/70 mb-1">تاريخ الرحلة</label>
+                <input
+                  type="date"
+                  [(ngModel)]="planDate"
+                  class="w-full rounded-xl border border-white/15 bg-[#12110e] px-3 py-2 text-xs text-white outline-none focus:border-yellow-400"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-white/70 mb-1">وقت البدء</label>
+                <input
+                  type="time"
+                  [(ngModel)]="planTime"
+                  class="w-full rounded-xl border border-white/15 bg-[#12110e] px-3 py-2 text-xs text-white outline-none focus:border-yellow-400"
+                />
+              </div>
+            </div>
+
+            <div class="mt-5 flex gap-2">
+              <button
+                type="button"
+                (click)="closeScheduleModal()"
+                class="flex-1 rounded-xl border border-white/15 py-2 text-xs font-medium text-white/70 hover:bg-white/5 cursor-pointer"
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                [disabled]="isAddingToSchedule || !planDate || !planTime"
+                (click)="confirmAddToSchedule()"
+                class="flex-1 rounded-xl bg-yellow-500 py-2 text-xs font-bold text-black hover:bg-yellow-400 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                @if (isAddingToSchedule) {
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                  جاري الإضافة...
+                } @else {
+                  <i class="fa-solid fa-check"></i>
+                  تأكيد الإضافة
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   }
 </div>
