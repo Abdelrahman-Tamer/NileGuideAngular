@@ -38,6 +38,7 @@ export interface ChatResponse {
 export interface RetrievedHistoryItem {
   role: 'user' | 'assistant';
   content: string;
+  sources?: ChatSource[];
 }
 
 export interface RetrievedConversationResponse {
@@ -80,7 +81,7 @@ export interface AiConversationsListResponse {
 export class ChatbotService {
   private readonly http = inject(HttpClient);
 
-  private readonly aiBaseUrl = 'https://mini-rag-alpha.vercel.app/api/v1/nlp';
+  private readonly aiBaseUrl = STORED_KEYS.AI_BASE_URL;
   private readonly backendChatUrl = `${STORED_KEYS.baseUrl}/chat/conversations`;
 
   createAiConversation(): Observable<CreateAiConversationResponse> {

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectorRef, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
@@ -49,12 +49,23 @@ export class ChatbotComponent implements OnInit {
   private readonly scheduleService = inject(ScheduleService);
   private readonly toastr = inject(ToastrService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly router = inject(Router);
 
   // Schedule modal state
   selectedActivityForPlan: ActivityItem | null = null;
   planDate = '';
   planTime = '10:00';
   isAddingToSchedule = false;
+
+  readonly fallbackImage = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100%" height="100%" fill="%231b1915"/><path d="M50 20 L80 80 L20 80 Z" fill="none" stroke="%23eab308" stroke-width="4"/><circle cx="50" cy="55" r="10" fill="%23eab308"/></svg>';
+
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.onerror = null;
+      target.src = this.fallbackImage;
+    }
+  }
 
   isOpen = false;
   isSending = false;
@@ -296,6 +307,21 @@ export class ChatbotComponent implements OnInit {
     const token = localStorage.getItem(STORED_KEYS.USER_TOKEN);
     if (!token) {
       this.toastr.warning('يرجى تسجيل الدخول أولاً لإضافة الأنشطة إلى جدولك');
+      try {
+        sessionStorage.setItem(
+          'pending_schedule_activity',
+          JSON.stringify({
+            activity: this.selectedActivityForPlan,
+            planDate: this.planDate,
+            planTime: this.planTime,
+          })
+        );
+      } catch {}
+      this.closeScheduleModal();
+      this.closeChat();
+      this.router.navigate(['/auth/login'], {
+        queryParams: { returnUrl: '/activities' },
+      });
       return;
     }
 
@@ -508,9 +534,30 @@ export class ChatbotComponent implements OnInit {
           };
         }
 
+        const activities: ActivityItem[] = [];
+        const seenIds = new Set<number>();
+        if (item.sources && Array.isArray(item.sources)) {
+          for (const src of item.sources) {
+            const id = Number(src.activity_id);
+            if (id && !seenIds.has(id)) {
+              seenIds.add(id);
+              activities.push({
+                id,
+                title: src.title || `نشاط ${id}`,
+                city: src.city || undefined,
+                category: src.category || undefined,
+                price: src.price || undefined,
+                imageUrl: src.image_url || this.fallbackImage,
+                link: src.link || `/activities/${id}`,
+              });
+            }
+          }
+        }
+
         return {
           sender: 'bot' as const,
           text: item.content,
+          activities: activities.length > 0 ? activities.slice(0, 3) : undefined,
         };
       })
       .filter((message) => !!message.text?.trim());

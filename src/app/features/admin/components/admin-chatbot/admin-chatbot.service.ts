@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { STORED_KEYS } from '../../../../core/constants/Stored_keys';
 
 export interface AiFileAsset {
   file_id: string;
@@ -19,7 +20,7 @@ export interface AiFilesListResponse {
 export class AdminChatbotService {
   private readonly http = inject(HttpClient);
 
-  private readonly baseUrl = 'https://ai.nileguide.online/api/v1/data';
+  private readonly baseUrl = STORED_KEYS.AI_DATA_URL;
 
   getFiles(): Observable<AiFilesListResponse> {
     return this.http.get<AiFilesListResponse>(`${this.baseUrl}/files`);
