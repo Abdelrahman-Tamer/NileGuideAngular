@@ -20,7 +20,9 @@ export interface AiFilesListResponse {
 export class AdminChatbotService {
   private readonly http = inject(HttpClient);
 
-  private readonly baseUrl = STORED_KEYS.AI_DATA_URL;
+  // Securely routes all administrative AI knowledge operations through NileGuideApi backend proxy.
+  // The browser never receives, embeds, or transmits the internal RAG service secret.
+  private readonly baseUrl = STORED_KEYS.AI_ADMIN_URL;
 
   getFiles(): Observable<AiFilesListResponse> {
     return this.http.get<AiFilesListResponse>(`${this.baseUrl}/files`);
@@ -37,10 +39,10 @@ export class AdminChatbotService {
       formData.append('files', file, file.name);
     });
 
-    formData.append('chunk_size', String(chunkSize));
-    formData.append('overlap_size', String(overlapSize));
+    formData.append('chunkSize', String(chunkSize));
+    formData.append('overlapSize', String(overlapSize));
 
-    return this.http.post(`${this.baseUrl}/multi-upload`, formData);
+    return this.http.post(`${this.baseUrl}/files/multi-upload`, formData);
   }
 
   updateFile(
@@ -52,16 +54,16 @@ export class AdminChatbotService {
     const formData = new FormData();
 
     formData.append('file', file, file.name);
-    formData.append('chunk_size', String(chunkSize));
-    formData.append('overlap_size', String(overlapSize));
+    formData.append('chunkSize', String(chunkSize));
+    formData.append('overlapSize', String(overlapSize));
 
     return this.http.put(
-      `${this.baseUrl}/file/${encodeURIComponent(fileId)}`,
+      `${this.baseUrl}/files/${encodeURIComponent(fileId)}`,
       formData,
     );
   }
 
   deleteFile(fileId: string): Observable<unknown> {
-    return this.http.delete(`${this.baseUrl}/file/${encodeURIComponent(fileId)}`);
+    return this.http.delete(`${this.baseUrl}/files/${encodeURIComponent(fileId)}`);
   }
 }

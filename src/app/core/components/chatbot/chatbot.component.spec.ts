@@ -44,4 +44,36 @@ describe('ChatbotComponent', () => {
     component.onImageError(mockEvent);
     expect(mockImg.src).toContain('data:image/svg+xml');
   });
+
+  it('should render recommended activity cards with Arabic buttons "التفاصيل" and "إضافة للجدول"', () => {
+    vi.spyOn(component as any, 'loadSavedConversations').mockImplementation(() => {});
+    component.toggleChat();
+    component.messages = [
+      {
+        sender: 'bot',
+        text: 'إليك بعض الأنشطة المقترحة:',
+        activities: [
+          {
+            id: 42,
+            title: 'جولة الأهرامات',
+            city: 'الجيزة',
+            price: '$50',
+            imageUrl: 'https://example.com/pyramids.jpg',
+          },
+        ],
+      },
+    ];
+    (component as any).cdr.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    const allLinks = Array.from(element.querySelectorAll('a'));
+    const linkWithDetails = allLinks.find((el) => el.textContent?.includes('التفاصيل'));
+    expect(linkWithDetails).toBeTruthy();
+    expect(linkWithDetails?.textContent?.trim()).toContain('التفاصيل');
+
+    const allButtons = Array.from(element.querySelectorAll('button'));
+    const buttonWithSchedule = allButtons.find((el) => el.textContent?.includes('إضافة للجدول'));
+    expect(buttonWithSchedule).toBeTruthy();
+    expect(buttonWithSchedule?.textContent?.trim()).toContain('إضافة للجدول');
+  });
 });

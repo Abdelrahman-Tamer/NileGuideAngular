@@ -69,6 +69,10 @@ export class ActivitiesService {
     return this.http.get<ActivityDetails>(`${this.baseUrl}/${activityId}`);
   }
 
+  getActivitiesBatch(activityIds: number[]) {
+    return this.http.post<any[]>(`${this.baseUrl}/batch`, activityIds);
+  }
+
   getActivityReviews(activityId: number) {
     return this.http.get<ActivityReview[]>(`${this.baseUrl}/${activityId}/reviews`);
   }
