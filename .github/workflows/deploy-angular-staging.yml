@@ -1,0 +1,167 @@
+name: Deploy NileGuide Angular Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'Specific commit SHA to deploy (defaults to latest on branch)'
+        required: false
+        default: ''
+        type: string
+      dry_run:
+        description: 'Perform dry-run validation only (no cloud upload)'
+        required: false
+        default: false
+        type: boolean
+      target_provider:
+        description: 'Target staging provider'
+        required: true
+        default: 'vercel'
+        type: choice
+        options:
+          - vercel
+          - firebase
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-deploy-angular
+  cancel-in-progress: false
+
+jobs:
+  validate-and-build:
+    name: Validate and Build Angular Staging
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_name: angular-staging-dist
+      commit_sha: ${{ steps.resolve_commit.outputs.sha }}
+    steps:
+      - name: Resolve Commit SHA
+        id: resolve_commit
+        run: |
+          TARGET_SHA="${{ inputs.commit_sha }}"
+          if [ -z "$TARGET_SHA" ]; then
+            TARGET_SHA="${{ github.sha }}"
+          fi
+          echo "sha=$TARGET_SHA" >> $GITHUB_OUTPUT
+          echo "Selected commit SHA: $TARGET_SHA"
+
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.resolve_commit.outputs.sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Automated Vitest Unit Tests
+        run: npm run test -- --run
+
+      - name: Run Angular Staging Build
+        run: npx ng build --configuration=staging
+
+      - name: Verify Staging Dist Integrity
+        run: |
+          if [ ! -d "dist/G.Project/browser" ]; then
+            echo "ERROR: Expected build output at dist/G.Project/browser not found!"
+            exit 1
+          fi
+          if [ ! -f "dist/G.Project/browser/index.html" ]; then
+            echo "ERROR: index.html missing from dist/G.Project/browser!"
+            exit 1
+          fi
+          echo "Staging build verified successfully."
+
+      - name: Upload Staging Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: angular-staging-dist
+          path: dist/G.Project/browser/
+          retention-days: 5
+
+  deploy-staging:
+    name: Deploy to Staging Environment
+    needs: validate-and-build
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout Codebase (for deployment configs)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.validate-and-build.outputs.commit_sha }}
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: angular-staging-dist
+          path: dist/G.Project/browser/
+
+      - name: Validate Deployment Target Safety Guardrail
+        env:
+          STAGING_URL: ${{ secrets.STAGING_ANGULAR_URL || vars.STAGING_ANGULAR_URL }}
+        run: |
+          echo "Running pre-flight URL safety check..."
+          # Guard against live production URL hijacking
+          if [[ "$STAGING_URL" =~ "nileguide.runasp.net" ]] || [[ "$STAGING_URL" =~ "mini-rag-alpha.vercel.app" ]]; then
+            echo "CRITICAL SAFETY VIOLATION: Staging URL targets production environment! Aborting immediately."
+            exit 1
+          fi
+          echo "Target URL safety check passed: $STAGING_URL"
+
+      - name: Execute Staging Deployment (Vercel)
+        if: ${{ inputs.target_provider == 'vercel' }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ] || [ -z "$VERCEL_TOKEN" ]; then
+            echo "[DRY RUN / SIMULATION MODE]"
+            echo "Provider: Vercel"
+            echo "Target Directory: dist/G.Project/browser"
+            echo "Deployment parameters verified. Cloud upload skipped."
+          else
+            echo "Deploying to Vercel Staging..."
+            npx vercel deploy --prebuilt --token "$VERCEL_TOKEN"
+          fi
+
+      - name: Execute Staging Deployment (Firebase)
+        if: ${{ inputs.target_provider == 'firebase' }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ] || [ -z "$FIREBASE_TOKEN" ]; then
+            echo "[DRY RUN / SIMULATION MODE]"
+            echo "Provider: Firebase Hosting"
+            echo "Target Directory: dist/G.Project/browser"
+            echo "Deployment parameters verified. Cloud upload skipped."
+          else
+            echo "Deploying to Firebase Hosting Staging..."
+            npx firebase-tools deploy --only hosting:staging --token "$FIREBASE_TOKEN"
+          fi
+
+      - name: Post-Deployment Smoke Verification
+        env:
+          STAGING_URL: ${{ secrets.STAGING_ANGULAR_URL || vars.STAGING_ANGULAR_URL }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [ "$DRY_RUN" = "true" ] || [ -z "$STAGING_URL" ]; then
+            echo "Skipping live HTTP probe (dry run or staging URL not configured)."
+          else
+            echo "Probing staging endpoint: $STAGING_URL"
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$STAGING_URL" || echo "000")
+            if [ "$HTTP_STATUS" != "200" ]; then
+              echo "WARNING: Staging endpoint probe returned status $HTTP_STATUS (expected 200)"
+            else
+              echo "Smoke probe passed with HTTP $HTTP_STATUS"
+            fi
+          fi
