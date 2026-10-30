@@ -268,10 +268,11 @@ export class ChatbotComponent implements OnInit {
             }
           }
 
-          if (response.answer?.trim()) {
+          const botText = (response.answer || (response as any).message || response.response || '').trim();
+          if (botText) {
             this.messages.push({
               sender: 'bot',
-              text: response.answer.trim(),
+              text: botText,
               activities: activities.slice(0, 3),
             });
           }
