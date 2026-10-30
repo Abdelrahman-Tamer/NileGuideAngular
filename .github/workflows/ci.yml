@@ -46,8 +46,8 @@ jobs:
             echo "ERROR: Expected build output at dist/G.Project/browser not found!"
             exit 1
           fi
-          if [ ! -f "dist/G.Project/browser/index.html" ]; then
-            echo "ERROR: index.html missing from dist/G.Project/browser!"
+          if [ ! -f "dist/G.Project/browser/index.csr.html" ] && [ ! -f "dist/G.Project/browser/index.html" ]; then
+            echo "ERROR: Client entry HTML (index.csr.html / index.html) missing from dist/G.Project/browser!"
             exit 1
           fi
           echo "Production build verified successfully."
