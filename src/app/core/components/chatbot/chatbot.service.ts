@@ -32,6 +32,7 @@ export interface ChatResponse {
   signal: string;
   message: string;
   answer: string;
+  response?: string;
   sources?: ChatSource[];
 }
 

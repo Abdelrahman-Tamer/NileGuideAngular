@@ -1,0 +1,53 @@
+name: CI - NileGuide Angular
+
+on:
+  push:
+    branches:
+      - main
+      - 'fix/*'
+      - 'feature/*'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-angular-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    name: Test and Build Angular
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Automated Unit Tests (Vitest)
+        run: npx ng test --watch=false
+
+      - name: Run Production Build
+        run: npx ng build
+
+      - name: Verify Build Output
+        run: |
+          if [ ! -d "dist/G.Project/browser" ]; then
+            echo "ERROR: Expected build output at dist/G.Project/browser not found!"
+            exit 1
+          fi
+          if [ ! -f "dist/G.Project/browser/index.html" ]; then
+            echo "ERROR: index.html missing from dist/G.Project/browser!"
+            exit 1
+          fi
+          echo "Production build verified successfully."
