@@ -32,7 +32,17 @@ describe('AdminChatbotService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should fetch files list from verified AI data URL', () => {
+  it('should dynamically adapt AI_ADMIN_URL when STORED_KEYS.baseUrl changes', () => {
+    const originalBaseUrl = STORED_KEYS.baseUrl;
+    try {
+      STORED_KEYS.baseUrl = 'https://staging-api.nileguide.online/api';
+      expect(STORED_KEYS.AI_ADMIN_URL).toBe('https://staging-api.nileguide.online/api/admin/ai');
+    } finally {
+      STORED_KEYS.baseUrl = originalBaseUrl;
+    }
+  });
+
+  it('should route getFiles through secure backend admin proxy and never transmit X-Admin-Api-Key', () => {
     const mockResponse: AiFilesListResponse = {
       assets: [
         {
@@ -49,12 +59,14 @@ describe('AdminChatbotService', () => {
       expect(res.assets[0].asset_name).toBe('cairo_guide.txt');
     });
 
-    const req = httpTesting.expectOne(`${STORED_KEYS.AI_DATA_URL}/files`);
+    const req = httpTesting.expectOne(`${STORED_KEYS.AI_ADMIN_URL}/files`);
     expect(req.request.method).toBe('GET');
+    // Security check: Client browser must NEVER send internal X-Admin-Api-Key
+    expect(req.request.headers.has('X-Admin-Api-Key')).toBe(false);
     req.flush(mockResponse);
   });
 
-  it('should upload files using multipart/form-data to /multi-upload', () => {
+  it('should route uploadFiles through backend admin proxy with multipart/form-data', () => {
     const fakeFile = new File(['mock content'], 'test_activities.txt', {
       type: 'text/plain',
     });
@@ -63,21 +75,23 @@ describe('AdminChatbotService', () => {
       expect(res).toBeTruthy();
     });
 
-    const req = httpTesting.expectOne(`${STORED_KEYS.AI_DATA_URL}/multi-upload`);
+    const req = httpTesting.expectOne(`${STORED_KEYS.AI_ADMIN_URL}/files/multi-upload`);
     expect(req.request.method).toBe('POST');
     expect(req.request.body instanceof FormData).toBe(true);
+    expect(req.request.headers.has('X-Admin-Api-Key')).toBe(false);
     req.flush({ signal: 'multi_upload_success', succeeded: 1 });
   });
 
-  it('should delete a file by file_id', () => {
+  it('should route deleteFile through backend admin proxy without secret leakage', () => {
     service.deleteFile('file_123').subscribe((res) => {
       expect(res).toBeTruthy();
     });
 
     const req = httpTesting.expectOne(
-      `${STORED_KEYS.AI_DATA_URL}/file/file_123`
+      `${STORED_KEYS.AI_ADMIN_URL}/files/file_123`
     );
     expect(req.request.method).toBe('DELETE');
+    expect(req.request.headers.has('X-Admin-Api-Key')).toBe(false);
     req.flush({ signal: 'file_delete_success' });
   });
 });

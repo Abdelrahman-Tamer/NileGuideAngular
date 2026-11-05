@@ -14,13 +14,38 @@
           Manage activities, bookings, and content with ease
         </p>
       </div>
+      <!-- Card 4: AI & Knowledge Management -->
+      <div
+        routerLink="ai-management"
+        routerLinkActive
+        [routerLinkActiveOptions]="{ exact: true }"
+        #rlaAi="routerLinkActive"
+        class="group flex cursor-pointer items-center gap-4 rounded-2xl border bg-[#1b1712] p-6 transition duration-300"
+        [class.border-[#e0b100]]="rlaAi.isActive"
+        [class.shadow-[0_0_30px_#e0b10033]]="rlaAi.isActive"
+        [class.bg-[#231d14]]="rlaAi.isActive"
+        [class.border-[#3a3122]]="!rlaAi.isActive"
+        [class.hover:border-[#e0b100]]="!rlaAi.isActive"
+        [class.hover:shadow-[0_0_30px_#e0b10033]]="!rlaAi.isActive"
+      >
+        <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-[#8b5cf626] text-[#a78bfa]">
+          <i class="fa-solid fa-robot text-xl"></i>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-bold sm:text-xl">AI Knowledge</h3>
+          <p class="mt-1 text-sm text-[#b8aa8d] sm:text-base">
+            Upload & Sync RAG Files
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Stats Cards -->
   <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-12">
     @if (isLoading()) {
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
         @for (item of [1, 2, 3, 4, 5]; track item) {
           <div
             class="h-[176px] rounded-2xl border border-[#3a3122] bg-[#1b1712] p-5 sm:p-6 animate-pulse"

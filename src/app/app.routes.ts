@@ -25,7 +25,6 @@ export const routes: Routes = [
       },
       {
         path: 'activities',
-        canActivate: [touristGuard],
         loadComponent: () =>
           import('./features/activities/activities.component').then(
             (m) => m.ActivitiesComponent
@@ -33,7 +32,6 @@ export const routes: Routes = [
       },
       {
         path: 'activities/:id',
-        canActivate: [touristGuard],
         loadComponent: () =>
           import('./features/details/details.component').then(
             (m) => m.DetailsComponent

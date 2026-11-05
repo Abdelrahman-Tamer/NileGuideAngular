@@ -89,25 +89,23 @@ export class ScheduleComponent implements OnInit {
       return;
     }
 
-    const requests = items.map((item) =>
-      this.activitiesService.getActivityById(item.activityId).pipe(
-        map((details: ActivityDetails) => ({
-          ...item,
-          openTime: details.openingHours?.[0]?.openTime ?? '--',
-          closeTime: details.openingHours?.[0]?.closeTime ?? '--',
-        })),
-        catchError(() =>
-          of({
-            ...item,
-            openTime: '--',
-            closeTime: '--',
-          })
-        )
-      )
-    );
+    const ids = Array.from(new Set(items.map((i) => i.activityId)));
+    this.activitiesService.getActivitiesBatch(ids).subscribe({
+      next: (batchResults) => {
+        const detailsMap = new Map<number, any>();
+        if (Array.isArray(batchResults)) {
+          batchResults.forEach((act) => detailsMap.set(act.activityId ?? act.activityID, act));
+        }
 
-    forkJoin(requests).subscribe({
-      next: (enrichedItems) => {
+        const enrichedItems = items.map((item) => {
+          const details = detailsMap.get(item.activityId);
+          return {
+            ...item,
+            openTime: details?.openingHours?.[0]?.openTime ?? (details?.activityHours?.[0]?.openHour ? `${details?.activityHours?.[0]?.openHour}:00 ${details?.activityHours?.[0]?.openAmPm}` : '--'),
+            closeTime: details?.openingHours?.[0]?.closeTime ?? (details?.activityHours?.[0]?.closeHour ? `${details?.activityHours?.[0]?.closeHour}:00 ${details?.activityHours?.[0]?.closeAmPm}` : '--'),
+          };
+        });
+
         this.scheduleItems = enrichedItems.sort((a, b) => {
           const dateCompare = a.scheduledDate.localeCompare(b.scheduledDate);
           if (dateCompare !== 0) return dateCompare;

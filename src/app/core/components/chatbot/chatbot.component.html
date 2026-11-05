@@ -12,7 +12,7 @@
 
   @if (isOpen) {
     <div
-      class="relative flex h-140 w-107.5 max-w-[calc(100vw-40px)] overflow-hidden rounded-2xl border border-white/10 bg-[#1b1915] text-white shadow-2xl"
+      class="relative flex h-[min(35rem,calc(100dvh-5rem))] w-107.5 max-w-[calc(100vw-32px)] overflow-hidden rounded-2xl border border-white/10 bg-[#1b1915] text-white shadow-2xl"
     >
       <!-- Dark clickable layer on the rest of chat -->
       <button
@@ -105,7 +105,7 @@
               <span
                 (click)="deleteConversation($event, conversation.conversationId)"
                 class="shrink-0 text-white/45 transition hover:text-red-400 group-hover:text-white/70"
-                title="Delete conversation"
+                title="Delete conversation" role="button" tabindex="0" aria-label="Delete conversation"
               >
                 <i class="fa-regular fa-trash-can"></i>
               </span>
@@ -192,7 +192,7 @@
               </div>
             </div>
           } @else {
-            <div class="space-y-4">
+            <div class="space-y-4" role="log" aria-live="polite" aria-relevant="additions">
               @for (message of messages; track $index) {
                 <div
                   class="flex flex-col"
