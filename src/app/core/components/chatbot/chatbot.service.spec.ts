@@ -155,4 +155,51 @@ describe('ChatbotService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(mockRetrieved);
   });
+
+  it('should default AI_BASE_URL to Production without overrides', () => {
+    delete (window as any).__NILEGUIDE_CONFIG__;
+    sessionStorage.removeItem('nileguide_ai_base_url');
+    expect(STORED_KEYS.AI_BASE_URL).toBe('https://mini-rag-alpha.vercel.app/api/v1/nlp');
+  });
+
+  it('should dynamically route AI calls to Preview URL when sessionStorage override is set', () => {
+    const previewUrl = 'https://mini-rag-preview-dpl123.vercel.app/api/v1/nlp';
+    sessionStorage.setItem('nileguide_ai_base_url', previewUrl);
+
+    expect(STORED_KEYS.AI_BASE_URL).toBe(previewUrl);
+
+    service.createGuestSession().subscribe();
+    const req = httpTesting.expectOne(`${previewUrl}/guest/session`);
+    expect(req.request.url).toBe(`${previewUrl}/guest/session`);
+    req.flush({
+      guest_token: 'tok_prev',
+      guest_id: 'g_prev',
+      session_id: 's_prev',
+      daily_limit: 5,
+      remaining_questions: 5,
+      inactivity_ttl_seconds: 1800,
+    });
+  });
+
+  it('should prioritize window.__NILEGUIDE_CONFIG__ runtime injection for Preview deployments', () => {
+    const runtimeUrl = 'https://mini-rag-preview-runtime.vercel.app/api/v1/nlp';
+    (window as any).__NILEGUIDE_CONFIG__ = { aiBaseUrl: runtimeUrl };
+
+    expect(STORED_KEYS.AI_BASE_URL).toBe(runtimeUrl);
+
+    service.createGuestSession().subscribe();
+    const req = httpTesting.expectOne(`${runtimeUrl}/guest/session`);
+    expect(req.request.url).toBe(`${runtimeUrl}/guest/session`);
+    req.flush({
+      guest_token: 'tok_prev',
+      guest_id: 'g_prev',
+      session_id: 's_prev',
+      daily_limit: 5,
+      remaining_questions: 5,
+      inactivity_ttl_seconds: 1800,
+    });
+
+    delete (window as any).__NILEGUIDE_CONFIG__;
+  });
 });
+

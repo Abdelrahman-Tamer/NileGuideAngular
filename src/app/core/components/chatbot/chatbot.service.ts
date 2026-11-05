@@ -94,7 +94,7 @@ export interface AiConversationsListResponse {
 export class ChatbotService {
   private readonly http = inject(HttpClient);
 
-  private readonly aiBaseUrl = STORED_KEYS.AI_BASE_URL;
+  private get aiBaseUrl(): string { return STORED_KEYS.AI_BASE_URL; }
   private readonly backendChatUrl = `${STORED_KEYS.baseUrl}/chat/conversations`;
   private readonly guestSessionStorageKey = 'nileguide_guest_session';
 
