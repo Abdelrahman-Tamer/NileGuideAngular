@@ -7,13 +7,19 @@ import {
 } from '@angular/common/http/testing';
 
 import { STORED_KEYS } from '../../constants/Stored_keys';
-import { ChatbotService, ChatResponse, RetrievedConversationResponse } from './chatbot.service';
+import {
+  ChatbotService,
+  ChatResponse,
+  GuestSessionResponse,
+  RetrievedConversationResponse,
+} from './chatbot.service';
 
 describe('ChatbotService', () => {
   let service: ChatbotService;
   let httpTesting: HttpTestingController;
 
   beforeEach(() => {
+    sessionStorage.clear();
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
@@ -23,13 +29,14 @@ describe('ChatbotService', () => {
 
   afterEach(() => {
     httpTesting.verify();
+    sessionStorage.clear();
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should create an AI conversation', () => {
+  it('should create an AI conversation for authenticated users', () => {
     service.createAiConversation().subscribe((res) => {
       expect(res.conversation_id).toBe('conv_123');
     });
@@ -39,11 +46,56 @@ describe('ChatbotService', () => {
     req.flush({ conversation_id: 'conv_123' });
   });
 
-  it('should send message to AI chat endpoint', () => {
+  it('should create a guest session with token and quotas', () => {
+    const mockGuest: GuestSessionResponse = {
+      guest_token: 'g_123.s_456.1700000000.signature',
+      guest_id: 'g_123',
+      session_id: 's_456',
+      daily_limit: 5,
+      remaining_questions: 5,
+      inactivity_ttl_seconds: 1800,
+    };
+
+    service.createGuestSession().subscribe((res) => {
+      expect(res.guest_token).toBe(mockGuest.guest_token);
+      expect(res.remaining_questions).toBe(5);
+      expect(res.daily_limit).toBe(5);
+    });
+
+    const req = httpTesting.expectOne(`${STORED_KEYS.AI_BASE_URL}/guest/session`);
+    expect(req.request.method).toBe('POST');
+    req.flush(mockGuest);
+  });
+
+  it('should manage guest session storage in sessionStorage', () => {
+    expect(service.getStoredGuestSession()).toBeNull();
+
+    const mockSession: GuestSessionResponse = {
+      guest_token: 'tok_abc',
+      guest_id: 'gid_1',
+      session_id: 'sid_1',
+      daily_limit: 5,
+      remaining_questions: 3,
+      inactivity_ttl_seconds: 1800,
+    };
+
+    service.storeGuestSession(mockSession);
+    const retrieved = service.getStoredGuestSession();
+    expect(retrieved).not.toBeNull();
+    expect(retrieved?.guest_token).toBe('tok_abc');
+    expect(retrieved?.remaining_questions).toBe(3);
+
+    service.clearGuestSession();
+    expect(service.getStoredGuestSession()).toBeNull();
+  });
+
+  it('should send message to AI chat endpoint with guest token', () => {
     const mockChatResponse: ChatResponse = {
       signal: 'chat_success',
       message: 'Here are activities in Cairo',
       answer: 'Here are activities in Cairo',
+      guest_remaining_questions: 4,
+      guest_daily_limit: 5,
       sources: [
         {
           activity_id: 85,
@@ -56,10 +108,10 @@ describe('ChatbotService', () => {
       ],
     };
 
-    service.sendMessage('Cairo activities', 'conv_123').subscribe((res) => {
+    service.sendMessage('Cairo activities', undefined, 'tok_guest_xyz').subscribe((res) => {
       expect(res.answer).toBe('Here are activities in Cairo');
+      expect(res.guest_remaining_questions).toBe(4);
       expect(res.sources?.length).toBe(1);
-      expect(res.sources?.[0].activity_id).toBe(85);
     });
 
     const req = httpTesting.expectOne(`${STORED_KEYS.AI_BASE_URL}/chat`);
@@ -67,7 +119,7 @@ describe('ChatbotService', () => {
     expect(req.request.body).toEqual({
       text: 'Cairo activities',
       limit: 5,
-      conversation_id: 'conv_123',
+      guest_token: 'tok_guest_xyz',
     });
     req.flush(mockChatResponse);
   });

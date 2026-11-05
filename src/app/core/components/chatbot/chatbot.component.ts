@@ -8,6 +8,8 @@ import { catchError, finalize } from 'rxjs/operators';
 
 import { STORED_KEYS } from '../../constants/Stored_keys';
 import { ScheduleService } from '../../../features/schedule/schedule.service';
+import { AuthService } from '../../../features/auth/services/auth.service';
+import { SafeMarkdownPipe } from '../../pipes/safe-markdown.pipe';
 import {
   AiConversationMetadata,
   ChatbotService,
@@ -25,13 +27,13 @@ export interface ActivityItem {
   link?: string;
 }
 
-interface ChatMessage {
+export interface ChatMessage {
   sender: 'bot' | 'user';
   text: string;
   activities?: ActivityItem[];
 }
 
-interface ConversationItem {
+export interface ConversationItem {
   conversationId: string;
   title: string;
   updatedAt?: string;
@@ -41,15 +43,24 @@ interface ConversationItem {
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SafeMarkdownPipe],
   templateUrl: './chatbot.component.html',
 })
 export class ChatbotComponent implements OnInit {
   private readonly chatbotService = inject(ChatbotService);
   private readonly scheduleService = inject(ScheduleService);
+  private readonly authService = inject(AuthService);
   private readonly toastr = inject(ToastrService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly router = inject(Router);
+
+  // Guest quota & session state
+  isGuest = true;
+  guestRemainingQuestions: number | null = null;
+  guestDailyLimit = 5;
+  isGuestLimitReached = false;
+  guestToken: string | null = null;
+  isLoadingGuestSession = false;
 
   // Schedule modal state
   selectedActivityForPlan: ActivityItem | null = null;
@@ -81,14 +92,71 @@ export class ChatbotComponent implements OnInit {
   messages: ChatMessage[] = [];
 
   ngOnInit(): void {
-    this.loadSavedConversations();
+    this.isGuest = !this.authService.isAuthenticated();
+    if (this.isOpen) {
+      this.checkAuthAndInitialize();
+    }
+  }
+
+  checkAuthAndInitialize(): void {
+    this.isGuest = !this.authService.isAuthenticated();
+
+    if (this.isGuest) {
+      if (!this.guestToken) {
+        this.initGuestSession();
+      }
+    } else {
+      this.chatbotService.clearGuestSession();
+      this.guestToken = null;
+      this.isGuestLimitReached = false;
+      this.loadSavedConversations();
+    }
+  }
+
+  initGuestSession(): void {
+    if (this.guestToken) {
+      return;
+    }
+
+    const stored = this.chatbotService.getStoredGuestSession();
+    if (stored && stored.guest_token) {
+      this.guestToken = stored.guest_token;
+      this.guestDailyLimit = stored.daily_limit || 5;
+      this.guestRemainingQuestions = stored.remaining_questions;
+      this.isGuestLimitReached = this.guestRemainingQuestions <= 0;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.isLoadingGuestSession = true;
+    this.chatbotService
+      .createGuestSession()
+      .pipe(
+        finalize(() => {
+          this.isLoadingGuestSession = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (session) => {
+          this.guestToken = session.guest_token;
+          this.guestDailyLimit = session.daily_limit || 5;
+          this.guestRemainingQuestions = session.remaining_questions;
+          this.isGuestLimitReached = this.guestRemainingQuestions <= 0;
+          this.chatbotService.storeGuestSession(session);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Failed to create guest session:', err);
+        },
+      });
   }
 
   toggleChat(): void {
     this.isOpen = !this.isOpen;
 
     if (this.isOpen) {
-      this.loadSavedConversations();
+      this.checkAuthAndInitialize();
     }
 
     this.cdr.detectChanges();
@@ -102,7 +170,7 @@ export class ChatbotComponent implements OnInit {
   toggleHistory(): void {
     this.isHistoryOpen = !this.isHistoryOpen;
 
-    if (this.isHistoryOpen) {
+    if (this.isHistoryOpen && !this.isGuest) {
       this.loadSavedConversations();
     }
 
@@ -114,6 +182,13 @@ export class ChatbotComponent implements OnInit {
     this.messages = [];
     this.errorMessage = '';
     this.isHistoryOpen = false;
+
+    if (this.isGuest) {
+      if (!this.guestToken) {
+        this.initGuestSession();
+      }
+    }
+
     this.cdr.detectChanges();
   }
 
@@ -121,6 +196,11 @@ export class ChatbotComponent implements OnInit {
     const text = this.messageText.trim();
 
     if (!text || this.isSending) return;
+
+    if (this.isGuest && this.isGuestLimitReached) {
+      this.errorMessage = 'وصلت للحد المتاح للمحادثات كزائر (5 أسئلة يومياً). أنشئ حساباً مجانياً لمواصلة المحادثة بلا حدود.';
+      return;
+    }
 
     this.messages.push({
       sender: 'user',
@@ -132,6 +212,11 @@ export class ChatbotComponent implements OnInit {
     this.isSending = true;
     this.cdr.detectChanges();
 
+    if (this.isGuest) {
+      this.sendGuestMessage(text);
+      return;
+    }
+
     if (!this.currentConversationId) {
       this.createConversationThenSend(text);
       return;
@@ -140,8 +225,89 @@ export class ChatbotComponent implements OnInit {
     this.sendMessageToConversation(text, this.currentConversationId);
   }
 
+  private sendGuestMessage(text: string): void {
+    const token = this.guestToken || undefined;
+
+    this.chatbotService
+      .sendMessage(text, undefined, token)
+      .pipe(
+        finalize(() => {
+          this.isSending = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.guest_remaining_questions !== undefined) {
+            this.guestRemainingQuestions = response.guest_remaining_questions;
+            this.isGuestLimitReached = this.guestRemainingQuestions <= 0;
+
+            const stored = this.chatbotService.getStoredGuestSession();
+            if (stored) {
+              stored.remaining_questions = this.guestRemainingQuestions;
+              this.chatbotService.storeGuestSession(stored);
+            }
+          }
+
+          const activities: ActivityItem[] = [];
+          const seenIds = new Set<number>();
+
+          if (response.sources && Array.isArray(response.sources)) {
+            for (const src of response.sources) {
+              const id = Number(src.activity_id);
+              if (id && !seenIds.has(id)) {
+                seenIds.add(id);
+                activities.push({
+                  id,
+                  title: src.title || `نشاط ${id}`,
+                  city: src.city || undefined,
+                  category: src.category || undefined,
+                  price: src.price || undefined,
+                  imageUrl: src.image_url || '/Photo/Aswan.png',
+                  link: src.link || `/activities/${id}`,
+                });
+              }
+            }
+          }
+
+          const botText = (response.answer || response.message || response.response || '').trim();
+          if (botText) {
+            this.messages.push({
+              sender: 'bot',
+              text: botText,
+              activities: activities.slice(0, 3),
+            });
+          }
+
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Chatbot Guest API error:', error);
+
+          if (error.status === 429 && error.error?.signal === 'guest_quota_exceeded') {
+            this.isGuestLimitReached = true;
+            this.guestRemainingQuestions = 0;
+            const stored = this.chatbotService.getStoredGuestSession();
+            if (stored) {
+              stored.remaining_questions = 0;
+              this.chatbotService.storeGuestSession(stored);
+            }
+          } else if (error.status === 401 && error.error?.signal === 'invalid_guest_token') {
+            this.chatbotService.clearGuestSession();
+            this.guestToken = null;
+            this.initGuestSession();
+            this.errorMessage = 'انتهت صلاحية جلسة الزائر. يرجى إعادة المحاولة.';
+          } else {
+            this.errorMessage = 'Connection error. Please try again.';
+          }
+
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
   openConversation(conversationId: string): void {
-    if (!conversationId || this.isLoadingConversation) return;
+    if (!conversationId || this.isLoadingConversation || this.isGuest) return;
 
     this.errorMessage = '';
     this.isLoadingConversation = true;
@@ -174,7 +340,7 @@ export class ChatbotComponent implements OnInit {
   deleteConversation(event: MouseEvent, conversationId: string): void {
     event.stopPropagation();
 
-    if (!conversationId) return;
+    if (!conversationId || this.isGuest) return;
 
     this.chatbotService.deleteConversation(conversationId).subscribe({
       next: () => {
@@ -217,7 +383,6 @@ export class ChatbotComponent implements OnInit {
           },
           error: (error) => {
             console.error('Save conversation error:', error);
-
             this.addConversationToList(conversationId, text);
             this.sendMessageToConversation(text, conversationId);
           },
@@ -225,7 +390,6 @@ export class ChatbotComponent implements OnInit {
       },
       error: (error) => {
         console.error('Create conversation error:', error);
-
         this.errorMessage = 'Failed to start a new conversation.';
         this.isSending = false;
         this.cdr.detectChanges();
@@ -268,7 +432,7 @@ export class ChatbotComponent implements OnInit {
             }
           }
 
-          const botText = (response.answer || (response as any).message || response.response || '').trim();
+          const botText = (response.answer || response.message || response.response || '').trim();
           if (botText) {
             this.messages.push({
               sender: 'bot',
@@ -288,7 +452,6 @@ export class ChatbotComponent implements OnInit {
         },
       });
   }
-
 
   openScheduleModal(act: ActivityItem): void {
     this.selectedActivityForPlan = act;
@@ -371,7 +534,7 @@ export class ChatbotComponent implements OnInit {
   }
 
   private loadSavedConversations(): void {
-    if (this.isLoadingConversations) return;
+    if (this.isLoadingConversations || this.isGuest) return;
 
     this.isLoadingConversations = true;
     this.cdr.detectChanges();

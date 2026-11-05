@@ -73,11 +73,13 @@ export class App {
       !isDashboardPage &&
       !isAdmin;
 
+    const isGuestOrTourist = !this.authService.isAuthenticated() || this.authService.isTourist();
+
     this.showChatbot =
-      this.authService.isAuthenticated() &&
-      this.authService.isTourist() &&
+      isGuestOrTourist &&
       !isDashboardPage &&
-      !isAuthPage;
+      !isAuthPage &&
+      !isAdmin;
 
     this.cdr.markForCheck();
   }
