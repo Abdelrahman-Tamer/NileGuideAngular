@@ -3,10 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "start": "node scripts/generate-config.mjs && ng serve",
+    "prebuild": "node scripts/generate-config.mjs",
+    "build": "node scripts/generate-config.mjs && ng build",
+    "watch": "node scripts/generate-config.mjs && ng build --watch --configuration development",
+    "test": "node scripts/generate-config.mjs && node --test scripts/generate-config.test.mjs && ng test",
+    "generate-config": "node scripts/generate-config.mjs",
     "serve:ssr:G.Project": "node dist/G.Project/server/server.mjs"
   },
   "prettier": {

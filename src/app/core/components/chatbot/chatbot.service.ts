@@ -7,10 +7,20 @@ export interface CreateAiConversationResponse {
   conversation_id: string;
 }
 
+export interface GuestSessionResponse {
+  guest_token: string;
+  guest_id: string;
+  session_id: string;
+  daily_limit: number;
+  remaining_questions: number;
+  inactivity_ttl_seconds: number;
+}
+
 export interface ChatRequest {
   text: string;
   limit: number;
-  conversation_id: string;
+  conversation_id?: string;
+  guest_token?: string;
 }
 
 export interface ChatSource {
@@ -34,6 +44,8 @@ export interface ChatResponse {
   answer: string;
   response?: string;
   sources?: ChatSource[];
+  guest_remaining_questions?: number;
+  guest_daily_limit?: number;
 }
 
 export interface RetrievedHistoryItem {
@@ -82,8 +94,9 @@ export interface AiConversationsListResponse {
 export class ChatbotService {
   private readonly http = inject(HttpClient);
 
-  private readonly aiBaseUrl = STORED_KEYS.AI_BASE_URL;
+  private get aiBaseUrl(): string { return STORED_KEYS.AI_BASE_URL; }
   private readonly backendChatUrl = `${STORED_KEYS.baseUrl}/chat/conversations`;
+  private readonly guestSessionStorageKey = 'nileguide_guest_session';
 
   createAiConversation(): Observable<CreateAiConversationResponse> {
     return this.http.post<CreateAiConversationResponse>(
@@ -92,12 +105,51 @@ export class ChatbotService {
     );
   }
 
-  sendMessage(text: string, conversationId: string): Observable<ChatResponse> {
+  createGuestSession(): Observable<GuestSessionResponse> {
+    return this.http.post<GuestSessionResponse>(
+      `${this.aiBaseUrl}/guest/session`,
+      {}
+    );
+  }
+
+  getStoredGuestSession(): GuestSessionResponse | null {
+    try {
+      const raw = sessionStorage.getItem(this.guestSessionStorageKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  storeGuestSession(session: GuestSessionResponse): void {
+    try {
+      sessionStorage.setItem(this.guestSessionStorageKey, JSON.stringify(session));
+    } catch {}
+  }
+
+  clearGuestSession(): void {
+    try {
+      sessionStorage.removeItem(this.guestSessionStorageKey);
+    } catch {}
+  }
+
+  sendMessage(
+    text: string,
+    conversationId?: string,
+    guestToken?: string
+  ): Observable<ChatResponse> {
     const payload: ChatRequest = {
       text,
       limit: 5,
-      conversation_id: conversationId,
     };
+
+    if (conversationId) {
+      payload.conversation_id = conversationId;
+    }
+
+    if (guestToken) {
+      payload.guest_token = guestToken;
+    }
 
     return this.http.post<ChatResponse>(`${this.aiBaseUrl}/chat`, payload);
   }
